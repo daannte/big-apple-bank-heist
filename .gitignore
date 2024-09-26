@@ -1,0 +1,5 @@
+*.pdf
+*.lst
+*.prg
+.vscode
+.env

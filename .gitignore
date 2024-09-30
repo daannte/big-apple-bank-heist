@@ -3,3 +3,4 @@
 *.prg
 .vscode
 .env
+Makefile

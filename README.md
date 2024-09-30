@@ -4,6 +4,7 @@ This repository contains the code for our project "The Big Apple Bank Heist" wri
 
 ## Setup
 1. Install make, DASM, and SCP
+    - Ensure they are included in your PATH
 
 2. Clone this repository to your local machine
 

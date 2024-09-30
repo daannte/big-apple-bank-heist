@@ -9,16 +9,13 @@ This repository contains the code for our project "The Big Apple Bank Heist" wri
 
 3. Clone your fork to your local machine
 
-4. Add the main repository as upstream
-    - Via the commandline when in the git repository, run `git remote add upstream https://github.com/daannte/big-apple-bank-heist.git`
-
-5. Create a `.env` file in the root of the repository containing the following variables:
+4. Create a `.env` file in the root of the repository containing the following variables:
     - USER=\<your UCalgary username\>
     - INFILE=\<name of the input assembly source file\>
     - OUTFILE=\<name of the output compiled program file\>
     - REMOTE=\<ssh remote to copy the program to\>
 
-4. Run `make`
+5. Run `make`
     - This will compile, upload, and run the program via the browser emulator provided by Dr. Aycock
     - You can also run any of the individual steps by doing `make [compile|upload|run]`
     - **NOTE** if running on Windows, use the Git Bash terminal

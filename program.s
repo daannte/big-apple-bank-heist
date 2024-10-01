@@ -13,6 +13,11 @@ SPKR2   = $900b   ; mid frequency
 SPKR3   = $900c  ; high frequency
 SPKR4   = $900d   ; noise
 
+; MUSIC TIMER addresses
+TIMER1  = $7677   ; 256^1
+TIMER2  = $7678   ; 256^2
+TIMER3  = $7679   ; 256^3
+
 ; -------- NOTES --------
 A1      = #183
 A2      = #219
@@ -75,18 +80,80 @@ nextstmt                ; next BASIC statement
 
 ; -------- PROGRAM --------
     ; Setup
-    lda #10         ; load volume as 15 (max)
+    lda #5          ; load volume as 10
     sta VOL         ; store into volume register (AKA set volume)
 
-    ldx #100          ; load x register as 0
+    lda #255        ; load timer 1 as 255
+    sta TIMER1      ; store into timer 1 register
 
-    ldy #Fs1        ; load x register as F#1
-    sty SPKR3       ; store into high frequency register
+    lda #255        ; load timer 1 as 255
+    sta TIMER2      ; store into timer 2 register
 
-    ldy #0    
+    lda #31       ; load timer 3 as 31
+    sta TIMER3      ; store into timer 3 register
+
+    lda #Fs1        ; load x register as F#1
+    sta SPKR3       ; store into high frequency register
 
 gameloop:           ; play a note on loop
+    lda TIMER3
+    beq volume_on
+    sbc #16
+    beq volume_off
+    jmp next_loop
+
+volume_off:
+    lda #0
+    sta VOL
+    jmp next_loop
+
+volume_on:
+    lda #5
+    sta VOL
+
+next_loop:
+    jsr increment_timer
     jmp gameloop
 
+; -------- END PROGRAM --------
+
+
+
+; -------- SUBROUTINES --------
+
+; increment_timer
+    ; decrements the timers and loops them
+    ; allows for approx. 16 seconds of looped data, such as music
+increment_timer:
+    lda TIMER1
+    beq increment_timer2
+    dec TIMER1
+    rts
+
+increment_timer2:
+    adc #255
+    sta TIMER1
+    lda TIMER2
+    beq increment_timer3
+    dec TIMER2
+    rts
+
+increment_timer3:
+    adc #255
+    sta TIMER2
+    lda TIMER3
+    beq loop_timer
+    dec TIMER3
+    rts
+
+loop_timer:
+    adc #31
+    sta TIMER3
+    rts
+
+; END increment_timer
+
+; end
+    ; end of program
 end:
     rts             ; return from subroutine

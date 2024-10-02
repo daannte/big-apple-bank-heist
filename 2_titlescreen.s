@@ -120,6 +120,8 @@ title:
   jsr CHROUT          ; Print "E"
   lda #160            ; Space
   jsr CHROUT          ; Print Space
+  lda #160            ; Space
+  jsr CHROUT          ; Print Space
   lda #75             ; "K"
   jsr CHROUT          ; Print "K"
   lda #73             ; "I"
@@ -154,6 +156,8 @@ title:
   jsr CHROUT          ; Print "L"
   lda #160            ; Space
   jsr CHROUT          ; Print Space
+  lda #160            ; Space
+  jsr CHROUT          ; Print Space
   lda #83             ; "S"
   jsr CHROUT          ; Print "S"
   lda #65             ; "A"
@@ -173,7 +177,7 @@ title:
 
   clc                 ; Clear carry
   ldx #13             ; Set X 
-  ldy #4              ; Set Y
+  ldy #3              ; Set Y
   jsr PLOT            ; Move cursor to (X, Y)
                       ; Print "Ramiro Piquer"
   lda #82             ; "R"
@@ -188,6 +192,8 @@ title:
   jsr CHROUT          ; Print "R"
   lda #79             ; "O"
   jsr CHROUT          ; Print "O"
+  lda #160            ; Space
+  jsr CHROUT          ; Print Space
   lda #160            ; Space
   jsr CHROUT          ; Print Space
   lda #80             ; "P"

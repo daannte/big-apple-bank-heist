@@ -89,6 +89,8 @@ title:
   jsr CHROUT          ; Print "K"
   lda #160            ; Space
   jsr CHROUT          ; Print Space
+  lda #160            ; Space
+  jsr CHROUT          ; Print Space
   lda #72             ; "H"
   jsr CHROUT          ; Print "H"
   lda #69             ; "E"
@@ -212,6 +214,8 @@ title:
   jsr CHROUT          ; Print "I"
   lda #78             ; "N"
   jsr CHROUT          ; Print "N"
+  lda #160            ; Space
+  jsr CHROUT          ; Print Space
   lda #160            ; Space
   jsr CHROUT          ; Print Space
   lda #83             ; "S"

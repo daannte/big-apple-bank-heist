@@ -16,12 +16,21 @@ clr:
   lda #$93              ; Load clear screen command
   jsr CHROUT            ; Print it
 
-border:
-  ldx #0              ; Set X do black
+bg:
+  ldx #0              ; Set X to black
   lda SCREEN          ; Load the screen colour address
-  and	#$F0            ; Reset the 2 border bits
+  and	#$0F            ; Reset the 4 background bits
   stx $1001           ; Store X into the user basic area memory
-  ora $1001           ; Combine black with the screen (Set black border)
+  ora $1001           ; Combine new background color with the screen
+  sta SCREEN          ; Store new colour into the screen colour address
+
+
+border:
+  ldx #0              ; Set X to black
+  lda SCREEN          ; Load the screen colour address
+  and	#$F8            ; Reset the 3 border bits
+  stx $1001           ; Store X into the user basic area memory
+  ora $1001           ; Combine new border colour with the screen 
   sta SCREEN          ; Store new colour into the screen colour address
 
 end:

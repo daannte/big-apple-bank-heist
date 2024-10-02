@@ -100,5 +100,8 @@ title:
   lda #84             ; "T"
   jsr CHROUT          ; Print "T"
 
+loop:
+  jmp loop
+
 end:
   rts

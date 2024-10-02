@@ -234,7 +234,7 @@ title:
   jsr CHROUT          ; Print "G"
 
 loop:
-  jmp loop
+  jmp loop            ; Infinite loop
 
 end:
   rts

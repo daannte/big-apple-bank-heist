@@ -14,7 +14,7 @@ nextstmt                ; next BASIC statement
     dc.w 0              ; end of BASIC program
 
 clr:
-  lda #$93              ; Load clear screen command
+  lda #147              ; Load clear screen command
   jsr CHROUT            ; Print it
 
 bg:
@@ -104,7 +104,7 @@ title:
 
 
   clc                 ; Clear carry
-  ldx #9              ; Set X 
+  ldx #7              ; Set X 
   ldy #4              ; Set Y
   jsr PLOT            ; Move cursor to (X, Y)
                       ; Print "Dante Kirsman"
@@ -138,7 +138,7 @@ title:
   jsr CHROUT          ; Print "N"
 
   clc                 ; Clear carry
-  ldx #11              ; Set X 
+  ldx #8              ; Set X 
   ldy #3              ; Set Y
   jsr PLOT            ; Move cursor to (X, Y)
                       ; Print "Daniel Sabourov"
@@ -176,7 +176,7 @@ title:
   jsr CHROUT          ; Print "V"
 
   clc                 ; Clear carry
-  ldx #13             ; Set X 
+  ldx #9             ; Set X 
   ldy #3              ; Set Y
   jsr PLOT            ; Move cursor to (X, Y)
                       ; Print "Ramiro Piquer"
@@ -210,7 +210,7 @@ title:
   jsr CHROUT          ; Print "R"
 
   clc                 ; Clear carry
-  ldx #15             ; Set X 
+  ldx #10             ; Set X 
   ldy #6              ; Set Y
   jsr PLOT            ; Move cursor to (X, Y)
                       ; Print "Jin Song"
@@ -232,6 +232,170 @@ title:
   jsr CHROUT          ; Print "N"
   lda #71             ; "G"
   jsr CHROUT          ; Print "G"
+
+  clc                 ; Clear carry
+  ldx #12             ; Set X 
+  ldy #8              ; Set Y
+  jsr PLOT            ; Move cursor to (X, Y)
+                      ; Print "2024"
+  lda #50             ; "2"
+  jsr CHROUT          ; Print "2"
+  lda #48             ; "0"
+  jsr CHROUT          ; Print "0"
+  lda #50             ; "2"
+  jsr CHROUT          ; Print "2"
+  lda #52             ; "4"
+  jsr CHROUT          ; Print "4"
+
+  ; Draw a bank
+  ; --- FLOOR ---
+  clc                 ; Clear carry
+  ldx #21             ; Set X 
+  ldy #7              ; Set Y
+  jsr PLOT            ; Move cursor to (X, Y)
+
+
+  lda #184            ; Draw line
+  jsr CHROUT          ; Print the line
+  lda #184            ; Draw line
+  jsr CHROUT          ; Print the line
+  lda #184            ; Draw line
+  jsr CHROUT          ; Print the line
+  lda #184            ; Draw line
+  jsr CHROUT          ; Print the line
+  lda #184            ; Draw line
+  jsr CHROUT          ; Print the line
+  lda #184            ; Draw line
+  jsr CHROUT          ; Print the line
+
+  ; --- Walls ---
+
+  clc                 ; Clear carry
+  ldx #20             ; Set X 
+  ldy #7              ; Set Y
+  jsr PLOT            ; Move cursor to (X, Y)
+
+  lda #182            ; Draw right vert line
+  jsr CHROUT          ; Print the line
+
+  clc                 ; Clear carry
+  ldx #20             ; Set X 
+  ldy #12             ; Set Y
+  jsr PLOT            ; Move cursor to (X, Y)
+
+  lda #181            ; Draw left vert line
+  jsr CHROUT          ; Print the line
+
+  clc                 ; Clear carry
+  ldx #19             ; Set X 
+  ldy #7              ; Set Y
+  jsr PLOT            ; Move cursor to (X, Y)
+
+  lda #182            ; Draw right vert line
+  jsr CHROUT          ; Print the line
+
+  clc                 ; Clear carry
+  ldx #19             ; Set X 
+  ldy #12             ; Set Y
+  jsr PLOT            ; Move cursor to (X, Y)
+
+  lda #181            ; Draw left vert line
+  jsr CHROUT          ; Print the line
+
+  clc                 ; Clear carry
+  ldx #18             ; Set X 
+  ldy #7              ; Set Y
+  jsr PLOT            ; Move cursor to (X, Y)
+
+  lda #182            ; Draw right vert line
+  jsr CHROUT          ; Print the line
+
+  clc                 ; Clear carry
+  ldx #18             ; Set X 
+  ldy #12             ; Set Y
+  jsr PLOT            ; Move cursor to (X, Y)
+
+  lda #181            ; Draw left vert line
+  jsr CHROUT          ; Print the line
+
+  clc                 ; Clear carry
+  ldx #18             ; Set X 
+  ldy #9              ; Set Y
+  jsr PLOT            ; Move cursor to (X, Y)
+
+  lda #181            ; Draw left vert line
+  jsr CHROUT          ; Print the line
+  lda #182            ; Draw right vert line
+  jsr CHROUT          ; Print the line
+
+  clc                 ; Clear carry
+  ldx #19             ; Set X 
+  ldy #9              ; Set Y
+  jsr PLOT            ; Move cursor to (X, Y)
+
+  lda #181            ; Draw left vert line
+  jsr CHROUT          ; Print the line
+  lda #182            ; Draw right vert line
+  jsr CHROUT          ; Print the line
+
+  clc                 ; Clear carry
+  ldx #20             ; Set X 
+  ldy #9              ; Set Y
+  jsr PLOT            ; Move cursor to (X, Y)
+
+  lda #181            ; Draw left vert line
+  jsr CHROUT          ; Print the line
+  lda #182            ; Draw right vert line
+  jsr CHROUT          ; Print the line
+
+
+  ; --- Flat roof thing ---
+
+  clc                 ; Clear carry
+  ldx #17             ; Set X 
+  ldy #7              ; Set Y
+  jsr PLOT            ; Move cursor to (X, Y)
+
+  lda #166            ; Draw line
+  jsr CHROUT          ; Print the line
+  lda #166            ; Draw line
+  jsr CHROUT          ; Print the line
+  lda #166            ; Draw line
+  jsr CHROUT          ; Print the line
+  lda #166            ; Draw line
+  jsr CHROUT          ; Print the line
+  lda #166            ; Draw line
+  jsr CHROUT          ; Print the line
+  lda #166            ; Draw line
+  jsr CHROUT          ; Print the line
+
+  ; --- ROOF ---
+
+  clc                 ; Clear carry
+  ldx #16             ; Set X 
+  ldy #8              ; Set Y
+  jsr PLOT            ; Move cursor to (X, Y)
+
+  lda #110            ; Draw slanted line
+  jsr CHROUT          ; Print slanted line 
+
+  lda #36             ; "$" 
+  jsr CHROUT          ; Print "$" 
+  lda #36             ; "$" 
+  jsr CHROUT          ; Print "$" 
+
+  lda #109            ; Draw slanted line
+  jsr CHROUT          ; Print slanted line 
+
+  clc                 ; Clear carry
+  ldx #15             ; Set X 
+  ldy #9              ; Set Y
+  jsr PLOT            ; Move cursor to (X, Y)
+
+  lda #110            ; Draw slanted line
+  jsr CHROUT          ; Print slanted line 
+  lda #109            ; Draw slanted line
+  jsr CHROUT          ; Print slanted line 
 
 loop:
   jmp loop            ; Infinite loop

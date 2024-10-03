@@ -1,17 +1,19 @@
     processor 6502
 
 ; KERNAL [sic] address
-CHROUT  = $ffd2
-A       = $030c
-X       = $030d
-Y       = $030e
+CHROUT  = $FFD2
 
 ; SPEAKER addresses
-VOL     = $900e   ; volume
-SPKR1   = $900a   ; low frequency
-SPKR2   = $900b   ; mid frequency
-SPKR3   = $900c  ; high frequency
-SPKR4   = $900d   ; noise
+VOL     = $900E   ; volume
+SPKR1   = $900A   ; low frequency
+SPKR2   = $900B   ; mid frequency
+SPKR3   = $900C  ; high frequency
+SPKR4   = $900D   ; noise
+
+; INPUT address
+KEYBOARD = $00C5
+
+    org $0801   ; BASIC start address
 
 ; -------- NOTES --------
 A1      = #183
@@ -75,17 +77,10 @@ nextstmt                ; next BASIC statement
 
 ; -------- PROGRAM --------
     ; Setup
-    lda #10         ; load volume as 15 (max)
-    sta VOL         ; store into volume register (AKA set volume)
+    lda #5         ; load volume as 5
+    sta VOL         ; store into volume register (AKA set volume)    
 
-    ldx #100          ; load x register as 0
-
-    ldy #Fs1        ; load x register as F#1
-    sty SPKR3       ; store into high frequency register
-
-    ldy #0    
-
-gameloop:           ; play a note on loop
+gameloop:
     jmp gameloop
 
 end:

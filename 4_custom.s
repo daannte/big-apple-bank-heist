@@ -25,8 +25,10 @@ bg:
   ; Set the characters to replace on the screen
   ; Page 271 in book
 
-  ldx #0		;@
+  ldx #0		            ; @
   stx 7690		
+  ldx #33               ; !
+  stx 7691
 
 draw:
   lda #$ff              ; loading 255 into $9005 makes the vic look at $1c00 for characters instead
@@ -48,23 +50,23 @@ draw:
   stx $1c06
   ldx #$24
   stx $1c07
-;
-;  LDX #$00
-;  stx $1c08
-;  LDX #$00
-;  stx $1c09
-;  LDX #$18
-;  stx $1c10
-;  LDX #$18
-;  stx $1c11
-;  LDX #$18
-;  stx $1c12
-;  LDX #$7E
-;  stx $1c13
-;  LDX #$FF
-;  stx $1c14
-;  LDX #$FF
-;  stx $1c15
+
+  ldx #$70
+  stx $1d08
+  ldx #$8e
+  stx $1d09
+  ldx #$62
+  stx $1d0a
+  ldx #$12
+  stx $1d0b
+  ldx #$29
+  stx $1d0c
+  ldx #$55
+  stx $1d0d
+  ldx #$a5
+  stx $1d0e
+  ldx #$c2
+  stx $1d0f
 
 end:
   rts

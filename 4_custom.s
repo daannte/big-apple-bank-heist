@@ -34,6 +34,8 @@ draw:
   lda #$ff              ; loading 255 into $9005 makes the vic look at $1c00 for characters instead
   sta $9005             ; the above can be found on pages 84
 
+  ; Custom player
+
   ldx #$18
   stx $1c00
   ldx #$24
@@ -50,6 +52,8 @@ draw:
   stx $1c06
   ldx #$24
   stx $1c07
+
+  ; Custom pickaxe
 
   ldx #$70
   stx $1d08

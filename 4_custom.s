@@ -18,59 +18,43 @@ clr:
   lda #147              ; Load clear screen command
   jsr CHROUT            ; Print it
 
-bg:
-  ldx #8                ; Black background			
-  stx SCREEN            ; Make background black
-
-  ; Set the characters to replace on the screen
-  ; Page 271 in book
-
-  ldx #0		            ; @
-  stx 7690		
-  ldx #33               ; !
-  stx 7691
-
 draw:
   lda #$ff              ; loading 255 into $9005 makes the vic look at $1c00 for characters instead
   sta $9005             ; the above can be found on pages 84
 
   ; Custom player
 
-  ldx #$18
-  stx $1c00
-  ldx #$24
-  stx $1c01
-  ldx #$24
-  stx $1c02
-  ldx #$18
-  stx $1c03
-  ldx #$7e
-  stx $1c04
-  ldx #$18
-  stx $1c05
-  ldx #$24
-  stx $1c06
-  ldx #$24
-  stx $1c07
+  lda #64
+  jsr CHROUT
 
   ; Custom pickaxe
 
-  ldx #$70
-  stx $1d08
-  ldx #$8e
-  stx $1d09
-  ldx #$62
-  stx $1d0a
-  ldx #$12
-  stx $1d0b
-  ldx #$29
-  stx $1d0c
-  ldx #$55
-  stx $1d0d
-  ldx #$a5
-  stx $1d0e
-  ldx #$c2
-  stx $1d0f
+  lda #65
+  jsr CHROUT
+
+
+loop:
+  jmp loop
 
 end:
   rts
+
+  org $1c00
+
+  dc.b $18
+  dc.b $24
+  dc.b $24
+  dc.b $18
+  dc.b $7e
+  dc.b $18
+  dc.b $24
+  dc.b $24
+
+  dc.b $70
+  dc.b $8e
+  dc.b $62
+  dc.b $12
+  dc.b $29
+  dc.b $55
+  dc.b $a5
+  dc.b $c2

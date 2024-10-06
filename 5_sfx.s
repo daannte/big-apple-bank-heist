@@ -102,6 +102,65 @@ nextstmt                ; next BASIC statement
     sta TIMER2
     sta TIMER3
 
+    ; Prints "PRESS R TO PLAY PICKAXE SOUND"
+    lda #'P
+    jsr CHROUT
+    lda #'R
+    jsr CHROUT
+    lda #'E
+    jsr CHROUT
+    lda #'S
+    jsr CHROUT
+    lda #'S
+    jsr CHROUT
+    lda #32
+    jsr CHROUT
+    lda #'R
+    jsr CHROUT
+    lda #32
+    jsr CHROUT
+    lda #'T
+    jsr CHROUT
+    lda #'O
+    jsr CHROUT
+    lda #32
+    jsr CHROUT
+    lda #'P
+    jsr CHROUT
+    lda #'L
+    jsr CHROUT
+    lda #'A
+    jsr CHROUT
+    lda #'Y
+    jsr CHROUT
+    lda #32
+    jsr CHROUT
+    lda #'P
+    jsr CHROUT
+    lda #'I
+    jsr CHROUT
+    lda #'C
+    jsr CHROUT
+    lda #'K
+    jsr CHROUT
+    lda #'A
+    jsr CHROUT
+    lda #'X
+    jsr CHROUT
+    lda #'E
+    jsr CHROUT
+    lda #32
+    jsr CHROUT
+    lda #'S
+    jsr CHROUT
+    lda #'O
+    jsr CHROUT
+    lda #'U
+    jsr CHROUT
+    lda #'N
+    jsr CHROUT
+    lda #'D
+    jsr CHROUT
 
 gameloop:
     lda KEYBOARD        ; load keyboard input

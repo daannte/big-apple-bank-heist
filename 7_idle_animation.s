@@ -8,6 +8,8 @@ JIFFY3  = $00A0     ; n * 256^0
 JIFFY2  = $00A1     ; n * 256^1
 JIFFY1  = $00A2     ; n * 256^2
 
+CURRENT = $1DFA     ; current animation frame
+SWITCH = $1DFB     ; switch for idle animation
 LASTJIFFY = $1DFC   ; stores last known jiffy
 TIMER1  = $1DFF     ; n * 256^0
 TIMER2  = $1DFE     ; n * 256^1
@@ -41,34 +43,47 @@ setup:
   lda #TIMERESET3	      ; 0 * 256^2 = 0 jiffies
   sta TIMER3		        ; store the timer value in address TIMER3
 
+  lda #1
+  sta CURRENT
+
+  lda #0
+  sta SWITCH
+
   lda #$ff              ; loading 255 into $9005 makes the vic look at $1c00 for characters instead
   sta $9005             ; the above can be found on pages 84
 
 draw:
+  lda SWITCH
+  beq check_current
+  jmp loop
+
+check_current:
   lda #147              ; Load clear screen command
   jsr CHROUT            ; Print it
+  lda CURRENT
+  bne idle_1
+  jmp idle_2
 
-  lda $1DFB 
-  cmp #1
-  beq idle_2
+idle_1:
+  lda #1
+  sta SWITCH
+  lda #0
+  sta CURRENT
   lda #64
   jsr CHROUT
-  jmp draw
+  jmp loop
 
 idle_2:
-  lda #147              ; Load clear screen command
-  jsr CHROUT            ; Print it
-
-  lda #0
-  sta $1DFB
-
+  lda #1
+  sta SWITCH
+  lda #1
+  sta CURRENT
   lda #65
   jsr CHROUT
-  jmp draw
 
 loop:
   jsr increment_timer
-  jmp loop
+  jmp draw
 
 ; -------- SUBROUTINES --------
 
@@ -116,8 +131,8 @@ check_timer:
     lda TIMER3              ; check if timer 3 is 0
     bne end_timer           ; if so, increment timer 3
 
-    lda #1
-    sta $1DFB 
+    lda #0
+    sta SWITCH
 
     lda #TIMERESET1     ; 168 * 256^0 = 168 jiffies
     sta TIMER1          ; store the timer value in address TIMER1
@@ -140,18 +155,18 @@ idle_1_char:
   dc.b %10011110
   dc.b %01110000
   dc.b %11111000
-  dc.b %11011000
+  dc.b %11111000
   dc.b %01010000
 
-idle_2_char:
-  dc.b %00000000
-  dc.b %01111000
-  dc.b %10001110
-  dc.b %10010101
-  dc.b %10001110
-  dc.b %11111000
-  dc.b %11111000
-  dc.b %01010000
+idle_2_char
+	dc.b %00000000
+	dc.b %01111000
+	dc.b %10011110
+	dc.b %10110101
+	dc.b %10011110
+	dc.b %11111000
+	dc.b %11111000
+	dc.b %01010000
 
 pickaxe_char:
   dc.b $70

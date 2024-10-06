@@ -15,9 +15,9 @@ TIMER1  = $1DFF     ; n * 256^0
 TIMER2  = $1DFE     ; n * 256^1
 TIMER3  = $1DFD     ; n * 256^2
 
-TIMERESET1	= #60
-TIMERESET2	= #0
-TIMERESET3	= #0
+TIMERESET1  = #60
+TIMERESET2  = #0
+TIMERESET3  = #0
 
     org $1001   ; BASIC start address
 
@@ -34,14 +34,14 @@ clr:
   jsr CHROUT            ; Print it
 
 setup:
-  lda #TIMERESET1	      ; 60 * 256^0 = 60 jiffies
-  sta TIMER1		        ; store the timer value in address TIMER1
+  lda #TIMERESET1        ; 60 * 256^0 = 60 jiffies
+  sta TIMER1            ; store the timer value in address TIMER1
 
-  lda #TIMERESET2	      ; 0 * 256^1 = 0 jiffies
-  sta TIMER2		        ; store the timer value in address TIMER2
+  lda #TIMERESET2        ; 0 * 256^1 = 0 jiffies
+  sta TIMER2            ; store the timer value in address TIMER2
 
-  lda #TIMERESET3	      ; 0 * 256^2 = 0 jiffies
-  sta TIMER3		        ; store the timer value in address TIMER3
+  lda #TIMERESET3        ; 0 * 256^2 = 0 jiffies
+  sta TIMER3            ; store the timer value in address TIMER3
 
   lda #1
   sta CURRENT
@@ -159,14 +159,14 @@ idle_1_char:
   dc.b %01010000
 
 idle_2_char
-	dc.b %00000000
-	dc.b %01111000
-	dc.b %10011110
-	dc.b %10110101
-	dc.b %10011110
-	dc.b %11111000
-	dc.b %11111000
-	dc.b %01010000
+  dc.b %00000000
+  dc.b %01111000
+  dc.b %10011110
+  dc.b %10110101
+  dc.b %10011110
+  dc.b %11111000
+  dc.b %11111000
+  dc.b %01010000
 
 pickaxe_char:
   dc.b $70

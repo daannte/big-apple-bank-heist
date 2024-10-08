@@ -105,7 +105,6 @@ w_key
   beq readkey
   inc Y_POS
   jsr calculatePOS
-  jsr dispCoor
   jmp readkey
 
 a_key

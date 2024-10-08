@@ -48,22 +48,22 @@ init
   jmp readkey
 
   ; Calculate Memory Location Address to draw Character.
-  ; Screen memory location is $1e00 + X position * 22 + Y position
+  ; Screen memory location is $1e00 + Y position * 22 + X position
   ; To multiply by 22, Left shift 4 times ( *16 ), and add lsb 2 times ( *4 ) 
   ; and add lsb 1 time ( *2 )
-  ; (16X + 4X + 2X)
+  ; (16Y + 4Y + 2Y)
 
   ; POS = $1dde - check memory map to see offset value change
 
 calculatePOS
-  lda X_POS             ; Load X_POS in accumulator
+  lda Y_POS             ; Load Y_POS in accumulator
   asl                   ; left shift
   asl                   ; left shift
   asl                   ; left shift
   asl                   ; left shift
   sta TEMP1             ; multiply by 16 (shift 4 times) and store temporarily in X register
 
-  lda X_POS             ; Load (again) X_POS in accumulator
+  lda Y_POS             ; Load (again) Y_POS in accumulator
   asl                   ; left shift
   sta TEMP2             ; Store left shifted (*2) value in TEMP2 address
   asl                   ; Let shift
@@ -73,9 +73,9 @@ calculatePOS
   adc TEMP1             ; Add (*16) 
   
   sta TEMP1             ; 22X
-  lda Y_POS             ; Load Y val to accumulator
+  lda X_POS             ; Load X val to accumulator
   clc                   ; clear carry 
-  adc TEMP1             ; Y val + 22x
+  adc TEMP1             ; X val + 22Y
   sta POS               ; save result in POS address
   rts
 

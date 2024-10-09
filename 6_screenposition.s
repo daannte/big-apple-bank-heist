@@ -87,7 +87,7 @@ readkey
   jsr GETIN     ; Read from keyboard buffer
   cmp #0        ; if no key from buffer, go back to read
   beq readkey
-
+  
   cmp #87       ; W key
   beq w_key
   cmp #65       ; A key
@@ -101,7 +101,7 @@ readkey
 
 w_key
   lda Y_POS
-  cmp #23
+  cmp #21
   beq readkey
   inc Y_POS
   jsr calculatePOS

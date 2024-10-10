@@ -3,4 +3,5 @@
 *.prg
 .vscode
 .env
+.DS_Store
 Makefile

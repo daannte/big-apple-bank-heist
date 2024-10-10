@@ -43,7 +43,6 @@ start:
     ldy #0
     jsr PLOT
     lda #'$
-    ;lda #122
     jsr CHROUT
 
     clc
@@ -78,9 +77,6 @@ wallLeft:
 
     lda #166
     jsr CHROUT
-
-    ;iny
-    ;dey
     dex
 
     bne wallLeft
@@ -94,9 +90,6 @@ wallRight:
 
     lda #166
     jsr CHROUT
-
-    ;iny
-    ;dey
     dex
 
     bne wallRight
@@ -150,8 +143,6 @@ middleWall:
     lda #166
     jsr CHROUT
 
-    ;iny
-    ;dey
     dex
 
     bne middleWall
@@ -162,7 +153,7 @@ middleWall:
     ldx #5
     ldy #8
     jsr PLOT
-    lda #160
+    lda #$20
     jsr CHROUT
 
     ;this is for the random brick in the middle

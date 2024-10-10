@@ -6,6 +6,7 @@ CHRIN   = $ffcf
 SCNKEY  = $ff9f
 GETIN   = $ffe4
 SCR     = $1e00
+SCR2    = $1ef2
 SCREEN  = $900f
 
 ; Address for coordinates
@@ -56,14 +57,16 @@ init
   ; POS = $1dde - check memory map to see offset value change
 
 calculatePOS
-  lda Y_POS             ; Load Y_POS in accumulator
+  lda X_POS             ; Load Y_POS in accumulator
+  sbc #10               ; Subtract 10 from Y_POS
+  bmi baseaddr
   asl                   ; left shift
   asl                   ; left shift
   asl                   ; left shift
   asl                   ; left shift
   sta TEMP1             ; multiply by 16 (shift 4 times) and store temporarily in X register
 
-  lda Y_POS             ; Load (again) Y_POS in accumulator
+  lda X_POS             ; Load (again) Y_POS in accumulator
   asl                   ; left shift
   sta TEMP2             ; Store left shifted (*2) value in TEMP2 address
   asl                   ; Let shift
@@ -73,11 +76,36 @@ calculatePOS
   adc TEMP1             ; Add (*16) 
   
   sta TEMP1             ; 22X
-  lda X_POS             ; Load X val to accumulator
+  lda Y_POS             ; Load X val to accumulator
   clc                   ; clear carry 
   adc TEMP1             ; X val + 22Y
   sta POS               ; save result in POS address
   rts
+
+baseaddr
+  lda X_POS
+  asl                   ; left shift
+  asl                   ; left shift
+  asl                   ; left shift
+  asl                   ; left shift
+  sta TEMP1             ; multiply by 16 (shift 4 times) and store temporarily in X register
+
+  lda X_POS             ; Load (again) Y_POS in accumulator
+  asl                   ; left shift
+  sta TEMP2             ; Store left shifted (*2) value in TEMP2 address
+  asl                   ; Let shift
+  clc                   ; Clear carry for addition
+  adc TEMP2             ; Add (*2) to (*4)
+  clc                   ; Clear carry
+  adc TEMP1             ; Add (*16) 
+  
+  sta TEMP1             ; 22X
+  lda Y_POS             ; Load X val to accumulator
+  clc                   ; clear carry 
+  adc TEMP1             ; X val + 22Y
+  sta POS               ; save result in POS address
+  rts
+  
 
   ; Main Loop - Read key, recalculate position on screen
 readkey
@@ -100,34 +128,32 @@ readkey
 
 
 w_key
-  lda Y_POS
-  cmp #21
-  beq readkey
-  inc Y_POS
-  jsr calculatePOS
-  jmp readkey
-
-a_key
   lda X_POS
-  cmp #0
   beq readkey
   dec X_POS
   jsr calculatePOS
   jmp readkey
 
-s_key
+a_key
   lda Y_POS
-  cmp #0
   beq readkey
   dec Y_POS
   jsr calculatePOS
   jmp readkey
 
-d_key
+s_key
   lda X_POS
   cmp #22
   beq readkey
-  inc X_POS
+  dec X_POS
+  jsr calculatePOS
+  jmp readkey
+
+d_key
+  lda Y_POS
+  cmp #21
+  beq readkey
+  inc Y_POS
   jsr calculatePOS
   jmp readkey
 

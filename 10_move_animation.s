@@ -16,7 +16,7 @@ TIMER1  = $1DFF     ; n * 256^0
 TIMER2  = $1DFE     ; n * 256^1
 TIMER3  = $1DFD     ; n * 256^2
 
-TIMERESET1  = #15
+TIMERESET1  = #5
 TIMERESET2  = #0
 TIMERESET3  = #0
 
@@ -69,6 +69,7 @@ setup:
 
   lda #0
   sta X_POS
+  lda #0
   sta Y_POS
 
   ldx #0
@@ -78,6 +79,8 @@ setup:
   lda #ROBBER_R
   sta CURRENT
   jsr CHROUT
+  clc
+  jsr PLOT
 
 read_input:
   lda MOVING
@@ -85,8 +88,8 @@ read_input:
   lda INPUT
   cmp #9
   beq w_key
-  ; cmp #17
-  ; beq a_key
+  cmp #17
+  beq a_key
   cmp #18
   beq d_key
   cmp #41
@@ -94,71 +97,19 @@ read_input:
   jmp loop
 
 w_key:
-  lda X_POS
-  beq loop
-  lda #147
-  jsr CHROUT
-  dec X_POS
-  ldy Y_POS
-  ldx X_POS
-  clc
-  jsr PLOT
-  lda #ROBBER_R
-  jsr CHROUT
-  lda #0
-  sta MOVING
+  jsr move_up
   jmp loop
 
-; a_key:
-;   lda X_POS
-;   beq loop
-;   cmp #0
-;   beq loop
-;   lda #147
-;   jsr CHROUT
-;   dec X_POS
-;   ldx X_POS
-;   ldy Y_POS
-;   jsr PLOT
-;   clc
-;   lda ROBBER_L
-;   jsr CHROUT
-;   lda #1
-;   sta MOVING
-;   jmp loop
+a_key:
+  jsr move_left
+  jmp loop
 
 d_key:
-  lda Y_POS
-  cmp #21
-  beq loop
-  lda #147
-  jsr CHROUT
-  inc Y_POS
-  ldx X_POS
-  ldy Y_POS
-  clc
-  jsr PLOT
-  lda #ROBBER_R
-  jsr CHROUT
-  lda #0
-  sta MOVING
+  jsr move_right
   jmp loop
 
 s_key:
-  lda X_POS
-  cmp #21
-  beq loop
-  lda #147
-  jsr CHROUT
-  inc X_POS
-  ldy Y_POS
-  ldx X_POS
-  clc
-  jsr PLOT
-  lda #ROBBER_R
-  jsr CHROUT
-  lda #0
-  sta MOVING
+  jsr move_down
 
 loop:
   jsr increment_timer
@@ -166,23 +117,143 @@ loop:
 
 ; -------- SUBROUTINES --------
 
+move_up:
+  lda X_POS
+  beq end_move_up
+
+  lda #ROBBER_VR_2
+  jsr CHROUT
+
+  dec X_POS
+  ldy Y_POS
+  ldx X_POS
+  clc
+  jsr PLOT
+
+  lda #ROBBER_VR_1
+  sta CURRENT
+  jsr CHROUT
+
+  clc
+  jsr PLOT
+  lda #0
+  sta MOVING
+  lda #TIMERESET1
+  sta TIMER1
+
+end_move_up:
+  rts
+; -------------------
+move_down:
+  lda X_POS
+  cmp #22
+  beq end_move_down
+
+  lda #ROBBER_VL_1
+  jsr CHROUT
+
+  inc X_POS
+  ldy Y_POS
+  ldx X_POS
+  clc
+  jsr PLOT
+
+  lda #ROBBER_VL_2
+  sta CURRENT
+  jsr CHROUT
+
+  clc
+  jsr PLOT
+  lda #0
+  sta MOVING
+  lda #TIMERESET1
+  sta TIMER1
+
+end_move_down:
+  rts
+; -------------------
+move_right:
+  lda Y_POS
+  cmp #21
+  beq end_move_right
+
+  lda #ROBBER_R_1
+  jsr CHROUT
+
+  inc Y_POS
+  ldx X_POS
+  ldy Y_POS
+  clc
+  jsr PLOT
+
+  lda #ROBBER_R_2
+  sta CURRENT
+  jsr CHROUT
+
+  clc
+  jsr PLOT
+  lda #0
+  sta MOVING
+  lda #TIMERESET1
+  sta TIMER1
+
+end_move_right:
+  rts
+; -------------------
+move_left:
+  lda Y_POS
+  beq end_move_left
+
+  lda #ROBBER_L_2
+  jsr CHROUT
+
+  dec Y_POS
+  ldx X_POS
+  ldy Y_POS
+  clc
+  jsr PLOT
+
+  lda #ROBBER_L_1
+  sta CURRENT
+  jsr CHROUT
+
+  clc
+  jsr PLOT
+  lda #0
+  sta MOVING
+  lda #TIMERESET1
+  sta TIMER1
+
+end_move_left:
+  rts
+
 ; increment_timer
-    ; decrements the timers and loops them
-    ; allows for approx. 16 seconds of looped data, such as music
+    ; decrements the timer
 increment_timer:
+  lda MOVING
+  bne end_timer
   lda JIFFY1              ; load current jiffy
   cmp LASTJIFFY           ; compare to last jiffy
-  bne increment_timer1    ; if jiffy elapsed, update timer
-  jmp check_timer         ; otherwise, return
-    
-increment_timer1:
+  beq end_timer           ; if jiffy elapsed, update timer
+  sta LASTJIFFY           ; store current jiffy
+  lda TIMER1
+  bne increment_timer1    ; if timer 1 is not 0, increment timer 1
+  lda TIMER2
+  bne increment_timer1    ; if timer 2 is not 0, increment timer 2
+  lda TIMER3
+  bne increment_timer1    ; if timer 3 is not 0, increment timer 3
+  
   lda #1
   sta MOVING
-  lda JIFFY1              ; load current jiffy
-  sta LASTJIFFY           ; store current jiffy
+  jsr animate
+
+  jmp end_timer
+    
+increment_timer1:
+  lda TIMER1              ; check if timer 1 is 0
   beq increment_timer2    ; if so, increment timer 2
   dec TIMER1              ; otherwise, decrement timer 1
-  jmp check_timer         ; return from subroutine
+  rts
 
 increment_timer2:
   lda #255                ; reset timer 1
@@ -190,40 +261,54 @@ increment_timer2:
   lda TIMER2              ; check if timer 2 is 0
   beq increment_timer3    ; if so, increment timer 3
   dec TIMER2              ; otherwise, decrement timer 2
-  jmp check_timer         ; return from subroutine
+  rts
 
 increment_timer3:
   lda #255                ; reset timer 2
   sta TIMER2              ; store into timer 2 register
   lda TIMER3              ; check if timer 3 is 0
-  beq loop_timer          ; if so, loop timer
-  dec TIMER3              ; otherwise, decrement timer 3
-  jmp check_timer         ; return from subroutine
-
-loop_timer:
-  lda #255                ; reset timer 3
-  sta TIMER3              ; store into timer 3 register
-
-check_timer:
-  sta LASTJIFFY           ; store current jiffy
-  lda TIMER1              ; check if timer 1 is 0
-  bne end_timer           ; if so, increment timer 1
-  lda TIMER2              ; check if timer 2 is 0
-  bne end_timer           ; if so, increment timer 2
-  lda TIMER3              ; check if timer 3 is 0
-  bne end_timer           ; if so, increment timer 3
-
-  lda #TIMERESET1     ; 168 * 256^0 = 168 jiffies
-  sta TIMER1          ; store the timer value in address TIMER1
-
-  lda #TIMERESET2     ; 0 * 256^1 = 0 jiffies
-  sta TIMER2          ; store the timer value in address TIMER2
-
-  lda #TIMERESET3     ; 0 * 256^2 = 0 jiffies
-  sta TIMER3          ; store the timer value in address TIMER3
+  beq end_timer          ; if so, loop timer
+  dec TIMER3              ; otherwise, decrement timer 3  
 
 end_timer:
   rts                 ; return from subroutine
+
+
+animate:
+  lda #147
+  jsr CHROUT
+  ldx X_POS
+  ldy Y_POS
+  clc
+  jsr PLOT
+  lda CURRENT
+  cmp #ROBBER_R_2
+  beq animate_r
+  cmp #ROBBER_L_1
+  beq animate_l
+  cmp #ROBBER_VR_1
+  beq animate_l
+  cmp #ROBBER_VL_2
+  beq animate_r
+  rts
+
+animate_r:
+  lda #ROBBER_R
+  jsr CHROUT
+  jmp end_animate
+
+animate_l:
+  lda #ROBBER_L
+  jsr CHROUT
+  jmp end_animate
+
+end_animate:
+  ldx X_POS
+  ldy Y_POS
+  clc
+  jsr PLOT
+  rts
+
 
   org $1c00
 

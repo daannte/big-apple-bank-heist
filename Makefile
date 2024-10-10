@@ -17,6 +17,36 @@ endif
 
 main: compile upload run
 
+1:
+	dasm 1_music.s -oout.prg -lout.lst
+
+2:
+	dasm 2_titlescreen.s -oout.prg -lout.lst
+
+3:
+	dasm 3_wasd.s -oout.prg -lout.lst
+
+4:
+	dasm 4_collisions.s -oout.prg -lout.lst
+
+5:
+	dasm 5_sfx.s -oout.prg -lout.lst
+
+6:
+	dasm 6_screenposition.s -oout.prg -lout.lst
+
+7:
+	dasm 7_idle_animation.s -oout.prg -lout.lst
+
+8:
+	dasm 8_map.s -oout.prg -lout.lst
+
+9:
+	dasm 9_cheat.s -oout.prg -lout.lst
+
+10:
+	dasm 10_move_animation.s -oout.prg -lout.lst
+
 compile:
 	dasm $(INFILE) -o$(OUTFILE) -lout.lst
 

@@ -6,6 +6,7 @@ CHRIN   = $ffcf
 SCNKEY  = $ff9f
 GETIN   = $ffe4
 SCR     = $1e00
+SCR2    = $1EDC
 SCREEN  = $900f
 
 ; Address for coordinates
@@ -31,6 +32,97 @@ nextstmt
 clr
   lda #147
   jsr CHROUT
+  ; PRESS WASD TO MOVE
+  ; WRITES WITHOUT
+  ; USING PLOT
+  lda #'P
+  jsr CHROUT
+  lda #'R
+  jsr CHROUT
+  lda #'E
+  jsr CHROUT
+  lda #'S
+  jsr CHROUT
+  lda #'S
+  jsr CHROUT
+  lda #32
+  jsr CHROUT
+  lda #'W
+  jsr CHROUT
+  lda #'A
+  jsr CHROUT
+  lda #'S
+  jsr CHROUT
+  lda #'D
+  jsr CHROUT
+  lda #32
+  jsr CHROUT
+  lda #'T
+  jsr CHROUT
+  lda #'O
+  jsr CHROUT
+  lda #32
+  jsr CHROUT
+  lda #'M
+  jsr CHROUT
+  lda #'O
+  jsr CHROUT
+  lda #'V
+  jsr CHROUT
+  lda #'E
+  jsr CHROUT
+  lda #13
+  jsr CHROUT
+  lda #'W
+  jsr CHROUT
+  lda #'R
+  jsr CHROUT
+  lda #'I
+  jsr CHROUT
+  lda #'T
+  jsr CHROUT
+  lda #'E
+  jsr CHROUT
+  lda #'S
+  jsr CHROUT
+  lda #32
+  jsr CHROUT
+  lda #'W
+  jsr CHROUT
+  lda #'I
+  jsr CHROUT
+  lda #'T
+  jsr CHROUT
+  lda #'H
+  jsr CHROUT
+  lda #'O
+  jsr CHROUT
+  lda #'U
+  jsr CHROUT
+  lda #'T
+  jsr CHROUT
+  lda #13
+  jsr CHROUT
+  lda #'U
+  jsr CHROUT
+  lda #'S
+  jsr CHROUT
+  lda #'I
+  jsr CHROUT
+  lda #'N
+  jsr CHROUT
+  lda #'G
+  jsr CHROUT
+  lda #32
+  jsr CHROUT
+  lda #'P
+  jsr CHROUT
+  lda #'L
+  jsr CHROUT
+  lda #'O
+  jsr CHROUT
+  lda #'T
+  jsr CHROUT
 
 bg
   ldx #0
@@ -41,10 +133,10 @@ bg
   sta SCREEN
 
 init
-  lda #5
-  sta X_POS
-  lda #5
-  sta Y_POS
+  ldx #5
+  stx X_POS
+  ldy #5
+  sty Y_POS
   jmp readkey
 
   ; Calculate Memory Location Address to draw Character.
@@ -53,31 +145,59 @@ init
   ; and add lsb 1 time ( *2 )
   ; (16Y + 4Y + 2Y)
 
-  ; POS = $1dde - check memory map to see offset value change
-
 calculatePOS
-  lda Y_POS             ; Load Y_POS in accumulator
-  asl                   ; left shift
-  asl                   ; left shift
-  asl                   ; left shift
-  asl                   ; left shift
-  sta TEMP1             ; multiply by 16 (shift 4 times) and store temporarily in X register
+  lda #147
+  jsr CHROUT
+  lda X_POS
+  sbc #10
+  bmi baseaddr
+  asl
+  asl
+  asl
+  asl
+  sta TEMP1
 
-  lda Y_POS             ; Load (again) Y_POS in accumulator
-  asl                   ; left shift
-  sta TEMP2             ; Store left shifted (*2) value in TEMP2 address
-  asl                   ; Let shift
-  clc                   ; Clear carry for addition
-  adc TEMP2             ; Add (*2) to (*4)
-  clc                   ; Clear carry
-  adc TEMP1             ; Add (*16) 
+  lda X_POS
+  asl
+  sta TEMP2
+
+  asl
+  adc TEMP2
+  adc TEMP1
   
-  sta TEMP1             ; 22X
-  lda X_POS             ; Load X val to accumulator
-  clc                   ; clear carry 
-  adc TEMP1             ; X val + 22Y
-  sta POS               ; save result in POS address
+  sta TEMP1
+  lda Y_POS
+  clc
+  adc TEMP1
+  sta POS  
+  ldx POS
+  lda #65
+  sta SCR2,x
   rts
+
+baseaddr
+  lda X_POS
+  asl
+  asl
+  asl
+  asl
+  sta TEMP1
+  lda X_POS
+  asl
+  sta TEMP2
+  asl
+  adc TEMP2
+  adc TEMP1
+  sta TEMP1
+  lda Y_POS
+  adc TEMP1
+  sta POS  
+  ldx POS
+  lda #65
+  sta SCR,x
+  rts
+  
+  
 
   ; Main Loop - Read key, recalculate position on screen
 readkey
@@ -100,34 +220,32 @@ readkey
 
 
 w_key
-  lda Y_POS
-  cmp #21
-  beq readkey
-  inc Y_POS
-  jsr calculatePOS
-  jmp readkey
-
-a_key
   lda X_POS
-  cmp #0
   beq readkey
   dec X_POS
   jsr calculatePOS
   jmp readkey
 
-s_key
+a_key
   lda Y_POS
-  cmp #0
   beq readkey
   dec Y_POS
   jsr calculatePOS
   jmp readkey
 
-d_key
+s_key
   lda X_POS
   cmp #22
   beq readkey
   inc X_POS
+  jsr calculatePOS
+  jmp readkey
+
+d_key
+  lda Y_POS
+  cmp #21
+  beq readkey
+  inc Y_POS
   jsr calculatePOS
   jmp readkey
 

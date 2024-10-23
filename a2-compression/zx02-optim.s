@@ -13,10 +13,6 @@
 
 ; Updated the code so it works with DASM
 
-CHROUT = $ffd2
-SCREEN = $900f
-PLOT   = $FFF0
-
 ; BASIC stub
   processor 6502
   org $1001
@@ -37,80 +33,82 @@ pntr    = ZP+7
 
 
 zx0_ini_block:
-    lda     #$00                ; load offset
-    sta     $00                 ; offset = 0
-    sta     $01                 ; offset = 0
-    lda     #$0d                ; screen data stored at 100d, load lower byte
-    sta     $02
-    lda     #$10                ; screen data stored at 100d, load upper byte
-    sta     $03
-    lda     #$00                ; screen stored at 1e00, load lower byte
-    sta     $04
-    lda     #$1e                ; screen stored at 1e00, load upper byte
-    sta     $05         
-    lda     #$80                ; bitr = $80
-    sta     $06
+  lda #$00                ; load offset
+  sta $00                 ; offset = 0
+  sta $01                 ; offset = 0
+  lda #$0D                ; load compiled data, lower byte
+  sta $02
+  lda #$10                ; load compiled data, uopper byte
+  sta $03
+  lda #$00                ; set destination location lower byte
+  sta $04
+  lda #$1E                ; set destination location upper byte
+  sta $05         
+  lda #$80                ; bitr = $80
+  sta $06
+  lda #$ff                ; pntr = $ff              
+  sta $07
 
 ;--------------------------------------------------
 ; Decompress ZX0 data (6502 optimized format)
 
 full_decomp:
-    ; Get initialization block
-    ldy #0
+  ; Get initialization block
+  ldy #0
 
 ; Decode literal: Ccopy next N bytes from compressed file
 ;    Elias(length)  byte[1]  byte[2]  ...  byte[N]
 decode_literal:
-    jsr   get_elias
+  jsr get_elias
 
 cop0:
-    lda   (ZX0_src),y
-    inc   ZX0_src
-    bne   cop0_dst
-    inc   ZX0_src+1
+  lda (ZX0_src),y
+  inc ZX0_src
+  bne cop0_dst
+  inc ZX0_src+1
 
 cop0_dst:   
-    sta   (ZX0_dst),y
-    inc   ZX0_dst
-    bne   cop0_offset
-    inc   ZX0_dst+1
+  sta (ZX0_dst),y
+  inc ZX0_dst
+  bne cop0_offset
+  inc ZX0_dst+1
 
 cop0_offset:
-    dex
-    bne   cop0
+  dex
+  bne cop0
 
-    asl   bitr
-    bcs   dzx0s_new_offset
+  asl bitr
+  bcs dzx0s_new_offset
 
 ; Copy from last offset (repeat N bytes from last offset)
 ;    Elias(length)
-    jsr   get_elias
+  jsr get_elias
 dzx0s_copy:
-    lda   ZX0_dst
-    sbc   offset  ; C=0 from get_elias
-    sta   pntr
-    lda   ZX0_dst+1
-    sbc   offset+1
-    sta   pntr+1
+  lda ZX0_dst
+  sbc offset  ; C=0 from get_elias
+  sta pntr
+  lda ZX0_dst+1
+  sbc offset+1
+  sta pntr+1
 
 cop1:
-    lda   (pntr),y
-    inc   pntr
-    bne   cop1_dst
-    inc   pntr+1
+  lda (pntr),y
+  inc pntr
+  bne cop1_dst
+  inc pntr+1
 
 cop1_dst:
-    sta   (ZX0_dst),y
-    inc   ZX0_dst
-    bne   cop1_decode
-    inc   ZX0_dst+1
+  sta (ZX0_dst),y
+  inc ZX0_dst
+  bne cop1_decode
+  inc ZX0_dst+1
 
 cop1_decode:
-    dex
-    bne   cop1
+  dex
+  bne cop1
 
-    asl   bitr
-    bcc   decode_literal
+  asl bitr
+  bcc decode_literal
 
 ; Copy from new offset (repeat N bytes from new offset)
 ;    Elias(MSB(offset))  LSB(offset)  Elias(length-1)

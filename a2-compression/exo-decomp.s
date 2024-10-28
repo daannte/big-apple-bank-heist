@@ -1,6 +1,5 @@
 CHROUT = $FFD2
 SCREEN = $900F
-PLOT   = $FFF0
 
 ; BASIC stub
   processor 6502

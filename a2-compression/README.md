@@ -1,5 +1,5 @@
-| Program         | Method        | Size (in bytes) | Compression Ratio |
-| :--------------:| :------------:|:---------------:|:-----------------:|
-| 2_titlescreen.s | Original      | 506             | 1                 |
-| exo.s           | Exomizer      | 142             | 3.56              |
-| zx02.s          | Zx02          | 122             | 4.15              |
+| Program           | Method        | Size (in bytes) | Compression Ratio |
+| :----------------:| :------------:|:---------------:|:-----------------:|
+| 2_titlescreen.prg | Original      | 775             | 1                 |
+| exo.prg           | Exomizer      | 671             | 1.15              |
+| zx02.prg          | Zx02          | 313             | 2.47              |

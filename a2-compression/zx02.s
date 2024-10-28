@@ -186,5 +186,8 @@ elias_skip1:
   bcs elias_get
   ; Got ending bit, stop reading
 
-loop:
+exit:
   rts
+
+loop:
+  jmp loop 

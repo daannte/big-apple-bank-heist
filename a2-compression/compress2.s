@@ -87,8 +87,6 @@ printstring:
   rts
 
 set_color:
-  sta COLOR
-  lda SCREEN
-  and COLOR
+  and SCREEN
   sta SCREEN
-  rts
+  rts 

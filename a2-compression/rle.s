@@ -49,7 +49,7 @@ next_char:
   ldx OFFSET              ; Grab the offset 
   lda DATA_SECTION        ; Check which section we are decompressing
   beq load_title_data 
-  lda rle_bank_data,x     ; Load the current character to decompress for title
+  lda rle_bank_data,x     ; Load the current character to decompress for bank
   jmp process_char
 
 load_title_data:

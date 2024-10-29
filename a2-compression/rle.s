@@ -1,8 +1,6 @@
-CHROUT = $ffd2
+CHROUT = $FFD2
 PLOT   = $FFF0
-OFFSET = $1DFF
-SCREEN = $900f
-
+SCREEN = $900F
 
 ; BASIC stub
   processor 6502
@@ -13,67 +11,98 @@ SCREEN = $900f
 nextstmt               
     dc.w 0              
 
+OFFSET = $00
+COMPRESSED_CHAR = $01
+RUN_LENGTH_TEST = $02
+DATA_SECTION = $03  ; New flag to indicate the current RLE data section
+
 ; Start of program
 clr:
   lda #147              ; Load clear screen command
   jsr CHROUT            ; Print it
 
 bg:
-  ldx #0              ; Set X to black
-  lda SCREEN          ; Load the screen colour address
-  and	#$0F            ; Reset the 4 background bits
-  stx $1001           ; Store X into the user basic area memory
-  ora $1001           ; Combine new background color with the screen
-  sta SCREEN          ; Store new colour into the screen colour address
-
+  ldx #0                ; Set X to black
+  lda SCREEN            ; Load the screen colour address
+  and #$0F              ; Reset the 4 background bits
+  stx $1001             ; Store X into the user basic area memory
+  ora $1001             ; Combine new background color with the screen
+  sta SCREEN            ; Store new colour into the screen colour address
 
 border:
-  ldx #0              ; Set X to black
-  lda SCREEN          ; Load the screen colour address
-  and	#$F8            ; Reset the 3 border bits
-  stx $1001           ; Store X into the user basic area memory
-  ora $1001           ; Combine new border colour with the screen 
-  sta SCREEN          ; Store new colour into the screen colour address
+  ldx #0                ; Set X to black
+  lda SCREEN            ; Load the screen colour address
+  and #$F8              ; Reset the 3 border bits
+  stx $1001             ; Store X into the user basic area memory
+  ora $1001             ; Combine new border colour with the screen 
+  sta SCREEN            ; Store new colour into the screen colour address
 
 title:
-  ldx #1              ; set x to white
-  stx $0286           ; store x into current color code address
-
-  lda #$00            ; reset a
-  sta OFFSET
+  ldx #1                ; Set x to white
+  stx $0286             ; Store x into current color code address
 
 decompress:
-  ldx OFFSET
-  lda rle_data,x         ; load the current rle data byte (character)
-  beq end                ; if it's zero, we've reached the end
+  lda #0                ; Reset a
+  tay                   ; Set y to 0              
+  sta OFFSET            ; Set offset to 0
+  sta DATA_SECTION      ; Set DATA_SECTION to 0
 
-  ; load the next byte (run length)
-  tay
-  inx                    ; move to the next rle data byte
-  inc OFFSET             ; increment the offset
-  lda rle_data,x         ; load the run length
-  beq end                ; if run length is zero, exit
+next_char:
+  ldx OFFSET            ; Grab the offset 
+  lda DATA_SECTION
+  beq load_title_data   ; If DATA_SECTION is 0, use rle_title_data
+  lda rle_bank_data,x   ; Otherwise, use rle_bank_data
+  jmp process_char
 
-  ; repeat character based on run length
+load_title_data:
+  lda rle_title_data,x
+
+process_char:
+  sta COMPRESSED_CHAR   ; Store the char for later use
+  beq check_data_section ; If character is zero, check data section
+
+  inx                   ; Move to the next RLE data byte
+  stx OFFSET            ; Set the new offset for later
+  lda DATA_SECTION
+  beq load_title_length
+  lda rle_bank_data,x
+  jmp store_run_length
+
+load_title_length:
+  lda rle_title_data,x
+
+store_run_length:
+  sta RUN_LENGTH_TEST
   tax
-  tya
 
-repeat_char:
-  jsr CHROUT             ; Output the character
-  dex                    ; Decrement run length counter
-  cpx #$00               ; Check if run length is zero
-  bne repeat_char        ; If not, repeat the character
+decompress_char:
+  lda COMPRESSED_CHAR   ; Load the character
+  jsr CHROUT            ; Print to screen
+  dex                   ; Decrement run length
+  bne decompress_char   ; Repeat until run length is zero
 
-  inc OFFSET             ; Increment the offset
-  jmp decompress         ; Repeat the decompression process
+  inc OFFSET            ; Increment offset since we finished the run length
+  jmp next_char         ; Go to the next character
+
+check_data_section:
+  lda DATA_SECTION
+  beq switch_to_bank    ; If we are in the title section, switch to bank data
+  jmp end               ; Otherwise, we are done
+
+switch_to_bank:
+  lda #1
+  sta DATA_SECTION      ; Set DATA_SECTION to 1 for rle_bank_data
+  lda #0
+  sta OFFSET            ; Reset OFFSET to 0 for new data section
+  jmp next_char         ; Start decompressing rle_bank_data
 
 end:
-  jmp end
+  jmp end               ; Infinite loop at the end
 
 ; RLE Data Storage
 ; THE BIG APPLE
 ; BANK HEIST
-rle_data:
+rle_title_data:
   .byte #$20, #$16
   .byte #$20, #$16
   .byte #$20, #$04, #$54, #$01, #$48, #$01, #$45, #$01, #$20, #$01, #$42, #$01, #$49, #$01, #$47, #$01, #$20, #$01, #$41, #$01, #$50, #$02, #$4C, #$01, #$45, #$01, #$20, #$05
@@ -88,7 +117,10 @@ rle_data:
   .byte #$20, #$16
   .byte #$20, #$09, #$32, #$01, #$30, #$01, #$32, #$01, #$34, #$01, #$20, #$09
   .byte #$20, #$16
+  ; End marker for title data
+  .byte #$00
 
+rle_bank_data:
   ; Bank Art
   .byte #$20, #$0A, #$6E, #$01, #$6D, #$01, #$20, #$0A
   .byte #$20, #$09, #$6E, #$01, #$24, #$02, #$6D, #$01, #$20, #$09
@@ -97,6 +129,5 @@ rle_data:
   .byte #$20, #$08, #$B6, #$01, #$20, #$01, #$B5, #$01, #$B6, #$01, #$20, #$01, #$B5, #$01, #$20, #$08
   .byte #$20, #$08, #$B6, #$01, #$20, #$01, #$B5, #$01, #$B6, #$01, #$20, #$01, #$B5, #$01, #$20, #$08
   .byte #$20, #$08, #$B8, #$06, #$20, #$08
-
-  ; End marker for data
+  ; End marker for bank data
   .byte #$00

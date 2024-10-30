@@ -1,3 +1,5 @@
+# Assignment 2 Compression Results
+
 | Program           | Method              | Size (in bytes) | Compression Ratio |
 | :----------------:| :------------------:|:---------------:|:-----------------:|
 | 2_titlescreen.prg | Original            | 775             | 1                 |
@@ -7,6 +9,7 @@
 | compress2.prg     | GPT                 | 277             | 2.80              |
 
 
+## ChatGPT Prompts for Part 2
 
 Prompt 1: 
     “I'm programming using 6502 on the VIC20. I have a program that draws a title screen for a game I'm working on. I want to compress the code.” 

@@ -97,10 +97,12 @@ setup:
 
   lda #0
   sta X_POS
-  sta SPAWN_X
 
   lda #0
   sta Y_POS
+
+  ; Set the spawn location of the level (change this later to actually work)
+  sta SPAWN_X
   sta SPAWN_Y
 
   ldx #0

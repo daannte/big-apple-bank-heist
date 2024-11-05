@@ -35,6 +35,7 @@ WALL        = #74
 EXIT        = #75
 
 ; MOVEMENT addresses
+HORIZONTAL = $1DF6; 0 = left, 1 = right
 VERTICAL = $1DF7; 0 = up, 1 = down
 MOVING  = $1DF8
 X_POS   = $1DF9
@@ -76,6 +77,12 @@ setup:
 
   lda #0
   sta MOVING
+
+  lda #255
+  sta VERTICAL
+
+  lda #1
+  sta HORIZONTAL
 
 bg:
   ldx #0              ; Set X to black
@@ -235,7 +242,15 @@ move_up:
   lda #0
   sta VERTICAL
 
+  lda HORIZONTAL
+  beq move_up1
+  lda #ROBBER_VL_2
+  jmp move_up2
+
+move_up1:
   lda #ROBBER_VR_2
+
+move_up2:
   jsr CHROUT
 
   dec X_POS
@@ -244,7 +259,15 @@ move_up:
   clc
   jsr PLOT
 
+  lda HORIZONTAL
+  beq move_up3
+  lda #ROBBER_VL_1
+  jmp move_up4
+
+move_up3:
   lda #ROBBER_VR_1
+
+move_up4:
   sta CURRENT
   jsr CHROUT
 
@@ -266,7 +289,15 @@ move_down:
   lda #1
   sta VERTICAL
 
+  lda HORIZONTAL
+  beq move_down1
   lda #ROBBER_VL_1
+  jmp move_down2
+
+move_down1:
+  lda #ROBBER_VR_1
+
+move_down2:
   jsr CHROUT
 
   inc X_POS
@@ -275,7 +306,15 @@ move_down:
   clc
   jsr PLOT
 
+  lda HORIZONTAL
+  beq move_down3
   lda #ROBBER_VL_2
+  jmp move_down4
+
+move_down3:
+  lda #ROBBER_VR_2
+
+move_down4:
   sta CURRENT
   jsr CHROUT
 
@@ -293,6 +332,9 @@ move_right:
   lda Y_POS
   cmp #21
   beq end_move_right
+
+  lda #1
+  sta HORIZONTAL
 
   lda #ROBBER_R_1
   jsr CHROUT
@@ -320,6 +362,9 @@ end_move_right:
 move_left:
   lda Y_POS
   beq end_move_left
+
+  lda #0
+  sta HORIZONTAL
 
   lda #ROBBER_L_2
   jsr CHROUT
@@ -398,10 +443,10 @@ animate:
   beq animate_r
   cmp #ROBBER_L_1
   beq animate_l
-  cmp #ROBBER_VR_1
-  beq animate_vl
-  cmp #ROBBER_VL_2
-  beq animate_vr
+  lda VERTICAL
+  beq animate_u
+  cmp #255
+  bne animate_d
   rts
 
 animate_r:
@@ -428,16 +473,8 @@ animate_l:
   jsr CHROUT
   jmp end_animate
 
-animate_vr:
-  lda VERTICAL
-  beq animate_vr_1
-  dex
-  jmp animate_vr_2
-
-animate_vr_1:
+animate_u:
   inx
-
-animate_vr_2:
   clc
   jsr PLOT
   lda #32
@@ -446,20 +483,20 @@ animate_vr_2:
   ldy Y_POS
   clc
   jsr PLOT
+  lda HORIZONTAL
+  beq animate_ul
   lda #ROBBER_R
+  jmp animate_u1
+
+animate_ul:
+  lda #ROBBER_L
+
+animate_u1:
   jsr CHROUT
   jmp end_animate
 
-animate_vl:
-  lda VERTICAL
-  beq animate_vl_1
+animate_d:
   dex
-  jmp animate_vl_2
-
-animate_vl_1:
-  inx
-
-animate_vl_2:
   clc
   jsr PLOT
   lda #32
@@ -468,7 +505,15 @@ animate_vl_2:
   ldy Y_POS
   clc
   jsr PLOT
+  lda HORIZONTAL
+  beq animate_dl
+  lda #ROBBER_R
+  jmp animate_d1
+
+animate_dl:
   lda #ROBBER_L
+
+animate_d1:
   jsr CHROUT
   jmp end_animate
 

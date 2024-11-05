@@ -34,7 +34,22 @@ ROBBER_VR_1 = #72
 ROBBER_VR_2 = #73
 
 WALL        = #74
-EXITDOOR        = #75
+EXITDOOR    = #75
+
+ASCII_0     = #76
+ASCII_1     = #77
+ASCII_2     = #78
+ASCII_3     = #79
+ASCII_4     = #80
+ASCII_5     = #81
+ASCII_6     = #82
+ASCII_7     = #83
+ASCII_8     = #84
+ASCII_9     = #85
+
+EMPTY_SPACE_CHAR = #86
+HEART_CHAR = #87
+TIMER_MAX_VALUE = #15
 
 ; MOVEMENT addresses
 HORIZONTAL = $1DF6; 0 = left, 1 = right
@@ -44,6 +59,7 @@ X_POS   = $1DF9
 Y_POS   = $1DFA
 
 PLAYER_LIVES = $00   ; Store player lives 
+JIFFIES_SINCE_SECOND = $01
 
 ; ZX02 VARS
 ZP        = $80
@@ -72,9 +88,14 @@ out_addr = $1e00
 comp_data:
   incbin "titlescreen.zx02"
 
-
 level1_data:
   incbin "level1.data"
+
+timertext:
+    .BYTE #'T, #'I, #'M, #'E, #'R, #' , #0
+
+timer_value:
+    .BYTE #69         ; Nice
 
 bg:
   ldx #0              ; Set X to black
@@ -92,6 +113,10 @@ border:
   ora $1001           ; Combine new border colour with the screen 
   sta SCREEN          ; Store new colour into the screen colour address
 
+textcolor:
+  ldx #1              ; Set X to white
+  stx $0286           ; Store X into current color code address
+
 titlescreen:
   jsr draw_titlescreen
 
@@ -100,16 +125,21 @@ title_input_loop:
   cmp #00               ; Keep looping until we get a value
   beq title_input_loop
 
-textcolor:
-  ldx #1              ; Set X to white
-  stx $0286           ; Store X into current color code address
-
 start:
   lda #147              ; Load clear screen command
   jsr CHROUT            ; Print it
 
   lda #2
   sta PLAYER_LIVES      ; 2 is interpreted as 3 lives because of how BNE works
+
+  lda #TIMER_MAX_VALUE
+  sta timer_value
+
+  lda JIFFY1
+  sta LASTJIFFY
+
+  lda #0
+  sta JIFFIES_SINCE_SECOND
 
 setup:
   lda #$ff              ; loading 255 into $9005 makes the vic look at $1c00 for characters instead
@@ -135,7 +165,12 @@ init:
   sta TIMER3            ; store the timer value in address TIMER3
 
   jsr load_level
+  jsr main_loop
+  cmp #0
+  beq titlescreen
+  jmp init
 
+main_loop:
 read_input:
   lda MOVING
   beq loop
@@ -170,12 +205,12 @@ s_key:
 
 space_key:
   jsr handle_lives
-  cmp #0
-  beq titlescreen
-  jmp init
+  rts
 
 loop:
   jsr increment_timer
+  cmp #0
+  bne space_key
   jmp read_input
 
 ; -------- SUBROUTINES --------
@@ -186,6 +221,26 @@ load_level:
   ldx #0
   ldy #0
   jsr PLOT
+
+  lda PLAYER_LIVES
+  tay
+  iny
+
+show_lives:
+  lda #HEART_CHAR
+  jsr CHROUT
+  dey
+  bne show_lives
+
+  lda #22
+  sbc PLAYER_LIVES
+  tax
+
+repeat:
+  lda #EMPTY_SPACE_CHAR
+  jsr CHROUT
+  dex
+  bne repeat
 
 top_row:
   lda #WALL
@@ -224,7 +279,7 @@ loop_byte:
   jmp inc_char
 
 empty_space:
-  lda #32
+  lda #EMPTY_SPACE_CHAR
   jsr CHROUT
   jmp inc_char
 
@@ -239,8 +294,10 @@ bottom_row:
   lda #WALL
   jsr CHROUT
   iny
-  cpy #21
+  cpy #20
   bne bottom_row
+  lda #10
+  sta $1FF9
 
 load_player:
   ldx #51
@@ -452,15 +509,78 @@ end_handle_lives:
 
 ; -------------------
 
+toAscii:
+    lda timer_value
+    sbc #9
+    bcc .skipFirst
+    lda timer_value
+    ldx #0
+    jmp .tenDigit
+.skipFirst
+    lda #EMPTY_SPACE_CHAR
+    jsr CHROUT
+    lda timer_value
+    adc #76
+    jsr CHROUT
+    rts
+.tenDigit
+    sec
+    sbc #10
+    bcc .oneDigit
+.tenDiv
+    inx
+    sbc #10
+    bcc .tenOutput
+    jmp .tenDiv
+.tenOutput
+    tay                 ; Store remainder to Y-reg, value is r-10
+    txa
+    adc #76             ; ASCII 0 - 9 (#48 - #57)
+    jsr CHROUT
+.oneDigit
+    tya
+    adc #86             ; (48(acii offset) + 10 (initial subtrahend))
+    jsr CHROUT
+    rts
+
+; -------------------
+
 ; increment_timer
     ; decrements the timer
 increment_timer:
-  lda MOVING
-  bne end_timer
   lda JIFFY1              ; load current jiffy
   cmp LASTJIFFY           ; compare to last jiffy
   beq end_timer           ; if jiffy elapsed, update timer
   sta LASTJIFFY           ; store current jiffy
+  inc JIFFIES_SINCE_SECOND
+  lda JIFFIES_SINCE_SECOND
+  cmp #60
+  bne continue_timer
+  lda #0
+  sta JIFFIES_SINCE_SECOND
+  ldx #0
+  ldy #20
+  clc
+  jsr PLOT
+  lda timer_value
+  beq times_up
+  dec timer_value
+  jsr toAscii
+  ldx X_POS
+  ldy Y_POS
+  clc
+  jsr PLOT
+  jmp continue_timer
+
+times_up:
+  lda #0
+  sta PLAYER_LIVES
+  lda #1
+  rts
+
+continue_timer:
+  lda MOVING
+  bne end_timer
   lda TIMER1
   bne increment_timer1    ; if timer 1 is not 0, increment timer 1
   lda TIMER2
@@ -478,6 +598,7 @@ increment_timer1:
   lda TIMER1              ; check if timer 1 is 0
   beq increment_timer2    ; if so, increment timer 2
   dec TIMER1              ; otherwise, decrement timer 1
+  lda #0
   rts
 
 increment_timer2:
@@ -486,6 +607,7 @@ increment_timer2:
   lda TIMER2              ; check if timer 2 is 0
   beq increment_timer3    ; if so, increment timer 3
   dec TIMER2              ; otherwise, decrement timer 2
+  lda #0
   rts
 
 increment_timer3:
@@ -496,6 +618,7 @@ increment_timer3:
   dec TIMER3              ; otherwise, decrement timer 3  
 
 end_timer:
+  lda #0
   rts                 ; return from subroutine
 
 animate:
@@ -522,7 +645,7 @@ animate_r:
   dey
   clc
   jsr PLOT
-  lda #32
+  lda #EMPTY_SPACE_CHAR
   jsr CHROUT
   lda #ROBBER_R
   jsr CHROUT
@@ -532,7 +655,7 @@ animate_l:
   iny
   clc
   jsr PLOT
-  lda #32
+  lda #EMPTY_SPACE_CHAR
   jsr CHROUT
   ldx X_POS
   ldy Y_POS
@@ -546,7 +669,7 @@ animate_u:
   inx
   clc
   jsr PLOT
-  lda #32
+  lda #EMPTY_SPACE_CHAR
   jsr CHROUT
   ldx X_POS
   ldy Y_POS
@@ -568,7 +691,7 @@ animate_d:
   dex
   clc
   jsr PLOT
-  lda #32
+  lda #EMPTY_SPACE_CHAR
   jsr CHROUT
   ldx X_POS
   ldy Y_POS
@@ -714,6 +837,126 @@ exitdoor:
   dc.b %11000011
   dc.b %11000011
   dc.b %11000011
+
+ascii_0:
+  dc.b %00111100
+  dc.b %01100110
+  dc.b %01100110
+  dc.b %01100110
+  dc.b %01100110
+  dc.b %01100110
+  dc.b %01100110
+  dc.b %00111100
+
+ascii_1:
+  dc.b %00011000
+  dc.b %00111000
+  dc.b %01111000
+  dc.b %00011000
+  dc.b %00011000
+  dc.b %00011000
+  dc.b %00011000
+  dc.b %01111110
+
+ascii_2:
+  dc.b %00111100
+  dc.b %01100110
+  dc.b %00000110
+  dc.b %00001100
+  dc.b %00011000
+  dc.b %00110000
+  dc.b %01100000
+  dc.b %01111110
+
+ascii_3:
+  dc.b %00111100
+  dc.b %01100110
+  dc.b %00000110
+  dc.b %00011100
+  dc.b %00000110
+  dc.b %01100110
+  dc.b %01100110
+  dc.b %00111100
+
+ascii_4:
+  dc.b %00001100
+  dc.b %00011100
+  dc.b %00111100
+  dc.b %01101100
+  dc.b %11001100
+  dc.b %11111110
+  dc.b %00001100
+  dc.b %00001100
+
+ascii_5:
+  dc.b %01111110
+  dc.b %01100000
+  dc.b %01100000
+  dc.b %01111100
+  dc.b %00000110
+  dc.b %01100110
+  dc.b %01100110
+  dc.b %00111100
+
+ascii_6:
+  dc.b %00111100
+  dc.b %01100110
+  dc.b %01100000
+  dc.b %01111100
+  dc.b %01100110
+  dc.b %01100110
+  dc.b %01100110
+  dc.b %00111100
+
+ascii_7:
+  dc.b %01111110
+  dc.b %01100110
+  dc.b %00001100
+  dc.b %00011000
+  dc.b %00110000
+  dc.b %00110000
+  dc.b %00110000
+  dc.b %00110000
+
+ascii_8:
+  dc.b %00111100
+  dc.b %01100110
+  dc.b %01100110
+  dc.b %00111100
+  dc.b %01100110
+  dc.b %01100110
+  dc.b %01100110
+  dc.b %00111100
+
+ascii_9:
+  dc.b %00111100
+  dc.b %01100110
+  dc.b %01100110
+  dc.b %01100110
+  dc.b %00111110
+  dc.b %00000110
+  dc.b %01100110
+  dc.b %00111100
+
+empty_space_char:
+  dc.b %00000000
+  dc.b %00000000
+  dc.b %00000000
+  dc.b %00000000
+  dc.b %00000000
+  dc.b %00000000
+  dc.b %00000000
+  dc.b %00000000
+
+heart_char:
+  dc.b %00000000
+  dc.b %00100100
+  dc.b %01111110
+  dc.b %01111110
+  dc.b %01111110
+  dc.b %00111100
+  dc.b %00011000
+  dc.b %00000000
 
   include "zx02.s"
   include "titlescreen.s"

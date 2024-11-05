@@ -49,7 +49,7 @@ ASCII_9     = #85
 
 EMPTY_SPACE_CHAR = #86
 HEART_CHAR = #87
-TIMER_MAX_VALUE = #69
+TIMER_MAX_VALUE = #15
 
 ; MOVEMENT addresses
 HORIZONTAL = $1DF6; 0 = left, 1 = right
@@ -209,6 +209,8 @@ space_key:
 
 loop:
   jsr increment_timer
+  cmp #0
+  bne space_key
   jmp read_input
 
 ; -------- SUBROUTINES --------
@@ -509,7 +511,18 @@ end_handle_lives:
 
 toAscii:
     lda timer_value
+    sbc #9
+    bcc .skipFirst
+    lda timer_value
     ldx #0
+    jmp .tenDigit
+.skipFirst
+    lda #EMPTY_SPACE_CHAR
+    jsr CHROUT
+    lda timer_value
+    adc #76
+    jsr CHROUT
+    rts
 .tenDigit
     sec
     sbc #10
@@ -549,12 +562,21 @@ increment_timer:
   ldy #20
   clc
   jsr PLOT
+  lda timer_value
+  beq times_up
   dec timer_value
   jsr toAscii
   ldx X_POS
   ldy Y_POS
   clc
   jsr PLOT
+  jmp continue_timer
+
+times_up:
+  lda #0
+  sta PLAYER_LIVES
+  lda #1
+  rts
 
 continue_timer:
   lda MOVING
@@ -576,6 +598,7 @@ increment_timer1:
   lda TIMER1              ; check if timer 1 is 0
   beq increment_timer2    ; if so, increment timer 2
   dec TIMER1              ; otherwise, decrement timer 1
+  lda #0
   rts
 
 increment_timer2:
@@ -584,6 +607,7 @@ increment_timer2:
   lda TIMER2              ; check if timer 2 is 0
   beq increment_timer3    ; if so, increment timer 3
   dec TIMER2              ; otherwise, decrement timer 2
+  lda #0
   rts
 
 increment_timer3:
@@ -594,6 +618,7 @@ increment_timer3:
   dec TIMER3              ; otherwise, decrement timer 3  
 
 end_timer:
+  lda #0
   rts                 ; return from subroutine
 
 animate:

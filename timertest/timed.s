@@ -64,11 +64,6 @@ tickT
     clc
     jsr PLOT
     jsr toAscii
-    lda tMaxV
-    cmp #69
-    bne tick2
-    jsr nice
-tick2
     jmp tickT
 
 ; Subroutines
@@ -111,15 +106,4 @@ toAscii
     tya
     adc #58             ; (48(acii offset) + 10 (initial subtrahend))
     jsr CHROUT
-    rts
-
-; Felt cute might delete later
-nice
-    ldx #0
-nice2
-    lda tObj2,X
-    jsr CHROUT
-    inx
-    cmp #0
-    bne nice2 
     rts

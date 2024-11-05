@@ -1,13 +1,13 @@
 ------- FILE timed.s LEVEL 1 PASS 3
-      1  10a3					      processor	6502
-      2  10a4 ????
-      3  10a4 ????						; KERNAL [sic] addresses
-      4  10a4 ????	       ff d2	   CHROUT     =	$FFD2
-      5  10a4 ????	       90 0f	   SCREEN     =	$900F
-      6  10a4 ????	       ff f0	   PLOT       =	$FFF0
-      7  10a4 ????
-      8  10a4 ????	       00 a2	   JIFFY      =	$A2
-      9  10a4 ????
+      1  108b					      processor	6502
+      2  108c ????
+      3  108c ????						; KERNAL [sic] addresses
+      4  108c ????	       ff d2	   CHROUT     =	$FFD2
+      5  108c ????	       90 0f	   SCREEN     =	$900F
+      6  108c ????	       ff f0	   PLOT       =	$FFF0
+      7  108c ????
+      8  108c ????	       00 a2	   JIFFY      =	$A2
+      9  108c ????
      10  1001					      org	$1001
      11  1001
      12  1001							; Basic stub
@@ -30,9 +30,9 @@
      29  101c		       20 d2 ff 	      jsr	CHROUT
      30  101f				   bg
      31  101f		       a9 0f		      lda	#$0F
-     32  1021		       20 5e 10 	      jsr	setbg
+     32  1021		       20 54 10 	      jsr	setbg
      33  1024		       a9 f8		      lda	#$F8
-     34  1026		       20 5e 10 	      jsr	setbg
+     34  1026		       20 54 10 	      jsr	setbg
      35  1029		       a2 01		      ldx	#1
      36  102b		       8e 86 02 	      stx	$0286
      37  102e
@@ -58,69 +58,53 @@
      57  1040
      58  1040				   tickT
      59  1040							; Timer starts here
-     60  1040		       20 65 10 	      jsr	jiffySec
+     60  1040		       20 5b 10 	      jsr	jiffySec
      61  1043		       ad 19 10 	      lda	tMaxV	; Max Timer Value
      62  1046		       a2 00		      ldx	#0
      63  1048		       a0 09		      ldy	#9
      64  104a		       18		      clc
      65  104b		       20 f0 ff 	      jsr	PLOT
-     66  104e		       20 76 10 	      jsr	toAscii
-     67  1051		       ad 19 10 	      lda	tMaxV
-     68  1054		       c9 45		      cmp	#69
-     69  1056		       d0 03		      bne	tick2
-     70  1058		       20 96 10 	      jsr	nice
-     71  105b				   tick2
-     72  105b		       4c 40 10 	      jmp	tickT
-     73  105e
-     74  105e							; Subroutines
-     75  105e
-     76  105e				   setbg
-     77  105e		       2d 0f 90 	      and	SCREEN
-     78  1061		       8d 0f 90 	      sta	SCREEN
-     79  1064		       60		      rts
-     80  1065
-     81  1065				   jiffySec
-     82  1065		       a5 a2		      lda	JIFFY	; Load Jiffy Clock Val
-     83  1067		       85 02		      sta	$02	; Store temporarily
-     84  1069				   .jiffyWait
-     85  1069		       a5 a2		      lda	JIFFY
-     86  106b		       38		      sec
-     87  106c		       e5 02		      sbc	$02
-     88  106e		       c9 3c		      cmp	#60
-     89  1070		       90 f7		      bcc	.jiffyWait
-     90  1072		       ce 19 10 	      dec	tMaxV
-     91  1075		       60		      rts
-     92  1076
-     93  1076				   toAscii
-     94  1076		       ad 19 10 	      lda	tMaxV
-     95  1079		       a2 00		      ldx	#0
-     96  107b				   .tenDigit
-     97  107b		       38		      sec
-     98  107c		       e9 0a		      sbc	#10
-     99  107e		       90 0f		      bcc	.oneDigit
-    100  1080				   .tenDiv
-    101  1080		       e8		      inx
-    102  1081		       e9 0a		      sbc	#10
-    103  1083		       90 03		      bcc	.tenOutput
-    104  1085		       4c 80 10 	      jmp	.tenDiv
-    105  1088				   .tenOutput
-    106  1088		       a8		      tay		; Store remainder to Y-reg, value is r-10
-    107  1089		       8a		      txa
-    108  108a		       69 30		      adc	#48	; ASCII 0 - 9 (#48 - #57)
-    109  108c		       20 d2 ff 	      jsr	CHROUT
-    110  108f				   .oneDigit
-    111  108f		       98		      tya
-    112  1090		       69 3a		      adc	#58	; (48(acii offset) + 10 (initial subtrahend))
-    113  1092		       20 d2 ff 	      jsr	CHROUT
-    114  1095		       60		      rts
-    115  1096
-    116  1096							; Felt cute might delete later
-    117  1096				   nice
-    118  1096		       a2 00		      ldx	#0
-    119  1098				   nice2
-    120  1098		       bd 14 10 	      lda	tObj2,X
-    121  109b		       20 d2 ff 	      jsr	CHROUT
-    122  109e		       e8		      inx
-    123  109f		       c9 00		      cmp	#0
-    124  10a1		       d0 f5		      bne	nice2
-    125  10a3		       60		      rts
+     66  104e		       20 6c 10 	      jsr	toAscii
+     67  1051		       4c 40 10 	      jmp	tickT
+     68  1054
+     69  1054							; Subroutines
+     70  1054
+     71  1054				   setbg
+     72  1054		       2d 0f 90 	      and	SCREEN
+     73  1057		       8d 0f 90 	      sta	SCREEN
+     74  105a		       60		      rts
+     75  105b
+     76  105b				   jiffySec
+     77  105b		       a5 a2		      lda	JIFFY	; Load Jiffy Clock Val
+     78  105d		       85 02		      sta	$02	; Store temporarily
+     79  105f				   .jiffyWait
+     80  105f		       a5 a2		      lda	JIFFY
+     81  1061		       38		      sec
+     82  1062		       e5 02		      sbc	$02
+     83  1064		       c9 3c		      cmp	#60
+     84  1066		       90 f7		      bcc	.jiffyWait
+     85  1068		       ce 19 10 	      dec	tMaxV
+     86  106b		       60		      rts
+     87  106c
+     88  106c				   toAscii
+     89  106c		       ad 19 10 	      lda	tMaxV
+     90  106f		       a2 00		      ldx	#0
+     91  1071				   .tenDigit
+     92  1071		       38		      sec
+     93  1072		       e9 0a		      sbc	#10
+     94  1074		       90 0f		      bcc	.oneDigit
+     95  1076				   .tenDiv
+     96  1076		       e8		      inx
+     97  1077		       e9 0a		      sbc	#10
+     98  1079		       90 03		      bcc	.tenOutput
+     99  107b		       4c 76 10 	      jmp	.tenDiv
+    100  107e				   .tenOutput
+    101  107e		       a8		      tay		; Store remainder to Y-reg, value is r-10
+    102  107f		       8a		      txa
+    103  1080		       69 30		      adc	#48	; ASCII 0 - 9 (#48 - #57)
+    104  1082		       20 d2 ff 	      jsr	CHROUT
+    105  1085				   .oneDigit
+    106  1085		       98		      tya
+    107  1086		       69 3a		      adc	#58	; (48(acii offset) + 10 (initial subtrahend))
+    108  1088		       20 d2 ff 	      jsr	CHROUT
+    109  108b		       60		      rts

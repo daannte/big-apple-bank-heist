@@ -57,15 +57,15 @@ def compress(data: list[list[str]]):
           if player_x != -1 or player_y != -1:
             print('Multiple player characters found. Only one player character is allowed.')
             sys.exit(1)
-          player_x = char_idx + 1
-          player_y = row_idx + 1
+          player_x = char_idx + 2
+          player_y = row_idx + 2
 
         elif char == CHAR_EXIT:
           if exit_x != -1 or exit_y != -1:
             print('Multiple exit characters found. Only one exit character is allowed.')
             sys.exit(1)
           exit_x = char_idx + 1
-          exit_y = row_idx + 1
+          exit_y = row_idx + 2
         
         elif char != CHAR_EMPTY:
           print(f'Invalid character {char} found at {row_idx},{char_idx}. Only the following characters are allowed: #, P, E, and space.')
@@ -116,11 +116,11 @@ def decompress(compressed_data: list[int]):
   exit_x = compressed_data[-3]
   exit_y = compressed_data[-2]
 
-  if player_x < 0 or player_x > 20 or player_y < 0 or player_y > 20:
+  if player_x < 0 or player_x > 20 or player_y < 0 or player_y > 21:
     print('Invalid player position. The player position must be within the bounds of the level.')
     sys.exit(1)
 
-  if exit_x < 0 or exit_x > 20 or exit_y < 0 or exit_y > 20:
+  if exit_x < 0 or exit_x > 20 or exit_y < 0 or exit_y > 21:
     print('Invalid exit position. The exit position must be within the bounds of the level.')
     sys.exit(1)
 
@@ -142,8 +142,8 @@ def decompress(compressed_data: list[int]):
         row = []
         char_idx = 0
       
-  data[player_y - 1][player_x - 1] = 'P'
-  data[exit_y - 1][exit_x - 1] = 'E'
+  data[player_y - 2][player_x - 1] = 'P'
+  data[exit_y - 2][exit_x - 1] = 'E'
 
   return data
 

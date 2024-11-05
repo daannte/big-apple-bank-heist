@@ -1,0 +1,108 @@
+------- FILE timed.s LEVEL 1 PASS 3
+      1  1086					      processor	6502
+      2  1087 ????
+      3  1087 ????						; KERNAL [sic] addresses
+      4  1087 ????	       ff d2	   CHROUT     =	$FFD2
+      5  1087 ????	       90 0f	   SCREEN     =	$900F
+      6  1087 ????	       ff f0	   PLOT       =	$FFF0
+      7  1087 ????
+      8  1087 ????	       00 a2	   JIFFY      =	$A2
+      9  1087 ????
+     10  1001					      org	$1001
+     11  1001
+     12  1001							; Basic stub
+     13  1001		       0b 10		      dc.w	nextstmt
+     14  1003		       0a 00		      dc.w	10
+     15  1005		       9e 34 31 31*	      dc.b	$9e, [clr]d, 0
+     16  100b				   nextstmt
+     17  100b		       00 00		      dc.w	0
+     18  100d
+     19  100d				   tObj1
+     20  100d		       54 49 4d 45*	      .BYTE.b	#'T, #'I, #'M, #'E, #'R, #' , #0
+     21  1014				   tMaxV
+     22  1014		       45		      .BYTE.b	#69	; Nice
+     23  1015
+     24  1015							; Program Start
+     25  1015				   clr
+     26  1015		       a9 93		      lda	#147
+     27  1017		       20 d2 ff 	      jsr	CHROUT
+     28  101a				   bg
+     29  101a		       a9 0f		      lda	#$0F
+     30  101c		       20 4f 10 	      jsr	setbg
+     31  101f		       a9 f8		      lda	#$F8
+     32  1021		       20 4f 10 	      jsr	setbg
+     33  1024		       a2 01		      ldx	#1
+     34  1026		       8e 86 02 	      stx	$0286
+     35  1029
+     36  1029							; Loop Structure of program
+     37  1029							; 0. Start Clock
+     38  1029							; 1. Load Main BG - level data
+     39  1029							; 2. Load Character/Mob/Item data
+     40  1029							; 3. Take input
+     41  1029							; 4. Modify data based on input
+     42  1029							; Repeat
+     43  1029
+     44  1029				   drawT
+     45  1029							; For testing purposes, load static background
+     46  1029		       a2 00		      ldx	#0
+     47  102b		       a0 03		      ldy	#3
+     48  102d		       20 f0 ff 	      jsr	PLOT
+     49  1030				   .pObjT
+     50  1030		       bd 0d 10 	      lda	tObj1,X
+     51  1033		       20 d2 ff 	      jsr	CHROUT
+     52  1036		       e8		      inx
+     53  1037		       c9 00		      cmp	#0
+     54  1039		       d0 f5		      bne	.pObjT
+     55  103b
+     56  103b				   tickT
+     57  103b							; Timer starts here
+     58  103b		       20 56 10 	      jsr	jiffySec
+     59  103e		       ad 14 10 	      lda	tMaxV	; Max Timer Value
+     60  1041		       a2 00		      ldx	#0
+     61  1043		       a0 09		      ldy	#9
+     62  1045		       18		      clc
+     63  1046		       20 f0 ff 	      jsr	PLOT
+     64  1049		       20 67 10 	      jsr	toAscii
+     65  104c		       4c 3b 10 	      jmp	tickT
+     66  104f
+     67  104f							; Subroutines
+     68  104f
+     69  104f				   setbg
+     70  104f		       2d 0f 90 	      and	SCREEN
+     71  1052		       8d 0f 90 	      sta	SCREEN
+     72  1055		       60		      rts
+     73  1056
+     74  1056				   jiffySec
+     75  1056		       a5 a2		      lda	JIFFY	; Load Jiffy Clock Val
+     76  1058		       85 02		      sta	$02	; Store temporarily
+     77  105a				   .jiffyWait
+     78  105a		       a5 a2		      lda	JIFFY
+     79  105c		       38		      sec
+     80  105d		       e5 02		      sbc	$02
+     81  105f		       c9 3c		      cmp	#60
+     82  1061		       90 f7		      bcc	.jiffyWait
+     83  1063		       ce 14 10 	      dec	tMaxV
+     84  1066		       60		      rts
+     85  1067
+     86  1067				   toAscii
+     87  1067		       ad 14 10 	      lda	tMaxV
+     88  106a		       a2 00		      ldx	#0
+     89  106c				   .tenDigit
+     90  106c		       38		      sec
+     91  106d		       e9 0a		      sbc	#10
+     92  106f		       90 0f		      bcc	.oneDigit
+     93  1071				   .tenDiv
+     94  1071		       e8		      inx
+     95  1072		       e9 0a		      sbc	#10
+     96  1074		       90 03		      bcc	.tenOutput
+     97  1076		       4c 71 10 	      jmp	.tenDiv
+     98  1079				   .tenOutput
+     99  1079		       a8		      tay		; Store remainder to Y-reg, value is r-10
+    100  107a		       8a		      txa
+    101  107b		       69 30		      adc	#48	; ASCII 0 - 9 (#48 - #57)
+    102  107d		       20 d2 ff 	      jsr	CHROUT
+    103  1080				   .oneDigit
+    104  1080		       98		      tya
+    105  1081		       69 3a		      adc	#58	; (48(acii offset) + 10 (initial subtrahend))
+    106  1083		       20 d2 ff 	      jsr	CHROUT
+    107  1086		       60		      rts

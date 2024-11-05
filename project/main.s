@@ -57,13 +57,6 @@ level1_data:
   incdir "project"
   incbin "level1.data"
 
-ZP        = $80
-offset_hi = ZP+0
-ZX0_src   = ZP+1
-ZX0_dst   = ZP+3
-bitr      = ZP+5
-pntr      = ZP+6
-
 start:
   lda #147              ; Load clear screen command
   jsr CHROUT            ; Print it
@@ -221,10 +214,16 @@ load_exit:
   ldy #52
   lda level1_data,y
   tay
-  lda #EXIT
   clc
   jsr PLOT
+  lda #EXIT
   jsr CHROUT
+
+set_position:
+  ldx X_POS
+  ldy Y_POS
+  clc
+  jsr PLOT
   rts
 
 ; --------------------------------

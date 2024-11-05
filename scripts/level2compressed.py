@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
-from pprint import pp
+import os
 
 '''
 On the VIC-20, the screen resolution is 22x23 characters.
@@ -49,23 +49,23 @@ def compress(data: list[list[str]]):
         sys.exit(1)
       
       if char == '#':
-        current_byte |= (1 << 7 - current_bit)
+        current_byte |= (1 << current_bit)
       else:
-        current_byte &= (255 - (1 << 7 - current_bit))
+        current_byte &= (255 - (1 << current_bit))
 
         if char == CHAR_PLAYER:
           if player_x != -1 or player_y != -1:
             print('Multiple player characters found. Only one player character is allowed.')
             sys.exit(1)
-          player_x = char_idx
-          player_y = row_idx
+          player_x = char_idx + 1
+          player_y = row_idx + 1
 
         elif char == CHAR_EXIT:
           if exit_x != -1 or exit_y != -1:
             print('Multiple exit characters found. Only one exit character is allowed.')
             sys.exit(1)
-          exit_x = char_idx
-          exit_y = row_idx
+          exit_x = char_idx + 1
+          exit_y = row_idx + 1
         
         elif char != CHAR_EMPTY:
           print(f'Invalid character {char} found at {row_idx},{char_idx}. Only the following characters are allowed: #, P, E, and space.')
@@ -116,11 +116,11 @@ def decompress(compressed_data: list[int]):
   exit_x = compressed_data[-3]
   exit_y = compressed_data[-2]
 
-  if player_x < 0 or player_x > 19 or player_y < 0 or player_y > 19:
+  if player_x < 0 or player_x > 20 or player_y < 0 or player_y > 20:
     print('Invalid player position. The player position must be within the bounds of the level.')
     sys.exit(1)
 
-  if exit_x < 0 or exit_x > 19 or exit_y < 0 or exit_y > 19:
+  if exit_x < 0 or exit_x > 20 or exit_y < 0 or exit_y > 20:
     print('Invalid exit position. The exit position must be within the bounds of the level.')
     sys.exit(1)
 
@@ -131,7 +131,7 @@ def decompress(compressed_data: list[int]):
   for i in range(50):
     byte = compressed_data[i]
     for j in range(8):
-      if byte & (1 << (7 - j)):
+      if byte & (1 << j):
         row.append('#')
       else:
         row.append(' ')
@@ -142,13 +142,14 @@ def decompress(compressed_data: list[int]):
         row = []
         char_idx = 0
       
-  data[player_y][player_x] = 'P'
-  data[exit_y][exit_x] = 'E'
+  data[player_y - 1][player_x - 1] = 'P'
+  data[exit_y - 1][exit_x - 1] = 'E'
 
   return data
 
 def main():
-  if len(sys.argv) == 1:
+  data = []
+  if len(sys.argv) == 2:
     data = sys.stdin.readlines()
     if not data:
       print('No data provided. Please provide level data to compress.')
@@ -157,14 +158,14 @@ def main():
     for i in range(len(data)):
       data[i] = data[i].strip("\n")
     [list(i) for i in data]
-  elif len(sys.argv) == 2:
+  elif len(sys.argv) == 3:
     with open(sys.argv[1], 'r') as f:
       data = f.readlines()
       for i in range(len(data)):
         data[i] = data[i].strip("\n")
       [list(i) for i in data]
   else:
-    print('Invalid number of arguments. Please provide only the level data to compress.')
+    print('Usage: level2compressed.py <outfile> [infile (as parameter or stdin)]')
     sys.exit(1)
   
   # if the data is empty, exit
@@ -177,10 +178,19 @@ def main():
   [print('{0:08b}'.format(i)) for i in compressed_data]
 
   decompressed_data = decompress(compressed_data)
+  [print(i) for i in decompressed_data]
 
-  print('-' * 22)
-  [print('|' + ''.join(row) + '|') for row in decompressed_data]
-  print('-' * 22)
+  outfile = sys.argv[1]
+
+  # check if file already exists
+  if os.path.exists(outfile):
+    print(f'File {outfile} already exists. Please specify a different file.')
+    sys.exit(1)
+
+  with open(outfile, 'wb') as f:
+    f.write(bytes(compressed_data))
+
+  print(f'Level data written to {outfile}.')
 
 if __name__ == '__main__':
   main()

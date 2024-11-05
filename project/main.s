@@ -2,6 +2,8 @@ CHROUT  = $FFD2
 PLOT    = $FFF0
 SCREEN  = $900f
 INPUT   = $00C5
+GETIN   = $FFE4
+CHARSET = $9005
 
 JIFFY1  = $00A2     ; n * 256^2
 JIFFY2  = $00A1     ; n * 256^1
@@ -32,7 +34,7 @@ ROBBER_VR_1 = #72
 ROBBER_VR_2 = #73
 
 WALL        = #74
-EXIT        = #75
+EXITDOOR        = #75
 
 ; MOVEMENT addresses
 HORIZONTAL = $1DF6; 0 = left, 1 = right
@@ -41,6 +43,17 @@ MOVING  = $1DF8
 X_POS   = $1DF9
 Y_POS   = $1DFA
 
+PLAYER_LIVES = $00   ; Store player lives 
+
+; ZX02 VARS
+ZP        = $80
+offset_hi = ZP+0
+ZX0_src   = ZP+1
+ZX0_dst   = ZP+3
+bitr      = ZP+5
+pntr      = ZP+6
+out_addr = $1e00
+
 BITWISE = $1DF6
 
 ; BASIC stub
@@ -48,41 +61,20 @@ BITWISE = $1DF6
   org $1001
     dc.w nextstmt       
     dc.w 10             
-    dc.b $9e, [start]d, 0 
+    dc.b $9e, [bg]d, 0 
 nextstmt               
     dc.w 0              
 
 out_addr = $1e00
 
-level1_data:
   incdir "project"
+
+comp_data:
+  incbin "titlescreen.zx02"
+
+
+level1_data:
   incbin "level1.data"
-
-start:
-  lda #147              ; Load clear screen command
-  jsr CHROUT            ; Print it
-
-setup:
-  lda #TIMERESET1       ; 60 * 256^0 = 60 jiffies
-  sta TIMER1            ; store the timer value in address TIMER1
-
-  lda #TIMERESET2       ; 0 * 256^1 = 0 jiffies
-  sta TIMER2            ; store the timer value in address TIMER2
-
-  lda #TIMERESET3       ; 0 * 256^2 = 0 jiffies
-  sta TIMER3            ; store the timer value in address TIMER3
-
-  lda #$ff              ; loading 255 into $9005 makes the vic look at $1c00 for characters instead
-  sta $9005             ; the above can be found on pages 84
-
-  lda #0
-  sta MOVING
-
-  lda #255
-  sta VERTICAL
-
-  lda #1
-  sta HORIZONTAL
 
 bg:
   ldx #0              ; Set X to black
@@ -100,23 +92,64 @@ border:
   ora $1001           ; Combine new border colour with the screen 
   sta SCREEN          ; Store new colour into the screen colour address
 
-init:
+titlescreen:
+  jsr draw_titlescreen
+
+title_input_loop:
+  jsr GETIN
+  cmp #00               ; Keep looping until we get a value
+  beq title_input_loop
+
+textcolor:
   ldx #1              ; Set X to white
   stx $0286           ; Store X into current color code address
+
+start:
+  lda #147              ; Load clear screen command
+  jsr CHROUT            ; Print it
+
+  lda #2
+  sta PLAYER_LIVES      ; 2 is interpreted as 3 lives because of how BNE works
+
+setup:
+  lda #$ff              ; loading 255 into $9005 makes the vic look at $1c00 for characters instead
+  sta $9005             ; the above can be found on pages 84
+
+init:
+  lda #0
+  sta MOVING
+
+  lda #255
+  sta VERTICAL
+
+  lda #1
+  sta HORIZONTAL
+  
+  lda #TIMERESET1       ; 60 * 256^0 = 60 jiffies
+  sta TIMER1            ; store the timer value in address TIMER1
+
+  lda #TIMERESET2       ; 0 * 256^1 = 0 jiffies
+  sta TIMER2            ; store the timer value in address TIMER2
+
+  lda #TIMERESET3       ; 0 * 256^2 = 0 jiffies
+  sta TIMER3            ; store the timer value in address TIMER3
+
   jsr load_level
 
 read_input:
   lda MOVING
   beq loop
-  lda INPUT
-  cmp #9
+  jsr GETIN
+  cmp #87
   beq w_key
-  cmp #17
+  cmp #65
   beq a_key
-  cmp #18
+  cmp #68
   beq d_key
-  cmp #41
+  cmp #83
   beq s_key
+  cmp #32
+  beq space_key
   jmp loop
 
 w_key:
@@ -133,6 +166,13 @@ d_key:
 
 s_key:
   jsr move_down
+  jmp loop
+
+space_key:
+  jsr handle_lives
+  cmp #0
+  beq titlescreen
+  jmp init
 
 loop:
   jsr increment_timer
@@ -141,6 +181,8 @@ loop:
 ; -------- SUBROUTINES --------
 
 load_level:
+  lda #147              ; Load clear screen command
+  jsr CHROUT            ; Print it
   ldx #0
   ldy #0
   jsr PLOT
@@ -223,7 +265,7 @@ load_exit:
   tay
   clc
   jsr PLOT
-  lda #EXIT
+  lda #EXITDOOR
   jsr CHROUT
 
 set_position:
@@ -389,6 +431,27 @@ move_left:
 end_move_left:
   rts
 
+; -------------------
+
+handle_lives:
+  lda PLAYER_LIVES
+  bne dec_lives
+
+  lda #$f0                ; loading 240 into CHARSET to reset character set for titlescreen 
+  sta CHARSET             ; the above can be found on page 267
+
+  lda #0
+  rts
+
+dec_lives:
+  dec PLAYER_LIVES
+  lda #1
+
+end_handle_lives:
+  rts
+
+; -------------------
+
 ; increment_timer
     ; decrements the timer
 increment_timer:
@@ -436,6 +499,9 @@ end_timer:
   rts                 ; return from subroutine
 
 animate:
+  lda VERTICAL
+  cmp #255
+  beq skip_animate
   ldx X_POS
   ldy Y_POS
   lda CURRENT
@@ -445,8 +511,11 @@ animate:
   beq animate_l
   lda VERTICAL
   beq animate_u
-  cmp #255
-  bne animate_d
+  jmp animate_d
+
+skip_animate:
+  lda #0
+  sta VERTICAL
   rts
 
 animate_r:
@@ -636,7 +705,7 @@ wall:
   dc.b %10101010
   dc.b %01010101
 
-exit:
+exitdoor:
   dc.b %11111111
   dc.b %11111111
   dc.b %11000011
@@ -645,3 +714,6 @@ exit:
   dc.b %11000011
   dc.b %11000011
   dc.b %11000011
+
+  include "zx02.s"
+  include "titlescreen.s"

@@ -15,6 +15,11 @@ title:
 decomp:
   jsr full_decomp
 
+title_input_loop:
+  jsr GETIN
+  cmp #00               ; Keep looping until we get a value
+  beq title_input_loop
+
 end:
   rts
 

@@ -77,13 +77,9 @@ BITWISE = $1DF6
   org $1001
     dc.w nextstmt       
     dc.w 10             
-    dc.b $9e, [bg]d, 0 
+    dc.b $9e, [start]d, 0 
 nextstmt               
     dc.w 0              
-
-out_addr = $1e00
-
-  incdir "project"
 
 comp_data:
   incbin "titlescreen.zx02"
@@ -97,35 +93,10 @@ timertext:
 timer_value:
     .BYTE #69         ; Nice
 
-bg:
-  ldx #0              ; Set X to black
-  lda SCREEN          ; Load the screen colour address
-  and	#$0F            ; Reset the 4 background bits
-  stx $1001           ; Store X into the user basic area memory
-  ora $1001           ; Combine new background color with the screen
-  sta SCREEN          ; Store new colour into the screen colour address
-
-border:
-  ldx #0              ; Set X to black
-  lda SCREEN          ; Load the screen colour address
-  and	#$F8            ; Reset the 3 border bits
-  stx $1001           ; Store X into the user basic area memory
-  ora $1001           ; Combine new border colour with the screen 
-  sta SCREEN          ; Store new colour into the screen colour address
-
-textcolor:
-  ldx #1              ; Set X to white
-  stx $0286           ; Store X into current color code address
-
-titlescreen:
+start:
   jsr draw_titlescreen
 
-title_input_loop:
-  jsr GETIN
-  cmp #00               ; Keep looping until we get a value
-  beq title_input_loop
-
-start:
+game:
   lda #147              ; Load clear screen command
   jsr CHROUT            ; Print it
 
@@ -167,7 +138,7 @@ init:
   jsr load_level
   jsr main_loop
   cmp #0
-  beq titlescreen
+  beq start
   jmp init
 
 main_loop:

@@ -5,15 +5,12 @@ INPUT   = $00C5
 GETIN   = $FFE4
 CHARSET = $9005
 
+SCR     = $1e00
+SCR2    = $1EE6
+
 JIFFY1  = $00A2     ; n * 256^2
 JIFFY2  = $00A1     ; n * 256^1
 JIFFY3  = $00A0     ; n * 256^0
-
-CURRENT = $1DFB     ; current animation frame
-LASTJIFFY = $1DFC   ; stores last known jiffy
-TIMER1  = $1DFF     ; n * 256^0
-TIMER2  = $1DFE     ; n * 256^1
-TIMER3  = $1DFD     ; n * 256^2
 
 TIMERESET1  = #5
 TIMERESET2  = #0
@@ -51,12 +48,25 @@ EMPTY_SPACE_CHAR = #86
 HEART_CHAR = #87
 TIMER_MAX_VALUE = #15
 
+CAN_JUMP     = $1DF3  ;1 if player can jump, 0 if not
+
+EXIT_X = $1DF4  ; vertical axis, because why not
+EXIT_Y = $1DF5  ; horizontal axis, because why not
+
 ; MOVEMENT addresses
+TEMP1   = $1DF4
+TEMP2   = $1DF5
 HORIZONTAL = $1DF6; 0 = left, 1 = right
 VERTICAL = $1DF7; 0 = up, 1 = down
 MOVING  = $1DF8
-X_POS   = $1DF9
-Y_POS   = $1DFA
+X_POS   = $1DF9 ; vertical axis, because why not
+Y_POS   = $1DFA ; horizontal axis, because why not
+
+CURRENT = $1DFB     ; current animation frame
+LASTJIFFY = $1DFC   ; stores last known jiffy
+TIMER1  = $1DFF     ; n * 256^0
+TIMER2  = $1DFE     ; n * 256^1
+TIMER3  = $1DFD     ; n * 256^2
 
 PLAYER_LIVES = $00   ; Store player lives 
 JIFFIES_SINCE_SECOND = $01
@@ -208,12 +218,95 @@ space_key:
   rts
 
 loop:
+  lda X_POS
+  cmp EXIT_X
+  bne not_exited
+  lda Y_POS
+  cmp EXIT_Y
+  bne not_exited
+  rts
+
+not_exited:
   jsr increment_timer
   cmp #0
   bne space_key
   jmp read_input
 
 ; -------- SUBROUTINES --------
+
+check_collision:
+  lda X_POS
+  cmp #10
+  bcc baseaddr
+  lda X_POS
+  cmp #10
+  bne midaddr
+  lda Y_POS
+  cmp #11
+  bcc baseaddr
+
+midaddr
+  lda X_POS
+  sbc #10
+  asl
+  asl
+  asl
+  asl
+  sta TEMP1
+
+  lda X_POS
+  asl
+  sta TEMP2
+
+  asl
+  adc TEMP2
+  adc TEMP1
+  
+  sta TEMP1
+  lda Y_POS
+  clc
+  adc TEMP1
+  sbc #69 ; for some reason, the magic number is 69
+  tax
+  lda SCR2,x
+  jmp check_occupied
+
+baseaddr
+  lda X_POS
+  asl
+  asl
+  asl
+  asl
+  sta TEMP1
+  lda X_POS
+  asl
+  sta TEMP2
+  asl
+  adc TEMP2
+  adc TEMP1
+  sta TEMP1
+  lda Y_POS
+  adc TEMP1
+  tax
+  lda SCR,x
+
+check_occupied:
+  cmp #10 ; WALL
+  beq occupied_wall
+  cmp #11 ; EXITDOOR
+  beq occupied_exit
+  lda #0
+  rts
+  
+occupied_wall:
+  lda #1
+  rts
+
+occupied_exit:
+  lda #2
+  rts
+
+; --------------------------------
 
 load_level:
   lda #147              ; Load clear screen command
@@ -226,11 +319,16 @@ load_level:
   tay
   iny
 
+  lda #2              ; Set X to red
+  sta $0286           ; Store X into current color code address
 show_lives:
   lda #HEART_CHAR
   jsr CHROUT
   dey
   bne show_lives
+
+  lda #1              ; Set X to white
+  sta $0286         
 
   lda #22
   sbc PLAYER_LIVES
@@ -317,13 +415,22 @@ load_exit:
   ldx #53
   lda level1_data,x
   tax
+  stx EXIT_X
   ldy #52
   lda level1_data,y
   tay
+  sty EXIT_Y
   clc
   jsr PLOT
   lda #EXITDOOR
   jsr CHROUT
+
+show_timer:
+  ldx #0
+  ldy #20
+  clc
+  jsr PLOT
+  jsr toAscii
 
 set_position:
   ldx X_POS
@@ -336,6 +443,12 @@ set_position:
 
 move_up:
   lda X_POS
+  cmp #2
+  beq end_move_up
+  dec X_POS
+  jsr check_collision
+  inc X_POS
+  cmp #1
   beq end_move_up
 
   lda #0
@@ -379,10 +492,16 @@ move_up4:
 
 end_move_up:
   rts
+
 ; -------------------
 move_down:
   lda X_POS
-  cmp #22
+  cmp #21
+  beq end_move_down
+  inc X_POS
+  jsr check_collision
+  dec X_POS
+  cmp #1
   beq end_move_down
 
   lda #1
@@ -429,7 +548,12 @@ end_move_down:
 ; -------------------
 move_right:
   lda Y_POS
-  cmp #21
+  cmp #20
+  beq end_move_right
+  inc Y_POS
+  jsr check_collision
+  dec Y_POS
+  cmp #1
   beq end_move_right
 
   lda #1
@@ -460,6 +584,12 @@ end_move_right:
 ; -------------------
 move_left:
   lda Y_POS
+  cmp #1
+  beq end_move_left
+  dec Y_POS
+  jsr check_collision
+  inc Y_POS
+  cmp #1
   beq end_move_left
 
   lda #0
@@ -819,14 +949,14 @@ robber_vl_2:
   dc.b %00000000
 
 wall:
-  dc.b %10101010
-  dc.b %01010101
-  dc.b %10101010
-  dc.b %01010101
-  dc.b %10101010
-  dc.b %01010101
-  dc.b %10101010
-  dc.b %01010101
+  dc.b %11111101
+  dc.b %11111101
+  dc.b %11111101
+  dc.b %00000000
+  dc.b %11011111
+  dc.b %11011111
+  dc.b %11011111
+  dc.b %00000000
 
 exitdoor:
   dc.b %11111111

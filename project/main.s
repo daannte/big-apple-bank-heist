@@ -111,12 +111,7 @@ textcolor:
 titlescreen:
   jsr draw_titlescreen
 
-title_input_loop:
-  jsr GETIN
-  cmp #00               ; Keep looping until we get a value
-  beq title_input_loop
-
-init_game:
+game:
   lda #147              ; Load clear screen command
   jsr CHROUT            ; Print it
 
@@ -158,7 +153,7 @@ init:
   jsr load_level
   jsr main_loop
   cmp #0
-  beq titlescreen
+  beq start
   jmp init
 
 main_loop:

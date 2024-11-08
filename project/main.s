@@ -7,7 +7,7 @@ INPUT   = $00C5
 GETIN   = $FFE4
 CHARSET = $9005
 
-SCR     = $1e00
+SCR     = $1E00
 SCR2    = $1EE6
 
 JIFFY1  = $00A2     ; n * 256^2
@@ -46,34 +46,11 @@ ASCII_7     = #83
 ASCII_8     = #84
 ASCII_9     = #85
 
-EMPTY_SPACE_CHAR = #86
-HEART_CHAR = #87
-TIMER_MAX_VALUE = #15
+EMPTY_SPACE_CHAR  = #86
+HEART_CHAR        = #87
+TIMER_MAX_VALUE   = #15
 
-PLAYER_LIVES = $00   ; Store player lives 
-JIFFIES_SINCE_SECOND = $01
-
-CAN_JUMP     = $02  ;1 if player can jump, 0 if not
-
-EXIT_X = $03  ; vertical axis, because why not
-EXIT_Y = $04  ; horizontal axis, because why not
-
-; MOVEMENT addresses
-TEMP1   = $05
-TEMP2   = $06
-HORIZONTAL = $07; 0 = left, 1 = right
-VERTICAL = $08; 0 = up, 1 = down
-MOVING  = $09
-X_POS   = $0A ; vertical axis, because why not
-Y_POS   = $0B ; horizontal axis, because why not
-
-CURRENT = $0C     ; current animation frame
-LASTJIFFY = $0D   ; stores last known jiffy
-TIMER1  = $0E     ; n * 256^0
-TIMER2  = $0F     ; n * 256^1
-TIMER3  = $10     ; n * 256^2
-
-BITWISE = $1DF6
+  include "zeropage.s"
 
   org $1001
   incdir "project"
@@ -112,11 +89,11 @@ titlescreen:
   jsr draw_titlescreen
 
 game:
-  lda #147              ; Load clear screen command
-  jsr CHROUT            ; Print it
+  lda #147            ; Load clear screen command
+  jsr CHROUT          ; Print it
 
   lda #2
-  sta PLAYER_LIVES      ; 2 is interpreted as 3 lives because of how BNE works
+  sta PLAYER_LIVES    ; 2 is interpreted as 3 lives because of how BNE works
 
   lda #TIMER_MAX_VALUE
   sta timer_value

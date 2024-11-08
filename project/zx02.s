@@ -19,13 +19,6 @@ zx0_ini_block
 
   subroutine
 
-; ZX02 VARS
-ZP        = $80
-offset_hi = ZP+0
-ZX0_src   = ZP+1
-ZX0_dst   = ZP+3
-bitr      = ZP+5
-pntr      = ZP+6
 out_addr = $1e00
 
 full_decomp:

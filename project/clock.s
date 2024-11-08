@@ -45,7 +45,7 @@ increment_clock:
   bne .continue_timer
   lda #0
   sta JIFFIES_SINCE_SECOND
-  ldx #0
+  tax
   ldy #20
   clc
   jsr PLOT
@@ -85,8 +85,7 @@ increment_clock:
   lda TIMER1              ; check if timer 1 is 0
   beq .increment_timer2    ; if so, increment timer 2
   dec TIMER1              ; otherwise, decrement timer 1
-  lda #0
-  rts
+  jmp .end_timer
 
 .increment_timer2:
   lda #255                ; reset timer 1
@@ -94,8 +93,7 @@ increment_clock:
   lda TIMER2              ; check if timer 2 is 0
   beq .increment_timer3    ; if so, increment timer 3
   dec TIMER2              ; otherwise, decrement timer 2
-  lda #0
-  rts
+  jmp .end_timer
 
 .increment_timer3:
   lda #255                ; reset timer 2

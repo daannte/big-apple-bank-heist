@@ -14,7 +14,7 @@ JIFFY1  = $00A2     ; n * 256^2
 JIFFY2  = $00A1     ; n * 256^1
 JIFFY3  = $00A0     ; n * 256^0
 
-TIMERESET1  = #5
+TIMERESET1  = #3
 TIMERESET2  = #0
 TIMERESET3  = #0
 
@@ -177,7 +177,9 @@ loop:
   lda Y_POS
   cmp EXIT_Y
   bne not_exited
-  rts
+  lda #0
+  sta PLAYER_LIVES
+  jmp space_key
 
 not_exited:
   jsr increment_clock

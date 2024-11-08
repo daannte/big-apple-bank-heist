@@ -31,7 +31,8 @@ check_collision:
   lda Y_POS
   clc
   adc TEMP1
-  sbc #69 ; for some reason, the magic number is 69
+  sec
+  sbc #70 ; for some reason, the magic number is 70
   tax
   lda SCR2,x
   jmp .check_occupied

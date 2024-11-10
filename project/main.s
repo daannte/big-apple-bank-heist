@@ -1,19 +1,5 @@
   processor 6502
 
-CHROUT  = $FFD2
-PLOT    = $FFF0
-SCREEN  = $900f
-INPUT   = $00C5
-GETIN   = $FFE4
-CHARSET = $9005
-
-SCR     = $1E00
-SCR2    = $1EE6
-
-JIFFY1  = $00A2     ; n * 256^2
-JIFFY2  = $00A1     ; n * 256^1
-JIFFY3  = $00A0     ; n * 256^0
-
   incdir "project"
   include "constants.s"
   include "zeropage.s"
@@ -25,10 +11,6 @@ comp_data
 
 level1_data
   incbin "level1.data"
-
-; 00100101
-timer_value:
-    .BYTE #69         ; Nice
 
 start:
   ldx #0              ; Set X to black
@@ -61,7 +43,7 @@ game:
   sta PLAYER_LIVES    ; 2 is interpreted as 3 lives because of how BNE works
 
   lda #TIMER_MAX_VALUE
-  sta timer_value
+  sta TIMER_VALUE
 
   lda JIFFY1
   sta LASTJIFFY

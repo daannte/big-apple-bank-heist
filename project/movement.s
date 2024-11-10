@@ -1,10 +1,10 @@
   subroutine
 check_collision:
   lda X_POS
-  cmp #10
+  cmp #11
   bcc .baseaddr
   lda X_POS
-  cmp #10
+  cmp #11
   bne .midaddr
   lda Y_POS
   cmp #11
@@ -12,6 +12,7 @@ check_collision:
 
 .midaddr
   lda X_POS
+  sec
   sbc #10
   asl
   asl
@@ -24,7 +25,9 @@ check_collision:
   sta TEMP2
 
   asl
+  clc
   adc TEMP2
+  clc
   adc TEMP1
   
   sta TEMP1
@@ -32,7 +35,7 @@ check_collision:
   clc
   adc TEMP1
   sec
-  sbc #70 ; for some reason, the magic number is 70
+  sbc #90 ; for some reason, the magic number is 70
   tax
   lda SCR2,x
   jmp .check_occupied
@@ -48,7 +51,9 @@ check_collision:
   asl
   sta TEMP2
   asl
+  clc
   adc TEMP2
+  clc
   adc TEMP1
   sta TEMP1
   lda Y_POS
@@ -262,6 +267,19 @@ move_left:
 ; -------------------
   subroutine
 gravity:
+  lda MOVING
+  beq .check_on_ground
+  lda GRAVITY_COOLDOWN
+  bne .check_on_ground
+  lda #GRAVITY_MAX_COOLDOWN
+  sta GRAVITY_COOLDOWN
   jsr move_down
   sta CAN_JUMP
+  rts
+
+.check_on_ground:
+  inc X_POS
+  jsr check_collision
+  sta CAN_JUMP
+  dec X_POS
   rts

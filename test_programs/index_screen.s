@@ -6,7 +6,7 @@ CHRIN   = $ffcf
 SCNKEY  = $ff9f
 GETIN   = $ffe4
 SCR     = $1e00
-SCR2    = $1EE6
+SCR2    = $1EFA
 SCREEN  = $900f
 
 ; Address for coordinates
@@ -150,10 +150,10 @@ calculatePOS
   lda #147
   jsr CHROUT
   lda X_POS
-  cmp #10
+  cmp #11
   bcc baseaddr
   lda X_POS
-  cmp #10
+  cmp #11
   bne midaddr
   lda Y_POS
   cmp #11
@@ -163,6 +163,7 @@ midaddr
   lda #2
   sta WHICH_ADDR
   lda X_POS
+  sec
   sbc #10
   asl
   asl
@@ -175,15 +176,18 @@ midaddr
   sta TEMP2
 
   asl
+  clc
   adc TEMP2
+  clc
   adc TEMP1
   
   sta TEMP1
   lda Y_POS
+  sec
+  sbc #90 ; for some reason, the magic number is 69
 
   clc
   adc TEMP1
-  sbc #69 ; for some reason, the magic number is 69
   sta POS  
   ldx POS
   lda #65
@@ -203,10 +207,13 @@ baseaddr
   asl
   sta TEMP2
   asl
+  clc
   adc TEMP2
+  clc
   adc TEMP1
   sta TEMP1
   lda Y_POS
+  clc
   adc TEMP1
   sta POS  
   ldx POS

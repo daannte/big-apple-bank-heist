@@ -20,6 +20,7 @@ TIMER3                ds.b  1   ; n * 256^2
 BITWISE               ds.b  1   ; Bitmask for level decompression
 CAN_JUMP              ds.b  1   ; 0 = can't jump, 1 = can jump
 TIMER_VALUE           ds.b  1   ; Timer value
+GRAVITY_COOLDOWN      ds.b  1   ; Cooldown for gravity
 
 ; zx02 variables
 offset_hi             ds.b  1   ; Offset high byte

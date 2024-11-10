@@ -48,9 +48,6 @@ game:
   lda JIFFY1
   sta LASTJIFFY
 
-  lda #0
-  sta JIFFIES_SINCE_SECOND
-
 setup:
   lda #$ff              ; loading 255 into $9005 makes the vic look at $1c00 for characters instead
   sta CHARSET             ; the above can be found on pages 84
@@ -58,6 +55,12 @@ setup:
 init:
   lda #0
   sta MOVING
+
+  lda #0
+  sta JIFFIES_SINCE_SECOND
+
+  lda #GRAVITY_MAX_COOLDOWN
+  sta GRAVITY_COOLDOWN
 
   lda #255
   sta VERTICAL
@@ -84,6 +87,9 @@ main_loop:
 read_input:
   lda MOVING
   beq loop
+  jsr gravity
+  lda MOVING
+  beq loop
   jsr GETIN
   cmp #87
   beq w_key
@@ -98,7 +104,13 @@ read_input:
   jmp loop
 
 w_key:
+  lda CAN_JUMP
+  beq loop
+  lda #0
+  sta CAN_JUMP
   jsr move_up
+  lda #GRAVITY_JUMP_COOLDOWN
+  sta GRAVITY_COOLDOWN
   jmp loop
 
 a_key:

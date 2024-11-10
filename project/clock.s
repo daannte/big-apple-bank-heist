@@ -1,38 +1,22 @@
   subroutine
 toAscii:
-  lda timer_value
-  sbc #9
-  bcc .skipFirst
-  lda timer_value
-  ldx #0
-  jmp .tenDigit
-.skipFirst
-  lda #EMPTY_SPACE_CHAR
-  jsr CHROUT
-  lda timer_value
+  lda TIMER_VALUE
+  lsr
+  lsr
+  lsr
+  lsr
+  clc
   adc #76
   jsr CHROUT
-  rts
-.tenDigit
-  sec
-  sbc #10
-  bcc .oneDigit
-.tenDiv
-  inx
-  sbc #10
-  bcc .tenOutput
-  jmp .tenDiv
-.tenOutput
-  tay                 ; Store remainder to Y-reg, value is r-10
-  txa
-  adc #76             ; ASCII 0 - 9 (#48 - #57)
-  jsr CHROUT
-.oneDigit
-  tya
-  adc #86             ; (48(acii offset) + 10 (initial subtrahend))
-  jsr CHROUT
-  rts
 
+  lda TIMER_VALUE
+  and #15
+  clc
+  adc #76
+  jsr CHROUT
+  
+  rts
+; --------------------------------
   subroutine
 increment_clock:
   lda JIFFY1              ; load current jiffy
@@ -49,9 +33,19 @@ increment_clock:
   ldy #20
   clc
   jsr PLOT
-  lda timer_value
+  lda TIMER_VALUE
   beq .times_up
-  dec timer_value
+  and #15
+  cmp #0
+  bne .dec_ones
+  lda TIMER_VALUE
+  sec
+  sbc #6
+  sta TIMER_VALUE
+
+.dec_ones:
+  dec TIMER_VALUE
+
   jsr toAscii
   ldx X_POS
   ldy Y_POS

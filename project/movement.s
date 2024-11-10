@@ -131,12 +131,12 @@ move_up:
 move_down:
   lda X_POS
   cmp #21
-  beq .end_move_down
+  beq .end_move_down_fail
   inc X_POS
   jsr check_collision
   dec X_POS
   cmp #1
-  beq .end_move_down
+  beq .end_move_down_fail
 
   lda #1
   sta VERTICAL
@@ -177,8 +177,14 @@ move_down:
   lda #TIMERESET1
   sta TIMER1
 
-.end_move_down:
+.end_move_down_success:
+  lda #0
   rts
+
+.end_move_down_fail:
+  lda #1
+  rts
+
 ; -------------------
   subroutine
 move_right:
@@ -252,4 +258,10 @@ move_left:
   sta TIMER1
 
 .end_move_left:
+  rts
+; -------------------
+  subroutine
+gravity:
+  jsr move_down
+  sta CAN_JUMP
   rts

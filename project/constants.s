@@ -32,7 +32,7 @@ ASCII_9     = #85
 
 EMPTY_SPACE_CHAR  = #86
 HEART_CHAR        = #87
-TIMER_MAX_VALUE   = %00100101 ; binary-coded decimal. left nibble is tens, right nibble is ones
+TIMER_MAX_VALUE   = %01100000 ; binary-coded decimal. left nibble is tens, right nibble is ones
 
 GRAVITY_MAX_COOLDOWN = #10 ; in jiffies
 GRAVITY_JUMP_COOLDOWN = #30  ; in jiffies

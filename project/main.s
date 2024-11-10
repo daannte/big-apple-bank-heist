@@ -10,7 +10,7 @@ comp_data
   incbin "titlescreen.zx02"
 
 level1_data
-  incbin "level1.data"
+  incbin "levels/level2.data"
 
 start:
   ldx #0              ; Set X to black

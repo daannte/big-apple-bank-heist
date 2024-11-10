@@ -23,6 +23,11 @@ increment_clock:
   cmp LASTJIFFY           ; compare to last jiffy
   beq .end_timer           ; if jiffy elapsed, update timer
   sta LASTJIFFY           ; store current jiffy
+  lda GRAVITY_COOLDOWN
+  beq .inc_jiffy_seconds
+  dec GRAVITY_COOLDOWN
+
+.inc_jiffy_seconds
   inc JIFFIES_SINCE_SECOND
   lda JIFFIES_SINCE_SECOND
   cmp #60

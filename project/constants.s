@@ -34,6 +34,9 @@ EMPTY_SPACE_CHAR  = #86
 HEART_CHAR        = #87
 TIMER_MAX_VALUE   = %00100101 ; binary-coded decimal. left nibble is tens, right nibble is ones
 
+GRAVITY_MAX_COOLDOWN = #10 ; in jiffies
+GRAVITY_JUMP_COOLDOWN = #30  ; in jiffies
+
 ; MEMORY locations
 CHROUT  = $FFD2
 PLOT    = $FFF0
@@ -43,7 +46,7 @@ GETIN   = $FFE4
 CHARSET = $9005
 
 SCR     = $1E00
-SCR2    = $1EE6
+SCR2    = $1EFA
 
 JIFFY1  = $00A2     ; n * 256^2
 JIFFY2  = $00A1     ; n * 256^1

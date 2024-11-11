@@ -6,6 +6,36 @@ load_level:
   ldy #0
   jsr PLOT
 
+  ; Clear the level address before doing anything
+  lda #0
+  sta $FB
+  sta $FC
+
+  lda CURRENT_LEVEL
+  beq .load_level_address ; skip multiply if level is 0
+  sta $FB 
+  lda #0
+  sta $FC 
+
+ ; Calculate the level address 
+.multiply:
+  clc
+  lda $FC
+  adc #LEVEL_SIZE
+  sta $FC
+
+  dec $FB
+  bne .multiply
+
+.load_level_address:
+  clc
+  lda #<level_data      ; Load base address low byte
+  adc $FC               ; Add offset
+  sta $FB               ; Store in zero page for indirect addressing
+  lda #>level_data      ; Load base address high byte
+  adc #0                ; Add carry if any
+  sta $FC               ; Store in zero page
+
   lda PLAYER_LIVES
   tay
   iny
@@ -45,14 +75,13 @@ load_level:
   jmp .loop_byte
 
 .inc_char:
-  iny
-  tya
-  cmp #20
+  inx
+  cpx #20
   bne .inc_bitwise
   lda #WALL
   jsr CHROUT
   jsr CHROUT
-  ldy #0
+  ldx #0
 
 .inc_bitwise:
   lda BITWISE
@@ -60,7 +89,7 @@ load_level:
   beq .end_loop_byte
   asl BITWISE
 .loop_byte:
-  lda level1_data,x
+  lda ($FB),y
   and BITWISE
   beq .empty_space
   lda #WALL
@@ -73,9 +102,8 @@ load_level:
   jmp .inc_char
 
 .end_loop_byte:
-  inx
-  txa
-  cmp #50
+  iny
+  cpy #50
   bne .load_character
   ldy #0
 
@@ -89,12 +117,12 @@ load_level:
   sta $1FF9
 
 .load_player:
-  ldx #51
-  lda level1_data,x
+  ldy #51
+  lda ($FB),y
   tax
   stx X_POS
-  ldy #50
-  lda level1_data,y
+  dey
+  lda ($FB),y
   tay
   sty Y_POS
   clc
@@ -103,12 +131,12 @@ load_level:
   jsr CHROUT
 
 .load_exit:
-  ldx #53
-  lda level1_data,x
+  ldy #53
+  lda ($FB),y
   tax
   stx EXIT_X
-  ldy #52
-  lda level1_data,y
+  dey
+  lda ($FB),y
   tay
   sty EXIT_Y
   clc

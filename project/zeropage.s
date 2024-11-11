@@ -21,6 +21,9 @@ BITWISE               ds.b  1   ; Bitmask for level decompression
 CAN_JUMP              ds.b  1   ; 0 = can't jump, 1 = can jump
 TIMER_VALUE           ds.b  1   ; Timer value
 GRAVITY_COOLDOWN      ds.b  1   ; Cooldown for gravity
+CURRENT_LEVEL         ds.b  1   ; Current level number
+LEVEL_LOW_BYTE        ds.b  1   ; Low byte of level data offset
+LEVEL_HIGH_BYTE       ds.b  1   ; High byte of level data offset
 
 ; zx02 variables
 offset_hi             ds.b  1   ; Offset high byte

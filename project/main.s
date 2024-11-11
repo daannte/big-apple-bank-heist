@@ -9,35 +9,19 @@
 comp_data
   incbin "titlescreen.zx02"
 
-level1_data
-  incbin "level1.data"
+level_data
+  incbin "levels/level1.data"
+  incbin "levels/level2.data"
 
 start:
-  ldx #0              ; Set X to black
-  lda SCREEN          ; Load the screen colour address
-  and	#$0F            ; Reset the 4 background bits
-  stx $1001           ; Store X into the user basic area memory
-  ora $1001           ; Combine new background color with the screen
-  sta SCREEN          ; Store new colour into the screen colour address
-
-border:
-  ldx #0              ; Set X to black
-  lda SCREEN          ; Load the screen colour address
-  and	#$F8            ; Reset the 3 border bits
-  stx $1001           ; Store X into the user basic area memory
-  ora $1001           ; Combine new border colour with the screen 
-  sta SCREEN          ; Store new colour into the screen colour address
-
-textcolor:
-  ldx #1              ; Set X to white
-  stx $0286           ; Store X into current color code address
-
-titlescreen:
   jsr draw_titlescreen
 
 game:
   lda #147            ; Load clear screen command
   jsr CHROUT          ; Print it
+
+  lda #0
+  sta CURRENT_LEVEL   ; Set the current_level to the first
 
   lda #2
   sta PLAYER_LIVES    ; 2 is interpreted as 3 lives because of how BNE works
@@ -136,15 +120,25 @@ loop:
   lda Y_POS
   cmp EXIT_Y
   bne not_exited
-  lda #0
-  sta PLAYER_LIVES
-  jmp space_key
+  jmp increment_level
 
 not_exited:
   jsr increment_clock
   cmp #0
   bne space_key
   jmp read_input
+
+increment_level:
+  inc CURRENT_LEVEL   ; Increment CURRENT_LEVEL
+  lda CURRENT_LEVEL
+  cmp #MAX_LEVELS     ; If max level reached, render next level, else die
+  beq game_over
+  jmp init
+game_over:
+  lda #0
+  sta PLAYER_LIVES
+  jmp space_key
+
 
 ; -------- SUBROUTINES --------
 

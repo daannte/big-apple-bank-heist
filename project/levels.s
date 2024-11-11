@@ -8,40 +8,38 @@ load_level:
 
   ; Clear the level address before doing anything
   lda #0
-  sta $FB
-  sta $FC
+  sta LEVEL_LOW_BYTE
+  sta LEVEL_HIGH_BYTE
 
-  lda CURRENT_LEVEL
+  lda CURRENT_LEVEL       ; Load the level we are at
   beq .load_level_address ; skip multiply if level is 0
-  sta $FB 
-  lda #0
-  sta $FC 
+  sta LEVEL_LOW_BYTE      ; Use the low byte as the counter
 
  ; Calculate the level address 
 .multiply:
-  clc
-  lda $FC
-  adc #LEVEL_SIZE
-  sta $FC
+  clc                     ; Clear carry to prepare for addition
+  lda LEVEL_HIGH_BYTE     ; Load the high byte
+  adc #LEVEL_SIZE         ; Add the level size
+  sta LEVEL_HIGH_BYTE     ; store the updated value into the high byte
 
-  dec $FB
-  bne .multiply
+  dec LEVEL_LOW_BYTE      ; Decrement the multiply counter
+  bne .multiply           ; If not zero, keep multiplying
 
 .load_level_address:
   clc
-  lda #<level_data      ; Load base address low byte
-  adc $FC               ; Add offset
-  sta $FB               ; Store in zero page for indirect addressing
-  lda #>level_data      ; Load base address high byte
-  adc #0                ; Add carry if any
-  sta $FC               ; Store in zero page
+  lda #<level_data        ; Load base address low byte
+  adc LEVEL_HIGH_BYTE     ; Add offset
+  sta LEVEL_LOW_BYTE      ; Low byte becomes indirect index addressing 
+  lda #>level_data        ; Load base address high byte
+  adc #0                  ; Add carry if any
+  sta LEVEL_HIGH_BYTE     ; Store in back in high byte 
 
   lda PLAYER_LIVES
   tay
   iny
 
-  lda #2              ; Set X to red
-  sta $0286           ; Store X into current color code address
+  lda #2                  ; Set X to red
+  sta $0286               ; Store X into current color code address
 .show_lives:
   lda #HEART_CHAR
   jsr CHROUT
@@ -89,7 +87,7 @@ load_level:
   beq .end_loop_byte
   asl BITWISE
 .loop_byte:
-  lda ($FB),y
+  lda (LEVEL_LOW_BYTE),y
   and BITWISE
   beq .empty_space
   lda #WALL
@@ -118,11 +116,11 @@ load_level:
 
 .load_player:
   ldy #51
-  lda ($FB),y
+  lda (LEVEL_LOW_BYTE),y
   tax
   stx X_POS
   dey
-  lda ($FB),y
+  lda (LEVEL_LOW_BYTE),y
   tay
   sty Y_POS
   clc
@@ -132,11 +130,11 @@ load_level:
 
 .load_exit:
   ldy #53
-  lda ($FB),y
+  lda (LEVEL_LOW_BYTE),y
   tax
   stx EXIT_X
   dey
-  lda ($FB),y
+  lda (LEVEL_LOW_BYTE),y
   tay
   sty EXIT_Y
   clc

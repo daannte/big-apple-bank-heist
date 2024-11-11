@@ -8,33 +8,33 @@ load_level:
 
   ; Clear the level address before doing anything
   lda #0
-  sta $FB
-  sta $FC
+  sta LEVEL_LOW_BYTE
+  sta LEVEL_HIGH_BYTE
 
   lda CURRENT_LEVEL
   beq .load_level_address ; skip multiply if level is 0
-  sta $FB 
+  sta LEVEL_LOW_BYTE 
   lda #0
-  sta $FC 
+  sta LEVEL_HIGH_BYTE 
 
  ; Calculate the level address 
 .multiply:
   clc
-  lda $FC
+  lda LEVEL_HIGH_BYTE
   adc #LEVEL_SIZE
-  sta $FC
+  sta LEVEL_HIGH_BYTE
 
-  dec $FB
+  dec LEVEL_LOW_BYTE
   bne .multiply
 
 .load_level_address:
   clc
   lda #<level_data      ; Load base address low byte
-  adc $FC               ; Add offset
-  sta $FB               ; Store in zero page for indirect addressing
+  adc LEVEL_HIGH_BYTE               ; Add offset
+  sta LEVEL_LOW_BYTE               ; Store in zero page for indirect addressing
   lda #>level_data      ; Load base address high byte
   adc #0                ; Add carry if any
-  sta $FC               ; Store in zero page
+  sta LEVEL_HIGH_BYTE               ; Store in zero page
 
   lda PLAYER_LIVES
   tay
@@ -89,7 +89,7 @@ load_level:
   beq .end_loop_byte
   asl BITWISE
 .loop_byte:
-  lda ($FB),y
+  lda (LEVEL_LOW_BYTE),y
   and BITWISE
   beq .empty_space
   lda #WALL
@@ -118,11 +118,11 @@ load_level:
 
 .load_player:
   ldy #51
-  lda ($FB),y
+  lda (LEVEL_LOW_BYTE),y
   tax
   stx X_POS
   dey
-  lda ($FB),y
+  lda (LEVEL_LOW_BYTE),y
   tay
   sty Y_POS
   clc
@@ -132,11 +132,11 @@ load_level:
 
 .load_exit:
   ldy #53
-  lda ($FB),y
+  lda (LEVEL_LOW_BYTE),y
   tax
   stx EXIT_X
   dey
-  lda ($FB),y
+  lda (LEVEL_LOW_BYTE),y
   tay
   sty EXIT_Y
   clc

@@ -11,37 +11,35 @@ load_level:
   sta LEVEL_LOW_BYTE
   sta LEVEL_HIGH_BYTE
 
-  lda CURRENT_LEVEL
+  lda CURRENT_LEVEL       ; Load the level we are at
   beq .load_level_address ; skip multiply if level is 0
-  sta LEVEL_LOW_BYTE 
-  lda #0
-  sta LEVEL_HIGH_BYTE 
+  sta LEVEL_LOW_BYTE      ; Use the low byte as the counter
 
  ; Calculate the level address 
 .multiply:
-  clc
-  lda LEVEL_HIGH_BYTE
-  adc #LEVEL_SIZE
-  sta LEVEL_HIGH_BYTE
+  clc                     ; Clear carry to prepare for addition
+  lda LEVEL_HIGH_BYTE     ; Load the high byte
+  adc #LEVEL_SIZE         ; Add the level size
+  sta LEVEL_HIGH_BYTE     ; store the updated value into the high byte
 
-  dec LEVEL_LOW_BYTE
-  bne .multiply
+  dec LEVEL_LOW_BYTE      ; Decrement the multiply counter
+  bne .multiply           ; If not zero, keep multiplying
 
 .load_level_address:
   clc
-  lda #<level_data      ; Load base address low byte
-  adc LEVEL_HIGH_BYTE               ; Add offset
-  sta LEVEL_LOW_BYTE               ; Store in zero page for indirect addressing
-  lda #>level_data      ; Load base address high byte
-  adc #0                ; Add carry if any
-  sta LEVEL_HIGH_BYTE               ; Store in zero page
+  lda #<level_data        ; Load base address low byte
+  adc LEVEL_HIGH_BYTE     ; Add offset
+  sta LEVEL_LOW_BYTE      ; Low byte becomes indirect index addressing 
+  lda #>level_data        ; Load base address high byte
+  adc #0                  ; Add carry if any
+  sta LEVEL_HIGH_BYTE     ; Store in back in high byte 
 
   lda PLAYER_LIVES
   tay
   iny
 
-  lda #2              ; Set X to red
-  sta $0286           ; Store X into current color code address
+  lda #2                  ; Set X to red
+  sta $0286               ; Store X into current color code address
 .show_lives:
   lda #HEART_CHAR
   jsr CHROUT

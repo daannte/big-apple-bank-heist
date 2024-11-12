@@ -9,9 +9,17 @@
 comp_data
   incbin "titlescreen.zx02"
 
-level_data
+level_pointers
+  dc.w level_1
+  dc.w level_2
+  dc.w level_3
+
+level_1
   incbin "levels/level1.data"
+level_2
   incbin "levels/level2.data"
+level_3
+  incbin "levels/level3.data"
 
 start:
   jsr draw_titlescreen

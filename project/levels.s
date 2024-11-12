@@ -2,37 +2,17 @@
 load_level:
   lda #147              ; Load clear screen command
   jsr CHROUT            ; Print it
-  ldx #0
-  ldy #0
-  jsr PLOT
-
-  ; Clear the level address before doing anything
-  lda #0
-  sta LEVEL_LOW_BYTE
-  sta LEVEL_HIGH_BYTE
-
-  lda CURRENT_LEVEL       ; Load the level we are at
-  beq .load_level_address ; skip multiply if level is 0
-  sta LEVEL_LOW_BYTE      ; Use the low byte as the counter
-
- ; Calculate the level address 
-.multiply:
-  clc                     ; Clear carry to prepare for addition
-  lda LEVEL_HIGH_BYTE     ; Load the high byte
-  adc #LEVEL_SIZE         ; Add the level size
-  sta LEVEL_HIGH_BYTE     ; store the updated value into the high byte
-
-  dec LEVEL_LOW_BYTE      ; Decrement the multiply counter
-  bne .multiply           ; If not zero, keep multiplying
 
 .load_level_address:
-  clc
-  lda #<level_data        ; Load base address low byte
-  adc LEVEL_HIGH_BYTE     ; Add offset
-  sta LEVEL_LOW_BYTE      ; Low byte becomes indirect index addressing 
-  lda #>level_data        ; Load base address high byte
-  adc #0                  ; Add carry if any
-  sta LEVEL_HIGH_BYTE     ; Store in back in high byte 
+  ; Load level index
+  lda CURRENT_LEVEL
+  asl
+  tay
+
+  lda level_pointers,y
+  sta LEVEL_LOW_BYTE
+  lda level_pointers+1,y
+  sta LEVEL_HIGH_BYTE
 
   lda PLAYER_LIVES
   tay
@@ -142,6 +122,36 @@ load_level:
   lda #EXITDOOR
   jsr CHROUT
 
+.load_traps:
+  lda #54                   
+  sta TRAP_INDEX
+
+.load_next_trap:
+  ldy TRAP_INDEX
+
+  lda (LEVEL_LOW_BYTE),y    ; Load trap X position
+  beq .end_traps            ; If X position is 0, end of traps
+  pha                       ; Store X position in stack for later 
+
+  iny
+  lda (LEVEL_LOW_BYTE),y    ; Load trap Y position
+  tax                       ; Store Y position in X register
+
+  pla                       ; Pull X from stack
+  tay                       ; Store X position in Y register
+
+  clc
+  jsr PLOT
+  lda #TRAP
+  jsr CHROUT
+
+  ; Increment twice because traps take 2 bytes
+  inc TRAP_INDEX
+  inc TRAP_INDEX
+
+  jmp .load_next_trap
+
+.end_traps:
 .show_timer:
   ldx #0
   ldy #20

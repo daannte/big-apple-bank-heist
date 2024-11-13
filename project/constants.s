@@ -1,5 +1,5 @@
 ; CONSTANT values
-TIMERESET1  = #3
+TIMERESET1  = #2
 TIMERESET2  = #0
 TIMERESET3  = #0
 
@@ -17,23 +17,28 @@ ROBBER_VR_1 = #72
 ROBBER_VR_2 = #73
 
 WALL        = #74
-TRAP        = #75
-EXITDOOR    = #76
+EXITDOOR    = #75
 
-ASCII_0     = #77
-ASCII_1     = #78
-ASCII_2     = #79
-ASCII_3     = #80
-ASCII_4     = #81
-ASCII_5     = #82
-ASCII_6     = #83
-ASCII_7     = #84
-ASCII_8     = #85
-ASCII_9     = #86
+ASCII_0     = #76
+ASCII_1     = #77
+ASCII_2     = #78
+ASCII_3     = #79
+ASCII_4     = #80
+ASCII_5     = #81
+ASCII_6     = #82
+ASCII_7     = #83
+ASCII_8     = #84
+ASCII_9     = #85
 
-EMPTY_SPACE_CHAR  = #87
-HEART_CHAR        = #88
-TIMER_MAX_VALUE   = %01100000 ; binary-coded decimal. left nibble is tens, right nibble is ones
+VOLUME      = $900E
+SPKLOW      = $900A
+SPKMID      = $900B
+SPKHIH      = $900C
+SPKWHT      = $900D
+
+EMPTY_SPACE_CHAR  = #86
+HEART_CHAR        = #87
+TIMER_MAX_VALUE   = %00100101 ; binary-coded decimal. left nibble is tens, right nibble is ones
 
 GRAVITY_MAX_COOLDOWN = #10 ; in jiffies
 GRAVITY_JUMP_COOLDOWN = #30  ; in jiffies

@@ -22,12 +22,21 @@ level_3
   incbin "levels/level3.data"
 
 start:
-  jsr draw_titlescreen
-
-game:
+  lda #$80
+  sta $028A           ; Key repeats - needed for XVIC emulator
+  lda #$0F            ; Border Black
+  jsr setbg
+  lda #$F8            ; BG Black 
+  jsr setbg
+  ldx #1
+  stx $0286
   lda #147            ; Load clear screen command
   jsr CHROUT          ; Print it
 
+titlescreen:
+  jsr draw_titlescreen
+
+game:
   lda #0
   sta CURRENT_LEVEL   ; Set the current_level to the first
 
@@ -82,6 +91,7 @@ read_input:
   jsr gravity
   lda MOVING
   beq loop
+  
   jsr GETIN
   cmp #87
   beq w_key
@@ -121,6 +131,11 @@ space_key:
   jsr handle_lives
   rts
 
+setbg:
+  and SCREEN 
+  sta SCREEN
+  rts
+
 loop:
   lda X_POS
   cmp EXIT_X
@@ -156,8 +171,13 @@ game_over:
   include "movement.s"
   include "titlescreen.s"
   include "zx02.s"
+  include "music.s"
 
 ; -------------------
 
   org $1c00
   include "charset.s"
+
+  org $1d00
+  include "musicdata.s"
+

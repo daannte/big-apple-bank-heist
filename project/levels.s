@@ -2,16 +2,24 @@
 load_level:
   lda #147              ; Load clear screen command
   jsr CHROUT            ; Print it
-  ldx #0
-  ldy #0
-  jsr PLOT
+
+.load_level_address:
+  ; Load level index
+  lda CURRENT_LEVEL
+  asl
+  tay
+
+  lda level_pointers,y
+  sta LEVEL_LOW_BYTE
+  lda level_pointers+1,y
+  sta LEVEL_HIGH_BYTE
 
   lda PLAYER_LIVES
   tay
   iny
 
-  lda #2              ; Set X to red
-  sta $0286           ; Store X into current color code address
+  lda #2                  ; Set X to red
+  sta $0286               ; Store X into current color code address
 .show_lives:
   lda #HEART_CHAR
   jsr CHROUT
@@ -45,14 +53,13 @@ load_level:
   jmp .loop_byte
 
 .inc_char:
-  iny
-  tya
-  cmp #20
+  inx
+  cpx #20
   bne .inc_bitwise
   lda #WALL
   jsr CHROUT
   jsr CHROUT
-  ldy #0
+  ldx #0
 
 .inc_bitwise:
   lda BITWISE
@@ -60,7 +67,7 @@ load_level:
   beq .end_loop_byte
   asl BITWISE
 .loop_byte:
-  lda level1_data,x
+  lda (LEVEL_LOW_BYTE),y
   and BITWISE
   beq .empty_space
   lda #WALL
@@ -73,9 +80,8 @@ load_level:
   jmp .inc_char
 
 .end_loop_byte:
-  inx
-  txa
-  cmp #50
+  iny
+  cpy #50
   bne .load_character
   ldy #0
 
@@ -89,12 +95,12 @@ load_level:
   sta $1FF9
 
 .load_player:
-  ldx #51
-  lda level1_data,x
+  ldy #51
+  lda (LEVEL_LOW_BYTE),y
   tax
   stx X_POS
-  ldy #50
-  lda level1_data,y
+  dey
+  lda (LEVEL_LOW_BYTE),y
   tay
   sty Y_POS
   clc
@@ -103,12 +109,12 @@ load_level:
   jsr CHROUT
 
 .load_exit:
-  ldx #53
-  lda level1_data,x
+  ldy #53
+  lda (LEVEL_LOW_BYTE),y
   tax
   stx EXIT_X
-  ldy #52
-  lda level1_data,y
+  dey
+  lda (LEVEL_LOW_BYTE),y
   tay
   sty EXIT_Y
   clc
@@ -116,6 +122,36 @@ load_level:
   lda #EXITDOOR
   jsr CHROUT
 
+.load_traps:
+  lda #54                   
+  sta TRAP_INDEX
+
+.load_next_trap:
+  ldy TRAP_INDEX
+
+  lda (LEVEL_LOW_BYTE),y    ; Load trap X position
+  beq .end_traps            ; If X position is 0, end of traps
+  pha                       ; Store X position in stack for later 
+
+  iny
+  lda (LEVEL_LOW_BYTE),y    ; Load trap Y position
+  tax                       ; Store Y position in X register
+
+  pla                       ; Pull X from stack
+  tay                       ; Store X position in Y register
+
+  clc
+  jsr PLOT
+  lda #TRAP
+  jsr CHROUT
+
+  ; Increment twice because traps take 2 bytes
+  inc TRAP_INDEX
+  inc TRAP_INDEX
+
+  jmp .load_next_trap
+
+.end_traps:
 .show_timer:
   ldx #0
   ldy #20

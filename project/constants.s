@@ -43,6 +43,9 @@ TIMER_MAX_VALUE   = %00100101 ; binary-coded decimal. left nibble is tens, right
 GRAVITY_MAX_COOLDOWN = #10 ; in jiffies
 GRAVITY_JUMP_COOLDOWN = #30  ; in jiffies
 
+LEVEL_SIZE = #55
+MAX_LEVELS = #3
+
 ; MEMORY locations
 CHROUT  = $FFD2
 PLOT    = $FFF0

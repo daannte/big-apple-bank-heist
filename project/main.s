@@ -9,8 +9,17 @@
 comp_data
   incbin "titlescreen.zx02"
 
-level1_data
-  incbin "level1.data"
+level_pointers
+  dc.w level_1
+  dc.w level_2
+  dc.w level_3
+
+level_1
+  incbin "levels/level1.data"
+level_2
+  incbin "levels/level2.data"
+level_3
+  incbin "levels/level3.data"
 
 start:
   lda #$80
@@ -28,6 +37,9 @@ titlescreen:
   jsr draw_titlescreen
 
 game:
+  lda #0
+  sta CURRENT_LEVEL   ; Set the current_level to the first
+
   lda #2
   sta PLAYER_LIVES    ; 2 is interpreted as 3 lives because of how BNE works
 
@@ -131,15 +143,25 @@ loop:
   lda Y_POS
   cmp EXIT_Y
   bne not_exited
-  lda #0
-  sta PLAYER_LIVES
-  jmp space_key
+  jmp increment_level
 
 not_exited:
   jsr increment_clock
   cmp #0
   bne space_key
   jmp read_input
+
+increment_level:
+  inc CURRENT_LEVEL   ; Increment CURRENT_LEVEL
+  lda CURRENT_LEVEL
+  cmp #MAX_LEVELS     ; If max level reached, render next level, else die
+  beq game_over
+  jmp init
+game_over:
+  lda #0
+  sta PLAYER_LIVES
+  jmp space_key
+
 
 ; -------- SUBROUTINES --------
 
@@ -158,3 +180,4 @@ not_exited:
 
   org $1d00
   include "musicdata.s"
+

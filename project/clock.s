@@ -6,13 +6,13 @@ toAscii:
   lsr
   lsr
   clc
-  adc #76
+  adc #ASCII_0
   jsr CHROUT
 
   lda TIMER_VALUE
   and #15
   clc
-  adc #76
+  adc #ASCII_0
   jsr CHROUT
   
   rts

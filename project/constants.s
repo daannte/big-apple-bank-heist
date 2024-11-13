@@ -17,18 +17,19 @@ ROBBER_VR_1 = #72
 ROBBER_VR_2 = #73
 
 WALL        = #74
-EXITDOOR    = #75
+TRAP        = #75
+EXITDOOR    = #76
 
-ASCII_0     = #76
-ASCII_1     = #77
-ASCII_2     = #78
-ASCII_3     = #79
-ASCII_4     = #80
-ASCII_5     = #81
-ASCII_6     = #82
-ASCII_7     = #83
-ASCII_8     = #84
-ASCII_9     = #85
+ASCII_0     = #77
+ASCII_1     = #78
+ASCII_2     = #79
+ASCII_3     = #80
+ASCII_4     = #81
+ASCII_5     = #82
+ASCII_6     = #83
+ASCII_7     = #84
+ASCII_8     = #85
+ASCII_9     = #86
 
 VOLUME      = $900E
 SPKLOW      = $900A

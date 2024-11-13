@@ -13,32 +13,21 @@ level1_data
   incbin "level1.data"
 
 start:
-  ldx #0              ; Set X to black
-  lda SCREEN          ; Load the screen colour address
-  and	#$0F            ; Reset the 4 background bits
-  stx $1001           ; Store X into the user basic area memory
-  ora $1001           ; Combine new background color with the screen
-  sta SCREEN          ; Store new colour into the screen colour address
-
-border:
-  ldx #0              ; Set X to black
-  lda SCREEN          ; Load the screen colour address
-  and	#$F8            ; Reset the 3 border bits
-  stx $1001           ; Store X into the user basic area memory
-  ora $1001           ; Combine new border colour with the screen 
-  sta SCREEN          ; Store new colour into the screen colour address
-
-textcolor:
-  ldx #1              ; Set X to white
-  stx $0286           ; Store X into current color code address
+  lda #$80
+  sta $028A           ; Key repeats - needed for XVIC emulator
+  lda #$0F            ; Border Black
+  jsr setbg
+  lda #$F8            ; BG Black 
+  jsr setbg
+  ldx #1
+  stx $0286
+  lda #147            ; Load clear screen command
+  jsr CHROUT          ; Print it
 
 titlescreen:
   jsr draw_titlescreen
 
 game:
-  lda #147            ; Load clear screen command
-  jsr CHROUT          ; Print it
-
   lda #2
   sta PLAYER_LIVES    ; 2 is interpreted as 3 lives because of how BNE works
 
@@ -90,6 +79,7 @@ read_input:
   jsr gravity
   lda MOVING
   beq loop
+  
   jsr GETIN
   cmp #87
   beq w_key
@@ -129,6 +119,11 @@ space_key:
   jsr handle_lives
   rts
 
+setbg:
+  and SCREEN 
+  sta SCREEN
+  rts
+
 loop:
   lda X_POS
   cmp EXIT_X
@@ -154,8 +149,12 @@ not_exited:
   include "movement.s"
   include "titlescreen.s"
   include "zx02.s"
+  include "music.s"
 
 ; -------------------
 
   org $1c00
   include "charset.s"
+
+  org $1d00
+  include "musicdata.s"

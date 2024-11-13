@@ -1,5 +1,5 @@
 ; CONSTANT values
-TIMERESET1  = #3
+TIMERESET1  = #2
 TIMERESET2  = #0
 TIMERESET3  = #0
 
@@ -29,6 +29,12 @@ ASCII_6     = #82
 ASCII_7     = #83
 ASCII_8     = #84
 ASCII_9     = #85
+
+VOLUME      = $900E
+SPKLOW      = $900A
+SPKMID      = $900B
+SPKHIH      = $900C
+SPKWHT      = $900D
 
 EMPTY_SPACE_CHAR  = #86
 HEART_CHAR        = #87

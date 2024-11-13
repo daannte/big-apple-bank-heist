@@ -17,9 +17,13 @@ draw_titlescreen:
 .decomp:
   jsr full_decomp
 
+play_music:
+  jsr musicinit
+  jmp end
+
 title_input_loop:
-  jsr GETIN
-  cmp #00               ; Keep looping until we get a value
+  ;jsr GETIN             ; JIN - input check done in music
+  ;cmp #00               ; Keep looping until we get a value
   beq title_input_loop
 
 end:

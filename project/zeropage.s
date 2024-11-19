@@ -21,10 +21,12 @@ BITWISE               ds.b  1   ; $10 Bitmask for level decompression
 CAN_JUMP              ds.b  1   ; $11 0 = can't jump, 1 = can jump
 TIMER_VALUE           ds.b  1   ; $12 Timer value
 GRAVITY_COOLDOWN      ds.b  1   ; $13 Cooldown for gravity
-CURRENT_LEVEL         ds.b  1   ; Current level number
-LEVEL_LOW_BYTE        ds.b  1   ; Low byte of level data offset
-LEVEL_HIGH_BYTE       ds.b  1   ; High byte of level data offset
-TRAP_INDEX            ds.b  1   ; Keeps track of the trap index 
+CURRENT_LEVEL         ds.b  1   ; $14 Current level number
+LEVEL_LOW_BYTE        ds.b  1   ; $15 Low byte of level data offset
+LEVEL_HIGH_BYTE       ds.b  1   ; $16 High byte of level data offset
+TRAP_INDEX            ds.b  1   ; $17 Keeps track of the trap index 
+SCORE1                ds.b  1   ; $18 Keeps track of the last 2 digits of the score  (xx00-xx99)
+SCORE2                ds.b  1   ; $19 Keeps track of the first 2 digits of the score (00xx-99xx)
 
 ; zx02 variables
 offset_hi             ds.b  1   ; Offset high byte

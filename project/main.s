@@ -53,9 +53,8 @@ setup:
 init:
   lda #0
   sta MOVING
-
-  lda #0
   sta JIFFIES_SINCE_SECOND
+  sta SCORE1
 
   lda #GRAVITY_MAX_COOLDOWN
   sta GRAVITY_COOLDOWN
@@ -149,12 +148,20 @@ not_exited:
   jmp read_input
 
 increment_level:
+  lda TIMER_VALUE
+  lsr
+  clc
+  adc SCORE1
+  sta SCORE1
+  
   inc CURRENT_LEVEL   ; Increment CURRENT_LEVEL
   lda CURRENT_LEVEL
   cmp #MAX_LEVELS     ; If max level reached, render next level, else die
-  beq game_over
+  beq game_win
   jmp init
-game_over:
+
+game_win:
+  jsr load_endscreen
   lda #0
   sta PLAYER_LIVES
   jmp space_key
@@ -163,6 +170,7 @@ game_over:
 ; -------- SUBROUTINES --------
 
   include "clock.s"
+  include "endscreen.s"
   include "levels.s"
   include "lives.s"
   include "movement.s"

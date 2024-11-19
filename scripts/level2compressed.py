@@ -12,7 +12,8 @@ The data in each level is stored as a 20x20 grid of characters. Static walls are
 Compression will be handled in the following manner:
   - A 50 byte blob will represent the positions of the walls in the level, where each bit determines if a wall is present in that area.
   - After the 50 byte blob, the player and exit positions will be stored as two bytes each, where the first byte is the x position and the second byte is the y position.
-  - After the player and exit positions, the remaining bytes will be used to store the positions of special objects such as traps and guards.
+  - After the player and exit positions, a single byte will be used to store the timer value for the level.
+  - The remaining bytes will be used to store the positions of special objects such as traps and guards.
   - The end of the compressed data will be marked by a 0 byte.
 """
 
@@ -113,6 +114,20 @@ def compress(data: list[list[str]]):
     compressed_data.append(exit_x)
     compressed_data.append(exit_y)
 
+    # Add timer value
+    timer = int(sys.argv[1])
+    if (timer < 1) or (timer > 99):
+        print("Invalid timer value. The timer value must be between 1 and 99.")
+        sys.exit(1)
+    
+    timer_encoded = 0
+    timer_encoded |= (timer % 10) & 0b1111
+    timer_encoded |= ((timer // 10) << 4) & 0b11110000
+
+    print(f"Timer: {timer} -> {timer_encoded} ({timer_encoded:08b})")
+
+    compressed_data.append(timer_encoded)
+
     for trap_x, trap_y in traps:
         compressed_data.append(trap_x)
         compressed_data.append(trap_y)
@@ -178,8 +193,12 @@ def decompress(compressed_data: list[int]):
     data[player_y - 2][player_x - 1] = "P"
     data[exit_y - 2][exit_x - 1] = "E"
 
+    # Decompress timer
+    timer_encoded = compressed_data[54]
+    timer = (timer_encoded & 0b1111) + ((timer_encoded & 0b11110000) >> 4) * 10
+
     # Decompress trap positions from remaining bytes
-    trap_idx = 54
+    trap_idx = 55
     while trap_idx < len(compressed_data) - 1:
         trap_x = compressed_data[trap_idx]
         trap_y = compressed_data[trap_idx + 1]
@@ -194,12 +213,14 @@ def decompress(compressed_data: list[int]):
         data[trap_y - 2][trap_x - 1] = "T"
         trap_idx += 2
 
+    print(f"Timer: {timer} ({timer_encoded:08b})")
+
     return data
 
 
 def main():
     data = []
-    if len(sys.argv) == 2:
+    if len(sys.argv) == 3:
         data = sys.stdin.readlines()
         if not data:
             print("No data provided. Please provide level data to compress.")
@@ -208,14 +229,14 @@ def main():
         for i in range(len(data)):
             data[i] = data[i].strip("\n")
         [list(i) for i in data]
-    elif len(sys.argv) == 3:
-        with open(sys.argv[1], "r") as f:
+    elif len(sys.argv) == 4:
+        with open(sys.argv[3], "r") as f:
             data = f.readlines()
             for i in range(len(data)):
                 data[i] = data[i].strip("\n")
             [list(i) for i in data]
     else:
-        print("Usage: level2compressed.py <outfile> [infile (as parameter or stdin)]")
+        print("Usage: level2compressed.py <level_timer> <outfile> [infile (as parameter or stdin)]")
         sys.exit(1)
 
     # if the data is empty, exit
@@ -230,7 +251,7 @@ def main():
     decompressed_data = decompress(compressed_data)
     [print(i) for i in decompressed_data]
 
-    outfile = sys.argv[1]
+    outfile = sys.argv[2]
 
     # check if file already exists
     if os.path.exists(outfile):

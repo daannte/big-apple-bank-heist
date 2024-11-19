@@ -43,9 +43,6 @@ game:
   lda #2
   sta PLAYER_LIVES    ; 2 is interpreted as 3 lives because of how BNE works
 
-  lda #TIMER_MAX_VALUE
-  sta TIMER_VALUE
-
   lda JIFFY1
   sta LASTJIFFY
 

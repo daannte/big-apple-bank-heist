@@ -122,8 +122,13 @@ load_level:
   lda #EXITDOOR
   jsr CHROUT
 
+.load_timer
+  ldy #54
+  lda (LEVEL_LOW_BYTE),y
+  sta TIMER_VALUE
+
 .load_traps:
-  lda #54                   
+  lda #55                   
   sta TRAP_INDEX
 
 .load_next_trap:

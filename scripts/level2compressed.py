@@ -22,6 +22,7 @@ CHAR_EXIT = "E"
 CHAR_WALL = "#"
 CHAR_EMPTY = " "
 CHAR_TRAP = "T"
+CHAR_GUARD = "G"
 
 
 def compress(data: list[list[str]]):
@@ -43,14 +44,22 @@ def compress(data: list[list[str]]):
     exit_x = -1
     exit_y = -1
     traps = []
+    guards = []
 
     for row_idx in range(20):
         row = data[row_idx]
         for char_idx in range(20):
             char = row[char_idx]
-            if char not in [CHAR_PLAYER, CHAR_EXIT, CHAR_WALL, CHAR_EMPTY, CHAR_TRAP]:
+            if char not in [
+                CHAR_PLAYER,
+                CHAR_EXIT,
+                CHAR_WALL,
+                CHAR_EMPTY,
+                CHAR_TRAP,
+                CHAR_GUARD,
+            ]:
                 print(
-                    f"Invalid character {char} found at {row_idx},{char_idx}. Only the following characters are allowed: #, P, E, T, and space."
+                    f"Invalid character {char} found at {row_idx},{char_idx}. Only the following characters are allowed: #, P, E, T, G, and space."
                 )
                 sys.exit(1)
 
@@ -80,9 +89,12 @@ def compress(data: list[list[str]]):
                 elif char == CHAR_TRAP:
                     traps.append((char_idx + 1, row_idx + 2))
 
+                elif char == CHAR_GUARD:
+                    guards.append((char_idx + 1, row_idx + 2))
+
                 elif char != CHAR_EMPTY:
                     print(
-                        f"Invalid character {char} found at {row_idx},{char_idx}. Only the following characters are allowed: #, P, E, T and space."
+                        f"Invalid character {char} found at {row_idx},{char_idx}. Only the following characters are allowed: #, P, E, T, G and space."
                     )
                     sys.exit(1)
 
@@ -119,7 +131,7 @@ def compress(data: list[list[str]]):
     if (timer < 1) or (timer > 99):
         print("Invalid timer value. The timer value must be between 1 and 99.")
         sys.exit(1)
-    
+
     timer_encoded = 0
     timer_encoded |= (timer % 10) & 0b1111
     timer_encoded |= ((timer // 10) << 4) & 0b11110000
@@ -131,6 +143,12 @@ def compress(data: list[list[str]]):
     for trap_x, trap_y in traps:
         compressed_data.append(trap_x)
         compressed_data.append(trap_y)
+
+    compressed_data.append(0)  # end of traps marker
+
+    for guard_x, guard_y in guards:
+        compressed_data.append(guard_x)
+        compressed_data.append(guard_y)
 
     compressed_data.append(0)  # end of compressed data marker
 
@@ -198,10 +216,15 @@ def decompress(compressed_data: list[int]):
     timer = (timer_encoded & 0b1111) + ((timer_encoded & 0b11110000) >> 4) * 10
 
     # Decompress trap positions from remaining bytes
-    trap_idx = 55
-    while trap_idx < len(compressed_data) - 1:
-        trap_x = compressed_data[trap_idx]
-        trap_y = compressed_data[trap_idx + 1]
+    i = 55
+    while i < len(compressed_data):
+        trap_x = compressed_data[i]
+
+        if trap_x == 0:
+            i += 1
+            break
+
+        trap_y = compressed_data[i + 1]
 
         # Ensure valid trap coordinates within bounds
         if not (1 <= trap_x <= 20 and 2 <= trap_y <= 21):
@@ -211,7 +234,26 @@ def decompress(compressed_data: list[int]):
             sys.exit(1)
 
         data[trap_y - 2][trap_x - 1] = "T"
-        trap_idx += 2
+        i += 2
+
+    # Decompress guards
+    while i < len(compressed_data):
+        guard_x = compressed_data[i]
+
+        if guard_x == 0:
+            break
+
+        guard_y = compressed_data[i + 1]
+
+        # Ensure valid trap coordinates within bounds
+        if not (1 <= guard_x <= 20 and 2 <= guard_y <= 21):
+            print(
+                f"Invalid trap position ({guard_x}, {guard_y}). Must be within level bounds."
+            )
+            sys.exit(1)
+
+        data[guard_y - 2][guard_x - 1] = "G"
+        i += 2
 
     print(f"Timer: {timer} ({timer_encoded:08b})")
 
@@ -236,7 +278,9 @@ def main():
                 data[i] = data[i].strip("\n")
             [list(i) for i in data]
     else:
-        print("Usage: level2compressed.py <level_timer> <outfile> [infile (as parameter or stdin)]")
+        print(
+            "Usage: level2compressed.py <level_timer> <outfile> [infile (as parameter or stdin)]"
+        )
         sys.exit(1)
 
     # if the data is empty, exit

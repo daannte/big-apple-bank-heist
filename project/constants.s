@@ -46,6 +46,7 @@ CUSTOM_ASCII_9     = #85
 EMPTY_SPACE_CHAR  = #86
 HEART_CHAR        = #87
 TRAP              = #88
+GUARD             = #89
 
 GRAVITY_MAX_COOLDOWN = #10 ; in jiffies
 GRAVITY_JUMP_COOLDOWN = #30  ; in jiffies

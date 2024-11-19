@@ -135,7 +135,7 @@ load_level:
   ldy TRAP_INDEX
 
   lda (LEVEL_LOW_BYTE),y    ; Load trap X position
-  beq .end_traps            ; If X position is 0, end of traps
+  beq .load_guards          ; If X position is 0, end of traps
   pha                       ; Store X position in stack for later 
 
   iny
@@ -156,7 +156,35 @@ load_level:
 
   jmp .load_next_trap
 
-.end_traps:
+.load_guards:
+  iny
+  sty GUARD_INDEX
+
+.load_next_guard:
+  ldy GUARD_INDEX
+
+  lda (LEVEL_LOW_BYTE),y    ; Load trap X position
+  beq .show_timer           ; If X position is 0, end of traps
+  pha                       ; Store X position in stack for later 
+
+  iny
+  lda (LEVEL_LOW_BYTE),y    ; Load trap Y position
+  tax                       ; Store Y position in X register
+
+  pla                       ; Pull X from stack
+  tay                       ; Store X position in Y register
+
+  clc
+  jsr PLOT
+  lda #GUARD
+  jsr CHROUT
+
+  ; Increment twice because guards take 2 bytes
+  inc GUARD_INDEX
+  inc GUARD_INDEX
+
+  jmp .load_next_guard
+
 .show_timer:
   ldx #0
   ldy #20

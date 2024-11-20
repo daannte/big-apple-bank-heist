@@ -1,18 +1,18 @@
   subroutine
-toAscii:
+print_bcd:
   lda TIMER_VALUE
   lsr
   lsr
   lsr
   lsr
   clc
-  adc #ASCII_0
+  adc ASCII_OFFSET
   jsr CHROUT
 
   lda TIMER_VALUE
   and #15
   clc
-  adc #ASCII_0
+  adc ASCII_OFFSET
   jsr CHROUT
   
   rts
@@ -38,6 +38,8 @@ increment_clock:
   ldy #20
   clc
   jsr PLOT
+
+.dec_level_timer:
   lda TIMER_VALUE
   beq .times_up
   and #15
@@ -50,8 +52,8 @@ increment_clock:
 
 .dec_ones:
   dec TIMER_VALUE
-
-  jsr toAscii
+  jsr print_bcd
+  
   ldx X_POS
   ldy Y_POS
   clc

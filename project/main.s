@@ -39,6 +39,8 @@ titlescreen:
 game:
   lda #0
   sta CURRENT_LEVEL   ; Set the current_level to the first
+  sta SCORE1
+  sta SCORE2
 
   lda #2
   sta PLAYER_LIVES    ; 2 is interpreted as 3 lives because of how BNE works
@@ -46,15 +48,14 @@ game:
   lda JIFFY1
   sta LASTJIFFY
 
-setup:
+init:
+  lda #CUSTOM_ASCII_0
+  sta ASCII_OFFSET
   lda #$ff              ; loading 255 into $9005 makes the vic look at $1c00 for characters instead
   sta CHARSET             ; the above can be found on pages 84
-
-init:
   lda #0
   sta MOVING
   sta JIFFIES_SINCE_SECOND
-  sta SCORE1
 
   lda #GRAVITY_MAX_COOLDOWN
   sta GRAVITY_COOLDOWN
@@ -148,16 +149,18 @@ not_exited:
   jmp read_input
 
 increment_level:
-  lda TIMER_VALUE
-  lsr
-  clc
-  adc SCORE1
-  sta SCORE1
-  
+  jsr add_score
   inc CURRENT_LEVEL   ; Increment CURRENT_LEVEL
   lda CURRENT_LEVEL
   cmp #MAX_LEVELS     ; If max level reached, render next level, else die
   beq game_win
+  lda #ASCII_0
+  sta ASCII_OFFSET
+  lda #$f0
+  sta CHARSET
+  lda #147
+  jsr CHROUT
+  jsr print_score
   jmp init
 
 game_win:

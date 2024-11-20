@@ -63,7 +63,7 @@ tickT
     ldy #9
     clc
     jsr PLOT
-    jsr toAscii
+    jsr print_bcd
     jmp tickT
 
 ; Subroutines
@@ -85,7 +85,7 @@ jiffySec
     dec tMaxV   
     rts
 
-toAscii
+print_bcd
     lda tMaxV
     ldx #0
 .tenDigit

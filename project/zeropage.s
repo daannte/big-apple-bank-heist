@@ -27,6 +27,7 @@ LEVEL_HIGH_BYTE       ds.b  1   ; $16 High byte of level data offset
 TRAP_INDEX            ds.b  1   ; $17 Keeps track of the trap index 
 SCORE1                ds.b  1   ; $18 Keeps track of the last 2 digits of the score  (xx00-xx99)
 SCORE2                ds.b  1   ; $19 Keeps track of the first 2 digits of the score (00xx-99xx)
+ASCII_OFFSET          ds.b  1   ; $1A Offset for ASCII characters (default or custom)
 
 ; zx02 variables
 offset_hi             ds.b  1   ; Offset high byte

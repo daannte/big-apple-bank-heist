@@ -163,15 +163,15 @@ load_level:
 .load_next_guard:
   ldy GUARD_INDEX
 
-  lda (LEVEL_LOW_BYTE),y    ; Load trap X position
-  beq .show_timer           ; If X position is 0, end of traps
+  lda (LEVEL_LOW_BYTE),y    ; Load guard X position
+  beq .show_timer           ; If X position is 0, end of guards
   pha                       ; Store X position in stack for later 
 
   ldx NUM_OF_GUARDS         ; Get the current guard
   sta GUARDS_X_POS,x        ; Store the guard's X position
 
   iny
-  lda (LEVEL_LOW_BYTE),y    ; Load trap Y position
+  lda (LEVEL_LOW_BYTE),y    ; Load guard Y position
   sta GUARDS_Y_POS,x        ; Store the guard's Y position
   tax                       ; Store Y position in X register
 

@@ -82,6 +82,7 @@ init:
   jmp init
 
 main_loop:
+  jsr move_guards
 read_input:
   lda MOVING
   beq loop
@@ -146,7 +147,7 @@ not_exited:
   jsr increment_clock
   cmp #0
   bne space_key
-  jmp read_input
+  jmp main_loop
 
 increment_level:
   jsr add_score
@@ -177,6 +178,7 @@ game_win:
   include "levels.s"
   include "lives.s"
   include "movement.s"
+  include "guards.s"
   include "titlescreen.s"
   include "zx02.s"
   include "music.s"

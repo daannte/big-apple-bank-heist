@@ -21,16 +21,27 @@ EXITDOOR    = #75
 
 ;;;TRAP     =
 
-ASCII_0     = #76
-ASCII_1     = #77
-ASCII_2     = #78
-ASCII_3     = #79
-ASCII_4     = #80
-ASCII_5     = #81
-ASCII_6     = #82
-ASCII_7     = #83
-ASCII_8     = #84
-ASCII_9     = #85
+ASCII_0           = #48
+ASCII_1           = #49
+ASCII_2           = #50
+ASCII_3           = #51
+ASCII_4           = #52
+ASCII_5           = #53
+ASCII_6           = #54
+ASCII_7           = #55
+ASCII_8           = #56
+ASCII_9           = #57
+
+CUSTOM_ASCII_0     = #76
+CUSTOM_ASCII_1     = #77
+CUSTOM_ASCII_2     = #78
+CUSTOM_ASCII_3     = #79
+CUSTOM_ASCII_4     = #80
+CUSTOM_ASCII_5     = #81
+CUSTOM_ASCII_6     = #82
+CUSTOM_ASCII_7     = #83
+CUSTOM_ASCII_8     = #84
+CUSTOM_ASCII_9     = #85
 
 EMPTY_SPACE_CHAR  = #86
 HEART_CHAR        = #87

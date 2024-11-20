@@ -162,7 +162,7 @@ load_level:
   ldy #20
   clc
   jsr PLOT
-  jsr toAscii
+  jsr print_bcd
 
 .set_position:
   ldx X_POS

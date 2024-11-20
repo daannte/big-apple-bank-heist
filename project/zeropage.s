@@ -28,6 +28,11 @@ TRAP_INDEX            ds.b  1   ; $17 Keeps track of the trap index
 SCORE1                ds.b  1   ; $18 Keeps track of the last 2 digits of the score  (xx00-xx99)
 SCORE2                ds.b  1   ; $19 Keeps track of the first 2 digits of the score (00xx-99xx)
 ASCII_OFFSET          ds.b  1   ; $1A Offset for ASCII characters (default or custom)
+GUARD_INDEX           ds.b  1   ; $1B Keeps track of the guard index
+NUM_OF_GUARDS         ds.b  1   ; $1C Keeps track of the amount of guards per level
+GUARDS_X_POS          ds.b  5   ; $1D-$21 Keeps track of the guards X position
+GUARDS_Y_POS          ds.b  5   ; $22-$26 Keeps track of the guards Y position
+GUARDS_DIR            ds.b  5   ; $27-$2B Keeps track of the guards direction
 
 ; zx02 variables
 offset_hi             ds.b  1   ; Offset high byte

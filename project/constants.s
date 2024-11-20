@@ -19,8 +19,6 @@ ROBBER_VR_2 = #73
 WALL        = #74
 EXITDOOR    = #75
 
-;;;TRAP     =
-
 ASCII_0           = #48
 ASCII_1           = #49
 ASCII_2           = #50

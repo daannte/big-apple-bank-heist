@@ -41,6 +41,7 @@ game:
   sta CURRENT_LEVEL   ; Set the current_level to the first
   sta SCORE1
   sta SCORE2
+  sta NUM_OF_GUARDS
 
   lda #2
   sta PLAYER_LIVES    ; 2 is interpreted as 3 lives because of how BNE works
@@ -82,7 +83,6 @@ init:
   jmp init
 
 main_loop:
-  jsr move_guards
 read_input:
   lda MOVING
   beq loop
@@ -144,6 +144,7 @@ loop:
   jmp increment_level
 
 not_exited:
+  jsr move_guards
   jsr increment_clock
   cmp #0
   bne space_key

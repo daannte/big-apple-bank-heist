@@ -17,6 +17,7 @@ LASTJIFFY             ds.b  1   ; $0C stores last known jiffy
 TIMER1                ds.b  1   ; $0D n * 256^0
 TIMER2                ds.b  1   ; $0E n * 256^1
 TIMER3                ds.b  1   ; $0F n * 256^2
+MINEABLE              ds.b  1   ; $10 MINEABLE
 BITWISE               ds.b  1   ; $10 Bitmask for level decompression
 CAN_JUMP              ds.b  1   ; $11 0 = can't jump, 1 = can jump
 TIMER_VALUE           ds.b  1   ; $12 Timer value

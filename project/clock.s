@@ -42,16 +42,17 @@ increment_clock:
 .dec_level_timer:
   lda TIMER_VALUE
   beq .times_up
-  and #15
-  cmp #0
-  bne .dec_ones
-  lda TIMER_VALUE
-  sec
-  sbc #6
-  sta TIMER_VALUE
+  ;remember to change this back -ramiro
+  ; and #15
+  ; cmp #0
+  ; bne .dec_ones
+  ; lda TIMER_VALUE
+  ; sec
+  ; sbc #6
+  ; sta TIMER_VALUE
 
 .dec_ones:
-  dec TIMER_VALUE
+  ; dec TIMER_VALUE
   jsr print_bcd
   
   ldx X_POS

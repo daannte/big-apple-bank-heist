@@ -193,6 +193,12 @@ move_down:
 ; -------------------
   subroutine
 move_right:
+  lda #1
+  sta HORIZONTAL
+
+  lda #0
+  sta MOVING
+
   lda Y_POS
   cmp #20
   beq .end_move_right
@@ -201,9 +207,6 @@ move_right:
   dec Y_POS
   cmp #1
   beq .end_move_right
-
-  lda #1
-  sta HORIZONTAL
 
   lda #ROBBER_R_1
   jsr CHROUT
@@ -220,16 +223,21 @@ move_right:
 
   clc
   jsr PLOT
-  lda #0
-  sta MOVING
   lda #TIMERESET1
   sta TIMER1
 
 .end_move_right:
   rts
+
 ; -------------------
   subroutine
 move_left:
+  lda #0
+  sta HORIZONTAL
+
+  lda #0
+  sta MOVING
+
   lda Y_POS
   cmp #1
   beq .end_move_left
@@ -238,9 +246,6 @@ move_left:
   inc Y_POS
   cmp #1
   beq .end_move_left
-
-  lda #0
-  sta HORIZONTAL
 
   lda #ROBBER_L_2
   jsr CHROUT
@@ -257,13 +262,12 @@ move_left:
 
   clc
   jsr PLOT
-  lda #0
-  sta MOVING
   lda #TIMERESET1
   sta TIMER1
 
 .end_move_left:
   rts
+
 ; -------------------
   subroutine
 gravity:

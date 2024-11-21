@@ -100,6 +100,8 @@ read_input:
   beq s_key
   cmp #32
   beq space_key
+  cmp #69
+  beq e_key
   jmp loop
 
 w_key:
@@ -122,6 +124,10 @@ d_key:
 
 s_key:
   jsr move_down
+  jmp loop
+
+e_key:
+  jsr swing_pickaxe
   jmp loop
 
 space_key:
@@ -180,6 +186,7 @@ game_win:
   include "titlescreen.s"
   include "zx02.s"
   include "music.s"
+  include "pickaxe.s"
 
 ; -------------------
 
@@ -188,4 +195,3 @@ game_win:
 
   org $1d00
   include "musicdata.s"
-

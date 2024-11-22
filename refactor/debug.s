@@ -1,6 +1,6 @@
 ; debug.s
 ; Subroutines to test features
-
+    subroutine
 ; Subroutine : Test Sprites
 ; Description : Loads sprites from charset to test sprites
 test_sprites:
@@ -13,3 +13,8 @@ test_sprites:
     bne .test_sprites_loop
     rts
 
+
+; Subroutine : Test Level Loader
+; Description : Draw Level Borders
+test_level:
+    jsr load_level

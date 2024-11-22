@@ -17,8 +17,27 @@ handle_movement:
     beq move_left
     cmp #68                     ; "D"
     beq move_right 
+    cmp #32                     ; "<SPACE>"
+    beq move_action             
     rts
 
 ; Subroutine : Move Up
 ; Description : 
 move_up:
+
+; Subroutine : Move Down
+; Description : 
+move_down:
+
+; Subroutine : Move Left
+; Description : 
+move_left:
+
+; Subroutine : Move Right
+; Description : 
+move_right:
+
+; Subroutine : Action
+; Description : Item usage: Loads from CURRENT_ITEM(ZP) and calls item use subroutine
+move_action:
+

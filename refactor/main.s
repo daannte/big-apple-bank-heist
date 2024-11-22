@@ -8,18 +8,30 @@
     org $1001
     include "stub.s"
 
+level_pointers:
+    dc.w level_1
+
+level_1
+    incbin "levels/level1.data"
+
+
 start:
-    jsr clearSCR                    ; Clear Screen and set BG color
-    jsr loadChars                   ; Load Custom Charset
+    jsr clear_scr                  ; Clear Screen and set BG color
+    jsr load_chars                 ; Load Custom Charset
+
+init:
+    lda #0
+    sta CURRENT_LEVEL
 
 game:
-    jsr handle_input
-    jsr update_game_state
+    jsr test_level
+    ;jsr handle_input
+    ;jsr update_game_state
+    ;jsr render_game
+    ;jsr handle_timing
 
 loop:
     jmp loop
-
-
 
 ; -------- SUBROUTINES ---------
 
@@ -34,6 +46,8 @@ update_game_state:
     include "debug.s"               ; debugging subroutines
     include "utility.s"
     include "control.s"
+    include "movement.s"
+    include "render.s"
 
 ; ---- Memory Specific Data ----
 

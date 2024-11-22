@@ -1,4 +1,8 @@
+; utility.s
+; Reused subroutines to perform set up, clear, and etc.
+
     subroutine
+
 setbg:
     and SCREEN 
     sta SCREEN
@@ -6,7 +10,7 @@ setbg:
 
 ; Subroutine : Clear Screen
 ; Description : Clears screen and sets border/background to black
-clearSCR:
+clear_scr:
     lda #$80            ; #$80 for Key Repeats, needed for XVIC emulator
     sta $028A           ; Key repeats - needed for XVIC emulator
     lda #$0F            ; Border Black
@@ -21,6 +25,7 @@ clearSCR:
 
 ; Subroutine : Load Charset
 ; Description : Load #$FF in $9005 (Charset), to load custom characters
-loadChars:
+load_chars:
     lda #$ff            ; 255 -> $1c00
     sta CHARSET
+    rts

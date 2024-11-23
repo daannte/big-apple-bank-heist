@@ -14,7 +14,6 @@ level_pointers:
 level_1
     incbin "levels/level1.data"
 
-
 start:
     jsr clear_scr                  ; Clear Screen and set BG color
     jsr load_chars                 ; Load Custom Charset
@@ -26,7 +25,9 @@ init:
     sta PLAYER_LIVES
 
 game:
-    jsr test_level
+    jsr test_sprites
+    
+    
     ;jsr handle_input
     ;jsr update_game_state
     ;jsr render_game

@@ -11,7 +11,11 @@ CURRENT_LEVEL           ds.b  1     ; Current level index
 LEVEL_LOW_BYTE          ds.b  1     ; Low byte of level data offset
 LEVEL_HIGH_BYTE         ds.b  1     ; High byte of level data offset
 BITWISE                 ds.b  1     ; Bitmask for level decompression
-EXIT_X                  ds.b  1   ; $02 x = vertical axis, because why not
-EXIT_Y                  ds.b  1   ; $03 y = horizontal axis, because why not
-    
+EXIT_X                  ds.b  1     ; x = vertical axis, because why not
+EXIT_Y                  ds.b  1     ; y = horizontal axis, because why not
+CURR_JIFFY_H            ds.b  1     ; JIFFY HIGH temporary storage 
+CURR_JIFFY_M            ds.b  1     ; JIFFY MID temporary storage 
+CURR_JIFFY_L            ds.b  1     ; JIFFY LOW temporary storage 
+
+
     seg

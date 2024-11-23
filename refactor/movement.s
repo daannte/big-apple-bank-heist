@@ -39,5 +39,9 @@ move_right:
 
 ; Subroutine : Action
 ; Description : Item usage: Loads from CURRENT_ITEM(ZP) and calls item use subroutine
+;               *PICKAXE : Detect collision ahead and remove block and replace with <SPACE>
 move_action:
 
+
+; Subroutine : Animations
+; Description : Animations

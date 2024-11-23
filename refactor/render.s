@@ -23,7 +23,6 @@ draw_player:
 ;               Each level pointer is ds.w, to cover for 16+ levels
 ;               Load level is only called once before new iterations of game loop
 ;               Timer is intentionally removed from this subroutine to make control of it more accessible
-
 load_level:
     lda #147              ; Load clear screen command
     jsr CHROUT            ; Print it

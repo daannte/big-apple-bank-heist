@@ -1,9 +1,12 @@
 ; KERNAL MEMORY LOCATIONS
-CHROUT  = $FFD2
-SCREEN  = $900f
-GETIN   = $FFE4
-CHARSET = $9005
-PLOT    = $FFF0
+CHROUT      = $FFD2
+SCREEN      = $900f
+GETIN       = $FFE4
+CHARSET     = $9005
+PLOT        = $FFF0
+JIFFY_LOW   = $00A2
+JIFFY_MID   = $00A1
+JIFFY_HIGH  = $00A0
 
 ; OTHER MEMORY LOCATIONS
 
@@ -18,30 +21,34 @@ ROBBER_L    = #67
 ROBBER_L_1  = #68
 ROBBER_L_2  = #69
 
-ROBBER_VL_1 = #70
-ROBBER_VL_2 = #71
-ROBBER_VR_1 = #72
-ROBBER_VR_2 = #73
+ROBBER_VR_1 = #70
+ROBBER_VR_2 = #71
+ROBBER_VL_1 = #72
+ROBBER_VL_2 = #73
 
-WALL        = #74
-EXITDOOR    = #75
+ROBBER_R_IDLE = #74
+ROBBER_L_IDLE = #75
 
-CUSTOM_ASCII_0     = #76
-CUSTOM_ASCII_1     = #77
-CUSTOM_ASCII_2     = #78
-CUSTOM_ASCII_3     = #79
-CUSTOM_ASCII_4     = #80
-CUSTOM_ASCII_5     = #81
-CUSTOM_ASCII_6     = #82
-CUSTOM_ASCII_7     = #83
-CUSTOM_ASCII_8     = #84
-CUSTOM_ASCII_9     = #85
+WALL        = #76
+EXITDOOR    = #77
+PICKAXE     = #78
 
-EMPTY_SPACE_CHAR  = #86
-HEART_CHAR        = #87
-TRAP              = #88
+CUSTOM_ASCII_0     = #79
+CUSTOM_ASCII_1     = #80
+CUSTOM_ASCII_2     = #81
+CUSTOM_ASCII_3     = #82
+CUSTOM_ASCII_4     = #83
+CUSTOM_ASCII_5     = #84
+CUSTOM_ASCII_6     = #85
+CUSTOM_ASCII_7     = #86
+CUSTOM_ASCII_8     = #87
+CUSTOM_ASCII_9     = #88
 
-CHAR_END          = #89                ; For debugging purposes
+EMPTY_SPACE_CHAR  = #89
+HEART_CHAR        = #90
+TRAP              = #91
+
+CHAR_END          = #92                ; For debugging purposes
 
 ; ASCII VALUES
 ASCII_0           = #48

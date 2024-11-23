@@ -22,6 +22,8 @@ start:
 init:
     lda #0
     sta CURRENT_LEVEL
+    lda #2
+    sta PLAYER_LIVES
 
 game:
     jsr test_level

@@ -11,6 +11,7 @@ CURRENT_LEVEL           ds.b  1     ; Current level index
 LEVEL_LOW_BYTE          ds.b  1     ; Low byte of level data offset
 LEVEL_HIGH_BYTE         ds.b  1     ; High byte of level data offset
 BITWISE                 ds.b  1     ; Bitmask for level decompression
-
+EXIT_X                  ds.b  1   ; $02 x = vertical axis, because why not
+EXIT_Y                  ds.b  1   ; $03 y = horizontal axis, because why not
     
     seg

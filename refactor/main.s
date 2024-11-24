@@ -15,7 +15,6 @@ level_1
     incbin "levels/level1.data"
 
 start:
-    jsr initialize_clock           ; THIS INITIALIZES CLOCK
     jsr clear_scr                  ; Clear Screen and set BG color
     jsr load_chars                 ; Load Custom Charset
 
@@ -27,25 +26,20 @@ start:
     lda #2
     sta PLAYER_LIVES
 
+init:
+    jsr load_level
+    jsr initialize_clock           ; THIS INITIALIZES CLOCK
+
 game:
-    lda #64
-    jsr CHROUT
-    jsr handle_timing
-    ;jsr handle_input
-    ;jsr update_game_state
+    jsr handle_input
+    jsr handle_movement
     ;jsr render_game
-    ;jsr handle_timing
+    jsr handle_timing
     jmp game
 loop:
     jmp loop
 
 ; -------- SUBROUTINES ---------
-
-; Subroutine : Update Game State
-; Description : Update game states, such as 
-;               Gravity, Movement, Collisions, Pickups, Actions, etc.
-update_game_state:
-    jsr handle_movement
 
 ; -------- OTHER FILES ---------
 

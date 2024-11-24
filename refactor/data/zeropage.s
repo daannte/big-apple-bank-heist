@@ -4,6 +4,11 @@
 
 X_POS                   ds.b  1     ; vertical axis, because why not
 Y_POS                   ds.b  1     ; horizontal axis, because why not
+TEMP_X_POS              ds.b  1     ; Temporary X position before collision detection
+TEMP_Y_POS              ds.b  1     ; Temporary Y position before collision detection
+TEMP1                   ds.b  1     ; Temporary variable for screen offset calculation
+TEMP2                   ds.b  1     ; Temporary variable for screen offset calculation
+COLLISION               ds.b  1     ; Store collision Bool (0 - No col, 1 - Wall, 2 - Exit, 3 - Item)
 PLAYER_LIVES            ds.b  1     ; Store player lives 
 CURRENT                 ds.b  1     ; Current animation frame
 INPUT_COMMAND           ds.b  1     ; Stores Keyboard Input

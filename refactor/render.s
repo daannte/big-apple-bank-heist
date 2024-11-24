@@ -107,8 +107,8 @@ load_level:
     iny
     cpy #50
     bne .load_character
+    
     ldy #0
-
 .bottom_row:
     lda #WALL
     jsr CHROUT

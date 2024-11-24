@@ -9,6 +9,8 @@ JIFFY_MID   = $00A1
 JIFFY_HIGH  = $00A0
 
 ; OTHER MEMORY LOCATIONS
+SCR         = $1E00         ; Screen Memory Location (First half)
+SCR2        = $1EFA         ; Screen Memory Location (Second half)
 
 ; CONSTANT VALUES - SPRITES
 ; Custom characters are defined in charset.s / $1c00
@@ -26,27 +28,27 @@ ROBBER_VR_2 = #71
 ROBBER_VL_1 = #72
 ROBBER_VL_2 = #73
 
-ROBBER_R_IDLE = #74
-ROBBER_L_IDLE = #75
+WALL        = #74
+EXITDOOR    = #75
+PICKAXE     = #76
 
-WALL        = #76
-EXITDOOR    = #77
-PICKAXE     = #78
+CUSTOM_ASCII_0     = #77
+CUSTOM_ASCII_1     = #78
+CUSTOM_ASCII_2     = #79
+CUSTOM_ASCII_3     = #80
+CUSTOM_ASCII_4     = #81
+CUSTOM_ASCII_5     = #82
+CUSTOM_ASCII_6     = #83
+CUSTOM_ASCII_7     = #84
+CUSTOM_ASCII_8     = #85
+CUSTOM_ASCII_9     = #86
 
-CUSTOM_ASCII_0     = #79
-CUSTOM_ASCII_1     = #80
-CUSTOM_ASCII_2     = #81
-CUSTOM_ASCII_3     = #82
-CUSTOM_ASCII_4     = #83
-CUSTOM_ASCII_5     = #84
-CUSTOM_ASCII_6     = #85
-CUSTOM_ASCII_7     = #86
-CUSTOM_ASCII_8     = #87
-CUSTOM_ASCII_9     = #88
+EMPTY_SPACE_CHAR  = #87
+HEART_CHAR        = #88
+TRAP              = #89
 
-EMPTY_SPACE_CHAR  = #89
-HEART_CHAR        = #90
-TRAP              = #91
+ROBBER_R_IDLE       = #90
+ROBBER_L_IDLE       = #91
 
 CHAR_END          = #92                ; For debugging purposes
 

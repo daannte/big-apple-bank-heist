@@ -16,6 +16,9 @@ EXIT_Y                  ds.b  1     ; y = horizontal axis, because why not
 CURR_JIFFY_H            ds.b  1     ; JIFFY HIGH temporary storage 
 CURR_JIFFY_M            ds.b  1     ; JIFFY MID temporary storage 
 CURR_JIFFY_L            ds.b  1     ; JIFFY LOW temporary storage 
-
+LOOP_INTERVAL           ds.b  1     ; JIFFY LOOP INTERVAL STORAGE
+TARG_JIFFY_L            ds.b  1     ; JIFFY LOW Target value storage
+TARG_JIFFY_M            ds.b  1     ; JIFFY MID Target value storage
+TARG_JIFFY_H            ds.b  1     ; JIFFY HIGH Target value storage
 
     seg

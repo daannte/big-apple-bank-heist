@@ -15,24 +15,27 @@ level_1
     incbin "levels/level1.data"
 
 start:
+    jsr initialize_clock           ; THIS INITIALIZES CLOCK
     jsr clear_scr                  ; Clear Screen and set BG color
     jsr load_chars                 ; Load Custom Charset
 
-init:
+    ; Level Init
     lda #0
     sta CURRENT_LEVEL
+
+    ; Player Lives Init
     lda #2
     sta PLAYER_LIVES
 
 game:
-    jsr test_sprites
-    
-    
+    lda #64
+    jsr CHROUT
+    jsr handle_timing
     ;jsr handle_input
     ;jsr update_game_state
     ;jsr render_game
     ;jsr handle_timing
-
+    jmp game
 loop:
     jmp loop
 

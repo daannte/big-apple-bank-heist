@@ -10,16 +10,7 @@
 handle_movement:
     jsr read_input
     jsr check_collisions
-    cmp #1
-    beq .collision_wall
-    lda TEMP_X_POS
-    sta X_POS
-    lda TEMP_Y_POS
-    sta Y_POS
-
-.collision_wall
-    lda #0
-    sta INPUT_COMMAND
+    jsr move_character
     rts
 
 ; Subroutine : Read Input
@@ -155,6 +146,22 @@ check_collisions:
 
 .occupied_exit
     lda #2
+    rts
+
+; Subroutine : Move Character
+; Description : Moves character position
+    subroutine
+move_character:
+    cmp #1
+    beq .collision_wall
+    lda TEMP_X_POS
+    sta X_POS
+    lda TEMP_Y_POS
+    sta Y_POS
+
+.collision_wall
+    lda #0
+    sta INPUT_COMMAND
     rts
 
 ; Subroutine : Gravity (WIP)

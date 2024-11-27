@@ -1,11 +1,11 @@
 ; control.s
 ; Input handling subroutines
     
-    subroutine
-
+    
 ; subroutine : Handle Input
 ; Description : calls GETIN, reads input and stores input in INPUT_COMMAND (ZP)
 ;               *** May change to joystick or $00C5 checks instead ***
+    subroutine
 handle_input:
     jsr GETIN
     cmp #87                     ; "W"

@@ -1,10 +1,9 @@
 ; utility.s
 ; Reused subroutines to perform set up, clear, and etc.
 
-    subroutine
-
 ; Subroutine : Clear Screen
 ; Description : Clears screen and sets border/background to black
+    subroutine
 clear_scr:
     lda #$80            ; #$80 for Key Repeats, needed for XVIC emulator
     sta $028A           ; Key repeats - needed for XVIC emulator
@@ -24,6 +23,7 @@ clear_scr:
 
 ; Subroutine : Load Charset
 ; Description : Load #$FF in $9005 (Charset), to load custom characters
+    subroutine
 load_chars:
     lda #$ff            ; 255 -> $1c00
     sta CHARSET
@@ -49,6 +49,7 @@ initialize_clock:
 
 ; Subroutine : Handle Timing
 ; Description : Dictates game loop speed
+    subroutine
 handle_timing:
     jsr read_jiffy          ; Read, save values in ZP
     jsr add_jiffy           ; Save target values in ZP
@@ -62,6 +63,7 @@ handle_timing:
 
 ; Subroutine : Read Jiffy
 ; Description : Reads Jiffy value and saves in CURR_JIFFY_$ ZP-variables
+    subroutine
 read_jiffy:
     lda JIFFY_LOW
     sta CURR_JIFFY_L
@@ -74,6 +76,7 @@ read_jiffy:
 ; Subroutine : Add Jiffy
 ; Description : Add LOOP_INTERVAL (Control Var) to CURR_JIFFY_$. 
 ;               LOOP_INTERVAL can be changed at constants.s to play with timing of game
+    subroutine
 add_jiffy:
     lda CURR_JIFFY_L
     clc
@@ -92,6 +95,7 @@ add_jiffy:
 ; Subroutine : Compare Jiffy
 ; Description : Compare CURR_JIFFY_$ with TARG_JIFFY_$
 ;               Returns carry flag if CURR_JIFFY_$ > TARG_JIFFY_$
+    subroutine
 compare_jiffy:
     ; Compare High Byte First
     lda CURR_JIFFY_H
@@ -119,7 +123,7 @@ compare_jiffy:
 
 ; Subroutine : Add Score
 ; Description : Increments the score
-subroutine
+    subroutine
 add_score:
   lda TIMER_VALUE
   and #$0f
@@ -147,6 +151,8 @@ add_score:
   sta SCORE1
   rts
 
+; Subroutine : Print BCD
+; Description : Prints BCD value
   subroutine
 print_bcd:
   lda BCD_TO_PRINT

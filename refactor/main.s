@@ -19,7 +19,6 @@ comp_data
 
 start:
     jsr clear_scr                  ; Clear Screen and set BG color
-    jsr draw_titlescreen           ; Draw Title Screen
     jsr load_chars                 ; Load Custom Charset
     jsr init_set
 
@@ -57,9 +56,13 @@ loop:
     include "utility.s"
     include "control.s"
     include "movement.s"
+    include "state.s"
     include "render.s"
+<<<<<<< HEAD
     include "state.s"
     include "titlescreen.s"
+=======
+>>>>>>> 2fe4694 (Add subroutine tag to all subroutines, delete redundant file in refactor directory)
     include "zx02.s"
 
 ; ---- Memory Specific Data ----

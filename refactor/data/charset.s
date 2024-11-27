@@ -280,5 +280,3 @@ robber_l_idle:
   dc.b %00001110
   dc.b %01111111
   dc.b %00011111
-
-end:

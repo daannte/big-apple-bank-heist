@@ -25,5 +25,19 @@ LOOP_INTERVAL           ds.b  1     ; JIFFY LOOP INTERVAL STORAGE
 TARG_JIFFY_L            ds.b  1     ; JIFFY LOW Target value storage
 TARG_JIFFY_M            ds.b  1     ; JIFFY MID Target value storage
 TARG_JIFFY_H            ds.b  1     ; JIFFY HIGH Target value storage
+CAN_JUMP                ds.b  1   ; $11 0 = can't jump, 1 = can jump
+TIMER_VALUE             ds.b  1   ; $12 Timer value
+GRAVITY_COOLDOWN        ds.b  1   ; $13 Cooldown for gravity
+SCORE1                  ds.b  1   ; $18 Keeps track of the last 2 digits of the score  (xx00-xx99)
+SCORE2                  ds.b  1   ; $19 Keeps track of the first 2 digits of the score (00xx-99xx)
+BCD_TO_PRINT            ds.b  1   ; BCD to print
+ASCII_OFFSET            ds.b  1   ; Offset for ASCII characters (default or custom)
+MOVING                  ds.b  1   ; $08 0 = moving, 1 = not moving
 
+; zx02 variables
+offset_hi             ds.b  1   ; Offset high byte
+ZX0_src               ds.w  1   ; Source address
+ZX0_dst               ds.w  1   ; Destination address
+bitr                  ds.b  1   ; Bitmask for decompression
+pntr                  ds.w  1   ; Pointer to last offset
     seg

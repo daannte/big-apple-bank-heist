@@ -52,6 +52,9 @@ ROBBER_L_IDLE       = #91
 
 CHAR_END          = #92                ; For debugging purposes
 
+GRAVITY_MAX_COOLDOWN = #10 ; in jiffies
+GRAVITY_JUMP_COOLDOWN = #30  ; in jiffies
+
 ; ASCII VALUES
 ASCII_0           = #48
 ASCII_1           = #49

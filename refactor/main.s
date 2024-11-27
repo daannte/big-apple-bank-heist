@@ -57,7 +57,6 @@ loop:
     include "control.s"
     include "movement.s"
     include "render.s"
-    include "titlescreen.s"
     include "zx02.s"
 
 ; ---- Memory Specific Data ----

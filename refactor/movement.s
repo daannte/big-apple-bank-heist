@@ -3,10 +3,10 @@
 ; States saved on ZP memory is used to manipulate movement
 ;   for modularity
 
-    subroutine
-
+    
 ; Subroutine : Handle Movement
 ; Description : Loads INPUT_COMMAND(ZP), moves character sprite
+    subroutine
 handle_movement:
     jsr read_input
     jsr check_collisions
@@ -24,6 +24,7 @@ handle_movement:
 
 ; Subroutine : Read Input
 ; Description : Loads INPUT_COMMAND and compares with keymap and branche
+    subroutine
 read_input:
     ; Store X and Y temporarily for collision detection
     lda X_POS
@@ -34,49 +35,50 @@ read_input:
     ; Read Input
     lda INPUT_COMMAND
     cmp #87                     ; "W"
-    beq move_up
+    beq .move_up
     cmp #83                     ; "S"
-    beq move_down
+    beq .move_down
     cmp #65                     ; "A"
-    beq move_left
+    beq .move_left
     cmp #68                     ; "D"
-    beq move_right 
+    beq .move_right 
     cmp #32                     ; "<SPACE>"
-    beq move_action             
+    beq .move_action             
     rts
 
 ; Subroutine : Move Up
 ; Description : 
-move_up:
+.move_up:
     dec TEMP_X_POS
     rts
 
 ; Subroutine : Move Down
 ; Description : 
-move_down:
+.move_down:
     inc TEMP_X_POS
     rts
 
 ; Subroutine : Move Left
 ; Description : 
-move_left:
+.move_left:
     dec TEMP_Y_POS
     rts
 
 ; Subroutine : Move Right
 ; Description : 
-move_right:
+.move_right:
     inc TEMP_Y_POS
     rts
 
 ; Subroutine : Action
 ; Description : Item usage: Loads from CURRENT_ITEM(ZP) and calls item use subroutine
 ;               *PICKAXE : Detect collision ahead and remove block and replace with <SPACE>
-move_action:
+.move_action:
     rts
 
 ; Subroutine : Check Collisions
 ; Description : Compares TEMP_$_POS with screen data to detect collision
+    subroutine
 check_collisions:
     lda TEMP_X_POS
     cmp #11
@@ -155,27 +157,8 @@ check_collisions:
     lda #2
     rts
 
-; Subroutine : Gravity
+; Subroutine : Gravity (WIP)
 ; Description : Gravity
-  subroutine
-gravity:
-  lda MOVING
-  beq .check_on_ground
-  lda GRAVITY_COOLDOWN
-  bne .check_on_ground
-  lda #GRAVITY_MAX_COOLDOWN
-  sta GRAVITY_COOLDOWN
-  jsr move_down
-  sta CAN_JUMP
-  rts
-
-.check_on_ground:
-  lda X_POS
-  sta TEMP_X_POS
-  inc TEMP_X_POS
-  jsr check_collisions
-  sta CAN_JUMP
-  rts
 
 ; Subroutine : Animations
 ; Description : Animations

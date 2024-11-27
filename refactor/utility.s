@@ -3,14 +3,6 @@
 
     subroutine
 
-; Subroutine : Initialize Clock
-; Description : Initialize Game Variables and System Variables
-initialize_clock:
-    ; Loop Speed Init (FPS)
-    lda #LOOP_RATE_10
-    sta LOOP_INTERVAL
-    rts
-
 ; Subroutine : Clear Screen
 ; Description : Clears screen and sets border/background to black
 clear_scr:
@@ -35,9 +27,26 @@ clear_scr:
 load_chars:
     lda #$ff            ; 255 -> $1c00
     sta CHARSET
+    lda #CUSTOM_ASCII_0
+    sta ASCII_OFFSET
+    rts
+
+; Subroutine : Init Settings
+; Description : Stores values to important values
+init_set:
+    lda #TIMER_DELAY
+    sta TIMER_LOOP_COUNT
     rts
 
 ; ---- Jiffy Related ----
+; Subroutine : Initialize Clock
+; Description : Initialize Game Variables and System Variables
+initialize_clock:
+    ; Loop Speed Init (FPS)
+    lda #LOOP_RATE_10
+    sta LOOP_INTERVAL
+    rts
+
 ; Subroutine : Handle Timing
 ; Description : Dictates game loop speed
 handle_timing:

@@ -5,6 +5,7 @@
 ; Subroutine : Render Game
 ; Description : Render game objects
 render_game:
+    jsr draw_timer
     rts
 
 ; Subroutine : Draw player
@@ -150,5 +151,22 @@ load_level:
 ; Subroutine : Draw Timer
 ; Description : Displays Timer
 draw_timer:
-    ; Implement timer drawing logic
+    ldx #0
+    ldy #20
+    clc
+    jsr PLOT
+    lda TIMER_VALUE
+    lsr
+    lsr
+    lsr
+    lsr
+    clc
+    adc ASCII_OFFSET
+    jsr CHROUT
+
+    lda TIMER_VALUE
+    and #15
+    clc
+    adc ASCII_OFFSET
+    jsr CHROUT
     rts

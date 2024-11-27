@@ -26,7 +26,7 @@ handle_input:
     rts
 
 .set_move_down:
-    lda #32
+    lda #83
     sta INPUT_COMMAND
     rts
 

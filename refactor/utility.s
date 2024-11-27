@@ -116,3 +116,52 @@ compare_jiffy:
 .not_reached
     clc                     ; Not reached, clear carry
     rts
+
+; Subroutine : Add Score
+; Description : Increments the score
+subroutine
+add_score:
+  lda TIMER_VALUE
+  and #$0f
+  sta TEMP1
+  lda TIMER_VALUE
+  and #$f0
+  lsr
+  sta TEMP2
+  lsr
+  lsr
+  clc
+  adc TEMP2
+  clc 
+  adc TEMP1
+  clc
+  adc SCORE1
+  
+  cmp #99
+  bcc .increment_tens
+  sec
+  sbc #100
+  inc SCORE2
+
+.increment_tens:
+  sta SCORE1
+  rts
+
+  subroutine
+print_bcd:
+  lda BCD_TO_PRINT
+  lsr
+  lsr
+  lsr
+  lsr
+  clc
+  adc ASCII_OFFSET
+  jsr CHROUT
+
+  lda BCD_TO_PRINT
+  and #15
+  clc
+  adc ASCII_OFFSET
+  jsr CHROUT
+  
+  rts

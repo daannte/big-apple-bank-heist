@@ -1,7 +1,8 @@
     processor 6502
 
     incdir "refactor"
-    incdir "data"
+    incdir "refactor/data"
+    incdir "refactor/levels"
     include "constants.s"
     include "zeropage.s"
 
@@ -11,16 +12,23 @@
 level_pointers:
     dc.w level_1
 level_1
-    incbin "levels/level1.data"
+    incbin "level1.data"
+
+comp_data
+    incbin "titlescreen.zx02"
 
 start:
     jsr clear_scr                  ; Clear Screen and set BG color
+    jsr draw_titlescreen           ; Draw Title Screen
     jsr load_chars                 ; Load Custom Charset
     jsr init_set
 
     ; Level Init
     lda #0
     sta CURRENT_LEVEL
+
+    lda #ROBBER_R
+    sta CURRENT
 
     ; Player Lives Init
     lda #2
@@ -38,7 +46,8 @@ game:
     jsr handle_timing
     jmp game
 loop:
-    jmp loop
+    jsr load_endscreen
+    jmp start
 
 ; -------- SUBROUTINES ---------
 
@@ -50,6 +59,8 @@ loop:
     include "movement.s"
     include "render.s"
     include "state.s"
+    include "titlescreen.s"
+    include "zx02.s"
 
 ; ---- Memory Specific Data ----
 

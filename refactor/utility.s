@@ -23,7 +23,6 @@ clear_scr:
 
 ; Subroutine : Load Charset
 ; Description : Load #$FF in $9005 (Charset), to load custom characters
-    subroutine
 load_chars:
     lda #$ff            ; 255 -> $1c00
     sta CHARSET

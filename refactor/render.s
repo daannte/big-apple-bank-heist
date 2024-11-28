@@ -147,7 +147,6 @@ load_level:
     jsr PLOT
     lda #EXITDOOR
     jsr CHROUT
-    rts
 
 ; Subroutine : Draw Timer
 ; Description : Displays Timer

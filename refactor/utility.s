@@ -1,6 +1,15 @@
 ; utility.s
 ; Reused subroutines to perform set up, clear, and etc.
 
+; Subroutine : Initialize Clock
+; Description : Initialize Game Variables and System Variables
+    subroutine
+initialize_clock:
+    ; Loop Speed Init (FPS)
+    lda #LOOP_RATE_30
+    sta LOOP_INTERVAL
+    rts
+
 ; Subroutine : Clear Screen
 ; Description : Clears screen and sets border/background to black
     subroutine

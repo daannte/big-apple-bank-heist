@@ -73,4 +73,4 @@ LOOP_RATE_30      = #2                  ; 30Hz
 LOOP_RATE_15      = #4                  ; 15Hz
 LOOP_RATE_10      = #6                  ; 10Hz
 
-TIMER_DELAY       = #8                  ; 8 Game loops before timer 'ticks' - change this as necessary
+TIMER_DELAY       = #36

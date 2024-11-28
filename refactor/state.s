@@ -18,6 +18,8 @@ dec_timer_loop:
     dec TIMER_LOOP_COUNT                ; If not 0, dec loop count
     jmp .timer_inter_exit               ; Exit sub
 .timer_dec:
+    lda #TIMER_DELAY
+    sta TIMER_LOOP_COUNT
     lda TIMER_VALUE
     beq .times_up
     and #15
@@ -25,7 +27,7 @@ dec_timer_loop:
     bne .tens
     lda TIMER_VALUE
     sec
-    sbc #6
+    sbc #7
     sta TIMER_VALUE
     jmp .timer_inter_exit
 .tens:

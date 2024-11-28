@@ -6,7 +6,7 @@
     subroutine
 initialize_clock:
     ; Loop Speed Init (FPS)
-    lda #LOOP_RATE_10
+    lda #LOOP_RATE_30
     sta LOOP_INTERVAL
     rts
 

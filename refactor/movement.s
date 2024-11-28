@@ -154,6 +154,12 @@ check_collisions:
 move_character:
     cmp #1
     beq .collision_wall
+    ldx X_POS
+    ldy Y_POS
+    clc
+    jsr PLOT
+    lda #EMPTY_SPACE_CHAR
+    jsr CHROUT
     lda TEMP_X_POS
     sta X_POS
     lda TEMP_Y_POS

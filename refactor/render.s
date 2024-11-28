@@ -147,6 +147,11 @@ load_level:
     jsr PLOT
     lda #EXITDOOR
     jsr CHROUT
+
+.load_timer_value:
+    ldy #54
+    lda (LEVEL_LOW_BYTE),y
+    sta TIMER_VALUE
     rts
 
 ; Subroutine : Draw Timer

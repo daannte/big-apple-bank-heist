@@ -35,6 +35,8 @@ load_chars:
 init_set:
     lda #TIMER_DELAY
     sta TIMER_LOOP_COUNT
+    lda #$80
+    sta $028A
     rts
 
 ; ---- Jiffy Related ----

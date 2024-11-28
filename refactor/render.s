@@ -6,6 +6,7 @@
 ; Description : Render game objects
 render_game:
     jsr draw_player
+    jsr draw_timer
     rts
 
 ; Subroutine : Draw player

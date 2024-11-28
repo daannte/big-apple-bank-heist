@@ -38,6 +38,13 @@ load_chars:
     sta CHARSET
     rts
 
+; Subroutine : Init Settings
+; Description : Stores values to important values
+init_set:
+    lda #TIMER_DELAY
+    sta TIMER_LOOP_COUNT
+    rts
+
 ; ---- Jiffy Related ----
 ; Subroutine : Handle Timing
 ; Description : Dictates game loop speed

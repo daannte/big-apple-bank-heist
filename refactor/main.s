@@ -22,6 +22,7 @@ start:
     jsr clear_scr                  ; Clear Screen and set BG color
     jsr draw_titlescreen           ; Draw Title Screen
     jsr load_chars                 ; Load Custom Charset
+    jsr init_set                   ; Init Settings
 
     ; Level Init
     lda #0

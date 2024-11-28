@@ -146,12 +146,28 @@ load_level:
     jsr PLOT
     lda #EXITDOOR
     jsr CHROUT
-    rts
 
 ; Subroutine : Draw Timer
 ; Description : Displays Timer
 draw_timer:
-    ; Implement timer drawing logic
+    ldx #0
+    ldy #20
+    clc
+    jsr PLOT
+    lda TIMER_VALUE
+    lsr
+    lsr
+    lsr
+    lsr
+    clc
+    adc ASCII_OFFSET
+    jsr CHROUT
+
+    lda TIMER_VALUE
+    and #15
+    clc
+    adc ASCII_OFFSET
+    jsr CHROUT
     rts
 
 ; Subroutine : Draw Score

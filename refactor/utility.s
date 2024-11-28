@@ -1,15 +1,6 @@
 ; utility.s
 ; Reused subroutines to perform set up, clear, and etc.
 
-; Subroutine : Initialize Clock
-; Description : Initialize Game Variables and System Variables
-    subroutine
-initialize_clock:
-    ; Loop Speed Init (FPS)
-    lda #LOOP_RATE_30
-    sta LOOP_INTERVAL
-    rts
-
 ; Subroutine : Clear Screen
 ; Description : Clears screen and sets border/background to black
     subroutine
@@ -46,19 +37,12 @@ init_set:
     sta TIMER_LOOP_COUNT
     rts
 
-; Subroutine : Init Settings
-; Description : Stores values to important values
-init_set:
-    lda #TIMER_DELAY
-    sta TIMER_LOOP_COUNT
-    rts
-
 ; ---- Jiffy Related ----
 ; Subroutine : Initialize Clock
 ; Description : Initialize Game Variables and System Variables
 initialize_clock:
     ; Loop Speed Init (FPS)
-    lda #LOOP_RATE_10
+    lda #LOOP_RATE_30
     sta LOOP_INTERVAL
     rts
 

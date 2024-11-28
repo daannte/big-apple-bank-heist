@@ -3,7 +3,6 @@
 ; Timer value, 
 
     subroutine
-
 ; Subroutine : handle_game_state
 ; Description : Sets necessary values for frame counting
 handle_game_state:

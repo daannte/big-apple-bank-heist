@@ -1,8 +1,8 @@
     processor 6502
 
     incdir "refactor"
-    incdir "refactor/data"
-    incdir "refactor/levels"
+    incdir "data"
+    incdir "levels"
     include "constants.s"
     include "zeropage.s"
 
@@ -38,8 +38,8 @@ init:
     jsr initialize_clock           ; THIS INITIALIZES CLOCK
 
 game:
-    ;jsr handle_input
-    ;jsr handle_movement
+    jsr handle_input
+    jsr handle_movement
     jsr handle_game_state
     jsr render_game
     jsr handle_timing
@@ -58,11 +58,8 @@ loop:
     include "movement.s"
     include "state.s"
     include "render.s"
-<<<<<<< HEAD
-    include "state.s"
-    include "titlescreen.s"
-=======
->>>>>>> 2fe4694 (Add subroutine tag to all subroutines, delete redundant file in refactor directory)
+    ;include "titlescreen.s"
+    ;include "music.s"
     include "zx02.s"
 
 ; ---- Memory Specific Data ----

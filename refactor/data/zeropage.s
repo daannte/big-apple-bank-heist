@@ -25,8 +25,10 @@ LOOP_INTERVAL           ds.b  1     ; JIFFY LOOP INTERVAL STORAGE
 TARG_JIFFY_L            ds.b  1     ; JIFFY LOW Target value storage
 TARG_JIFFY_M            ds.b  1     ; JIFFY MID Target value storage
 TARG_JIFFY_H            ds.b  1     ; JIFFY HIGH Target value storage
+TIMER_LOOP_COUNT        ds.b  1     ; Number of game loops before timer decrements
 ASCII_OFFSET            ds.b  1     ; Offset for ASCII characters (default or custom)
 TIMER_VALUE             ds.b  1     ; Timer value
+TIME_OUT_FLAG           ds.b  1     ; Flag to set time out
 
 CAN_JUMP                ds.b  1     ; 0 = can't jump, 1 = can jump
 GRAVITY_COOLDOWN        ds.b  1     ; Cooldown for gravity

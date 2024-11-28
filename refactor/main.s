@@ -11,6 +11,7 @@
 
 level_pointers:
     dc.w level_1
+    
 level_1
     incbin "level1.data"
 
@@ -21,21 +22,12 @@ start:
     jsr clear_scr                  ; Clear Screen and set BG color
     jsr load_chars                 ; Load Custom Charset
     jsr init_set
-
-    ; Level Init
-    lda #0
-    sta CURRENT_LEVEL
-
-    lda #ROBBER_R
-    sta CURRENT
-
-    ; Player Lives Init
-    lda #2
-    sta PLAYER_LIVES
+    jsr initialize_clock           ; THIS INITIALIZES CLOCK
 
 init:
     jsr load_level
-    jsr initialize_clock           ; THIS INITIALIZES CLOCK
+    lda #ROBBER_R
+    sta CURRENT
 
 game:
     jsr handle_input
@@ -47,8 +39,6 @@ game:
 loop:
     jsr load_endscreen
     jmp start
-
-; -------- SUBROUTINES ---------
 
 ; -------- OTHER FILES ---------
 

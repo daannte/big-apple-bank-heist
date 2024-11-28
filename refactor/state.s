@@ -6,6 +6,7 @@
 ; Subroutine : handle_game_state
 ; Description : Sets necessary values for frame counting
 handle_game_state:
+ ;   jsr player_move_animation
     jsr dec_timer_loop
     rts
 
@@ -38,4 +39,18 @@ dec_timer_loop:
     sta TIME_OUT_FLAG
 .timer_inter_exit:
     rts
+
+; Subroutine : handle_frames
+; Description : Stores frame ID
+handle_frames:
+    lda MOVING
+    beq .not_moving
+    ;lda ANIMATION_LOOP_COUNT
+    cmp #4
+
+.not_moving:
+    lda #0
+    sta ANIMATION_FRAME
+
+
 

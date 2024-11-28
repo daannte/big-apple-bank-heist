@@ -17,7 +17,9 @@ handle_input:
     cmp #$12                     ; "D"
     beq .set_move_right
     cmp #$20                     ; "<SPACE>"
-    beq .set_action_space           
+    beq .set_action_space
+    lda #0                       ; If nothing was pressed, set MOVING to 0 (for idle frames)
+    sta MOVING                             
     rts
 
 .set_move_up:

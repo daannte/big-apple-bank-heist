@@ -70,7 +70,7 @@ LOOP_RATE_30      = #2                  ; 30Hz
 LOOP_RATE_15      = #4                  ; 15Hz
 LOOP_RATE_10      = #6                  ; 10Hz
 
-TIMER_DELAY       = #20
+TIMER_DELAY       = #4
 
 ; OTHER VALUES
 GRAVITY_MAX_COOLDOWN = #10 ; in jiffies

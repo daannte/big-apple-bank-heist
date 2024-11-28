@@ -16,7 +16,7 @@ draw_player:
     ldy Y_POS
     clc
     jsr PLOT
-    lda CURRENT
+    lda CURRENT                       
     jsr CHROUT
     rts 
 

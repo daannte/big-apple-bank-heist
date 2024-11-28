@@ -150,6 +150,7 @@ check_collisions:
 
 ; Subroutine : Move Character
 ; Description : Moves character position
+; FUTURE : 
     subroutine
 move_character:
     cmp #1

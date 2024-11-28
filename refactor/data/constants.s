@@ -72,3 +72,5 @@ LOOP_RATE_60      = #1                  ; 60Hz
 LOOP_RATE_30      = #2                  ; 30Hz
 LOOP_RATE_15      = #4                  ; 15Hz
 LOOP_RATE_10      = #6                  ; 10Hz
+
+TIMER_DELAY       = #8

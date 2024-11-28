@@ -31,7 +31,9 @@ GRAVITY_COOLDOWN        ds.b  1   ; $13 Cooldown for gravity
 SCORE1                  ds.b  1   ; $18 Keeps track of the last 2 digits of the score  (xx00-xx99)
 SCORE2                  ds.b  1   ; $19 Keeps track of the first 2 digits of the score (00xx-99xx)
 BCD_TO_PRINT            ds.b  1   ; BCD to print
-ASCII_OFFSET            ds.b  1   ; Offset for ASCII characters (default or custom)
+TIMER_VALUE             ds.b  1     ; Position for Timer Value
+TIMER_LOOP_COUNT        ds.b  1     ; Counter that dec every game loop, (e.g. 4 loops to dec TIMER_VALUE)
+ASCII_OFFSET            ds.b  1     ; Starting position of custom_ascii_0 in charset.s
 MOVING                  ds.b  1   ; $08 0 = moving, 1 = not moving
 
 ; zx02 variables

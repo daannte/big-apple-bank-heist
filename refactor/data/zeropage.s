@@ -25,6 +25,7 @@ LOOP_INTERVAL           ds.b  1     ; JIFFY LOOP INTERVAL STORAGE
 TARG_JIFFY_L            ds.b  1     ; JIFFY LOW Target value storage
 TARG_JIFFY_M            ds.b  1     ; JIFFY MID Target value storage
 TARG_JIFFY_H            ds.b  1     ; JIFFY HIGH Target value storage
+TIME_OUT_FLAG           ds.b  1     ; TIME_OUT_FLAG
 TIMER_VALUE             ds.b  1     ; Position for Timer Value
 TIMER_LOOP_COUNT        ds.b  1     ; Counter that dec every game loop, (e.g. 4 loops to dec TIMER_VALUE)
 ASCII_OFFSET            ds.b  1     ; Starting position of custom_ascii_0 in charset.s

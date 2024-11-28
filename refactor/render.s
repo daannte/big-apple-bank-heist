@@ -116,7 +116,7 @@ load_level:
     iny
     cpy #20
     bne .bottom_row
-    lda #10
+    lda #12
     sta $1FF9
 
 .load_player:
@@ -165,7 +165,7 @@ draw_timer:
     jsr CHROUT
 
     lda TIMER_VALUE
-    and #15
+    and #$0f
     clc
     adc ASCII_OFFSET
     jsr CHROUT

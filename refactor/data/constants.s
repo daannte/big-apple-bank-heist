@@ -28,27 +28,27 @@ ROBBER_VR_2 = #71
 ROBBER_VL_1 = #72
 ROBBER_VL_2 = #73
 
-WALL        = #74
-EXITDOOR    = #75
-PICKAXE     = #76
+ROBBER_R_IDLE       = #74
+ROBBER_L_IDLE       = #75
 
-CUSTOM_ASCII_0     = #77
-CUSTOM_ASCII_1     = #78
-CUSTOM_ASCII_2     = #79
-CUSTOM_ASCII_3     = #80
-CUSTOM_ASCII_4     = #81
-CUSTOM_ASCII_5     = #82
-CUSTOM_ASCII_6     = #83
-CUSTOM_ASCII_7     = #84
-CUSTOM_ASCII_8     = #85
-CUSTOM_ASCII_9     = #86
+WALL        = #76
+EXITDOOR    = #77
+PICKAXE     = #78
 
-EMPTY_SPACE_CHAR  = #87
-HEART_CHAR        = #88
-TRAP              = #89
+EMPTY_SPACE_CHAR  = #79
+HEART_CHAR        = #80
+TRAP              = #81
 
-ROBBER_R_IDLE       = #90
-ROBBER_L_IDLE       = #91
+CUSTOM_ASCII_0     = #82
+CUSTOM_ASCII_1     = #83
+CUSTOM_ASCII_2     = #84
+CUSTOM_ASCII_3     = #85
+CUSTOM_ASCII_4     = #86
+CUSTOM_ASCII_5     = #87
+CUSTOM_ASCII_6     = #88
+CUSTOM_ASCII_7     = #89
+CUSTOM_ASCII_8     = #90
+CUSTOM_ASCII_9     = #91
 
 CHAR_END          = #92                ; For debugging purposes
 
@@ -70,4 +70,4 @@ LOOP_RATE_30      = #2                  ; 30Hz
 LOOP_RATE_15      = #4                  ; 15Hz
 LOOP_RATE_10      = #6                  ; 10Hz
 
-TIMER_DELAY       = #8                  ; 4 Game loops before timer 'ticks' - change this as necessary
+TIMER_DELAY       = #8                  ; 8 Game loops before timer 'ticks' - change this as necessary

@@ -41,6 +41,7 @@ init:
 game:
     jsr handle_input
     jsr handle_movement
+    jsr handle_game_state
     jsr render_game
     jsr handle_timing
     jmp game
@@ -56,6 +57,7 @@ loop:
     include "utility.s"
     include "control.s"
     include "movement.s"
+    include "state.s"
     include "render.s"
     include "zx02.s"
 

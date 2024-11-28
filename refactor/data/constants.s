@@ -52,9 +52,6 @@ CUSTOM_ASCII_9     = #91
 
 CHAR_END          = #92                ; For debugging purposes
 
-GRAVITY_MAX_COOLDOWN = #10 ; in jiffies
-GRAVITY_JUMP_COOLDOWN = #30  ; in jiffies
-
 ; ASCII VALUES
 ASCII_0           = #48
 ASCII_1           = #49
@@ -74,3 +71,7 @@ LOOP_RATE_15      = #4                  ; 15Hz
 LOOP_RATE_10      = #6                  ; 10Hz
 
 TIMER_DELAY       = #20
+
+; OTHER VALUES
+GRAVITY_MAX_COOLDOWN = #10 ; in jiffies
+GRAVITY_JUMP_COOLDOWN = #30  ; in jiffies

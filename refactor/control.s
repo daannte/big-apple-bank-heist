@@ -7,16 +7,16 @@
 ;               *** May change to joystick or $00C5 checks instead ***
     subroutine
 handle_input:
-    jsr GETIN
-    cmp #87                     ; "W"
+    lda $00C5
+    cmp #$09                      ; "W"
     beq .set_move_up
-    cmp #83                     ; "S"
+    cmp #$29                     ; "S"
     beq .set_move_down
-    cmp #65                     ; "A"
+    cmp #$11                     ; "A"
     beq .set_move_left
-    cmp #68                     ; "D"
+    cmp #$12                     ; "D"
     beq .set_move_right
-    cmp #32                     ; "<SPACE>"
+    cmp #$20                     ; "<SPACE>"
     beq .set_action_space           
     rts
 

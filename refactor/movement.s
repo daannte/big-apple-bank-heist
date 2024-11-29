@@ -11,6 +11,7 @@ handle_movement:
     jsr read_input
     jsr check_collisions
     jsr move_character
+    jsr reset_current
     rts
 
 ; Subroutine : Read Input

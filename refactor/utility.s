@@ -51,6 +51,14 @@ init_set:
     sta ANIMATION_FRAME
     rts
 
+; Subroutine : Reset CURRENT Frame
+; Description : Resets CURRENT
+reset_current:
+    lda #0
+    sta CURRENT
+    sta CURRENT2
+    rts
+
 ; ---- Jiffy Related ----
 ; Subroutine : Initialize Clock
 ; Description : Initialize Game Variables and System Variables

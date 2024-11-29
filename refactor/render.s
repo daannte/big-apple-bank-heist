@@ -13,7 +13,13 @@ render_game:
 ; Subroutine : Clear Player
 ; Description : Clears previous player sprite
 clear_player:
-  rts
+    ldx TEMP_X_POS
+    ldy TEMP_Y_POS
+    clc
+    jsr PLOT
+    lda #EMPTY_SPACE_CHAR
+    jsr CHROUT
+    rts
 
 ; Subroutine : Draw player
 ; Description : Draws Player Character

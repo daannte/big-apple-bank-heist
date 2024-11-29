@@ -109,7 +109,7 @@ robber_r_idle:
   dc.b %10110101
   dc.b %10011110
   dc.b %01110000
-  dc.b %11111110
+  dc.b %11111000
   dc.b %11110000
 
 robber_l_idle:
@@ -119,7 +119,7 @@ robber_l_idle:
   dc.b %10101101
   dc.b %01111001
   dc.b %00001110
-  dc.b %01111111
+  dc.b %01111001
   dc.b %00011111
 
 wall:

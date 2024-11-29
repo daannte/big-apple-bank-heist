@@ -70,8 +70,17 @@ LOOP_RATE_30      = #2                  ; 30Hz
 LOOP_RATE_15      = #4                  ; 15Hz
 LOOP_RATE_10      = #6                  ; 10Hz
 
-TIMER_DELAY       = #4
+TIMER_DELAY       = #18
+ANIMATION_DELAY   = #4
 
 ; OTHER VALUES
 GRAVITY_MAX_COOLDOWN = #10 ; in jiffies
 GRAVITY_JUMP_COOLDOWN = #30  ; in jiffies
+
+; ANIMATION CONSTANTS
+FACE_R          = #1
+FACE_L          = #2
+IDLE_R          = #3
+IDLE_L          = #4
+TRAN_R          = #5
+TRAN_L          = #6

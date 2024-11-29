@@ -20,29 +20,31 @@ handle_input:
     beq .set_action_space
     lda #0                       ; If nothing was pressed, set MOVING to 0 (for idle frames)
     sta MOVING                             
-    rts
+    jmp .set_exit
 
 .set_move_up:
     lda #87
     sta INPUT_COMMAND
-    rts
+    jmp .set_exit
 
 .set_move_down:
     lda #83
     sta INPUT_COMMAND
-    rts
+    jmp .set_exit
 
 .set_move_left:
     lda #65
     sta INPUT_COMMAND
-    rts
+    jmp .set_exit
 
 .set_move_right:
     lda #68
     sta INPUT_COMMAND
-    rts
+    jmp .set_exit
 
 .set_action_space
     lda #32
     sta INPUT_COMMAND
+
+.set_exit
     rts

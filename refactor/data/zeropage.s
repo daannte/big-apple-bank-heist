@@ -12,7 +12,6 @@ TEMP_Y_POS              ds.b  1     ; Temporary Y position before collision dete
 COLLISION               ds.b  1     ; Store collision Bool (0 - No col, 1 - Wall, 2 - Exit, 3 - Item)
 PLAYER_LIVES            ds.b  1     ; Store player lives 
 
-CURRENT                 ds.b  1     ; Current animation frame
 INPUT_COMMAND           ds.b  1     ; Stores Keyboard Input
 CURRENT_LEVEL           ds.b  1     ; Current level index
 LEVEL_LOW_BYTE          ds.b  1     ; Low byte of level data offset
@@ -36,9 +35,11 @@ TIMER_VALUE             ds.b  1     ; Timer value
 TIME_OUT_FLAG           ds.b  1     ; Flag to set time out
 
 ; Animations
+CURRENT                 ds.b  1     ; Holds Sprite For Render
+CURRENT2                ds.b  1     ; Holds Sprite For Render 2
 ANIMATION_FRAME         ds.b  1     ; Current animation frame
 ANIMATION_DIRECTION     ds.b  1     ; Current Facing ANIMATION_DIRECTION
-ANINATION_LOOP_COUNT    ds.b  1     ; Animation Loop Counter
+ANIMATION_LOOP_COUNT    ds.b  1     ; Animation Loop Counter
 MOVING                  ds.b  1     ; 0 = moving, 1 = not moving
 
 CAN_JUMP                ds.b  1     ; 0 = can't jump, 1 = can jump

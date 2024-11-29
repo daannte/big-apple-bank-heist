@@ -26,9 +26,7 @@ start:
 
 init:
     jsr load_level
-    lda #ROBBER_R
-    sta CURRENT
-
+    
 game:
     jsr handle_input
     jsr handle_movement
@@ -37,8 +35,9 @@ game:
     jsr handle_timing
     jmp game
 loop:
-    jsr load_endscreen
-    jmp start
+    ;jsr load_endscreen
+    ;jmp start
+    jmp loop
 
 ; -------- OTHER FILES ---------
 

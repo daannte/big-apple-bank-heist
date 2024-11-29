@@ -35,12 +35,20 @@ load_chars:
 init_set:
     lda #TIMER_DELAY
     sta TIMER_LOOP_COUNT
+    
+    lda #ANIMATION_DELAY
+    sta ANIMATION_LOOP_COUNT
+
     lda #$80                    ; Key Repeats Enable
     sta $028A    
     lda #0                      ; Level Init
     sta CURRENT_LEVEL
     lda #2                      ; Player Lives Init
     sta PLAYER_LIVES
+
+    ; ANIMATION
+    lda #1
+    sta ANIMATION_FRAME
     rts
 
 ; ---- Jiffy Related ----
@@ -48,7 +56,7 @@ init_set:
 ; Description : Initialize Game Variables and System Variables
 initialize_clock:
     ; Loop Speed Init (FPS)
-    lda #LOOP_RATE_30
+    lda #LOOP_RATE_15
     sta LOOP_INTERVAL
     rts
 

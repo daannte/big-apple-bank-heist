@@ -5,13 +5,26 @@
 ; Subroutine : Render Game
 ; Description : Render game objects
 render_game:
+    jsr clear_player
     jsr draw_player
     jsr draw_timer
     rts
 
+; Subroutine : Clear Player
+; Description : Clears previous player sprite
+clear_player:
+  rts
+
 ; Subroutine : Draw player
 ; Description : Draws Player Character
 draw_player:
+    ldx TEMP_X_POS
+    ldy TEMP_Y_POS
+    clc
+    jsr PLOT
+    lda CURRENT2
+    jsr CHROUT
+    
     ldx X_POS
     ldy Y_POS
     clc

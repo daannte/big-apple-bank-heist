@@ -17,7 +17,7 @@ handle_movement:
 ; Description : Loads INPUT_COMMAND and compares with keymap and branche
     subroutine
 read_input:
-    ; Store X and Y temporarily for collision detection
+    ; Store X and Y temporarily for Animations
     lda X_POS
     sta TEMP_X_POS             
     lda Y_POS
@@ -40,25 +40,37 @@ read_input:
 ; Subroutine : Move Up
 ; Description : 
 .move_up:
-    dec TEMP_X_POS
+    dec X_POS
+    lda #1
+    sta MOVING
     rts
 
 ; Subroutine : Move Down
 ; Description : 
 .move_down:
-    inc TEMP_X_POS
+    inc X_POS
+    lda #1
+    sta MOVING
     rts
 
 ; Subroutine : Move Left
 ; Description : 
 .move_left:
-    dec TEMP_Y_POS
+    dec Y_POS
+    lda #1
+    sta MOVING
+    lda #1
+    sta ANIMATION_DIRECTION 
     rts
 
 ; Subroutine : Move Right
 ; Description : 
 .move_right:
-    inc TEMP_Y_POS
+    inc Y_POS
+    lda #1
+    sta MOVING
+    lda #0
+    sta ANIMATION_DIRECTION
     rts
 
 ; Subroutine : Action
@@ -71,18 +83,18 @@ read_input:
 ; Description : Compares TEMP_$_POS with screen data to detect collision
     subroutine
 check_collisions:
-    lda TEMP_X_POS
+    lda X_POS
     cmp #11
     bcc .baseaddr
-    lda TEMP_X_POS
+    lda X_POS
     cmp #11
     bne .midaddr
-    lda TEMP_Y_POS
+    lda Y_POS
     cmp #11
     bcc .baseaddr
 
 .midaddr
-    lda TEMP_X_POS
+    lda X_POS
     sec
     sbc #10
     asl
@@ -91,7 +103,7 @@ check_collisions:
     asl
     sta TEMP1
 
-    lda TEMP_X_POS
+    lda X_POS
     asl
     sta TEMP2
 
@@ -102,7 +114,7 @@ check_collisions:
     adc TEMP1
 
     sta TEMP1
-    lda TEMP_Y_POS
+    lda Y_POS
     clc
     adc TEMP1
     sec
@@ -112,13 +124,13 @@ check_collisions:
     jmp .check_occupied
 
 .baseaddr
-    lda TEMP_X_POS
+    lda X_POS
     asl
     asl
     asl
     asl
     sta TEMP1
-    lda TEMP_X_POS
+    lda X_POS
     asl
     sta TEMP2
     asl
@@ -127,7 +139,7 @@ check_collisions:
     clc
     adc TEMP1
     sta TEMP1
-    lda TEMP_Y_POS
+    lda Y_POS
     adc TEMP1
     tax
     lda SCR,x
@@ -155,16 +167,10 @@ check_collisions:
 move_character:
     cmp #1
     beq .collision_wall
-    ldx X_POS
-    ldy Y_POS
-    clc
-    jsr PLOT
-    lda #EMPTY_SPACE_CHAR
-    jsr CHROUT
-    lda TEMP_X_POS
-    sta X_POS
-    lda TEMP_Y_POS
-    sta Y_POS
+    ;lda TEMP_X_POS
+    ;sta X_POS
+    ;lda TEMP_Y_POS
+    ;sta Y_POS
 
 .collision_wall
     lda #0

@@ -44,32 +44,76 @@ dec_timer_loop:
 ; Subroutine : handle_frames
 ; Description : Stores frame ID
 handle_frames:
+    ; First Check if MOVING
+    ; If moving, game takes 2 loops to complete movement
+    ; If not moving, game takes 2 loops to complete idle movement
+    lda MOVING
+    beq .idle_start         ; NOT MOVING
+    
+    ; MOVING HERE - Check if in the middle of move, or new input
+    ; 1 - Key has been pressed this game loop, start movement processor
+    ; 2 - Is in the middle of the loop
+    lda MOVING
+    cmp #1
+    beq .move_start
+
+    ; In process of moving ( MOVING is #2 ) - needs to finish movement
+    lda ANIMATION_FRAME
+    cmp #5                      ; Since last frame was #5 or #6 (TRAN_R, TRAN_L)
+    beq .right_complete
+
+    ; Finish left movement
+    lda #FACE_L
+    sta ANIMATION_FRAME
+    lda #0                      ; Reset MOVING to 0
+    sta MOVING
+    jmp .frames_exit
+
+    ; Finish right movement
+.right_complete:
+    lda #FACE_R
+    sta ANIMATION_FRAME
+    lda #0                      ; Reset MOVING to 0
+    sta MOVING
+    jmp .frames_exit
+    
+.move_start:
+    ; Key was only recently pressed
+    ; Start the movement sequence
+    ; Needs to render 2 frames: CURRENT, and CURRENT2 for intermediate frame
+    lda ANIMATION_FRAME
+    cmp #1                      ; Check if movement is left or right (if eq #1, RIGHT)
+    beq .right_anim
+
+    ; Left movement animation here
+    lda #2                      
+    sta MOVING                  ; Saves #2 to MOVING to indicate next loop needs to render transition frames
+    lda #TRAN_L                 ; #6 - Refer to constants.s file for exact value
+    sta ANIMATION_FRAME         ; Indicates that `draw_player` has to draw the 2 frames related to transition
+    jmp .frames_exit
+
+    ; Right movement animation here
+.right_anim
+    lda #2
+    sta MOVING                  ; Saves #2 to MOVING to indicate next loop needs to render transition frames
+    lda #TRAN_R                 ; #5 - Refer to constants.s file for value meaning
+    sta ANIMATION_FRAME         ; Indicates that `draw_player` has to draw the 2 frames related to trasition
+    jmp .frames_exit
+
+.idle_start:
+    ; Skips a game loop to simulate idle movement: will change CURRENT frame every $ANIMATION_LOOP_COUNT Times
     lda ANIMATION_LOOP_COUNT
     beq .next_frame
     dec ANIMATION_LOOP_COUNT
     jmp .frames_exit
+
 .next_frame:
+    ; Reset Animation Delay
     lda #ANIMATION_DELAY
     sta ANIMATION_LOOP_COUNT
     
     lda MOVING              ; If MOVING == 0, branch idle animations
     beq .idle_frames
-    
-    ; For Movement Frames
-    lda ANIMATION_DIRECTION 
-    beq .right_frame
-    bne .left_frame
-
-    ; Right animation
-.right_frame:
-    lda #TRAN_R
-    sta ANIMATION_FRAME    
-    jmp .frames_exit
-
-.left_frame:
-    lda #TRAN_L
-    sta ANIMATION_FRAME
-    jmp .frames_exit
 
 .idle_frames:
     lda ANIMATION_FRAME
@@ -131,12 +175,13 @@ update_frames:
 .right_move
     lda #ROBBER_R_1
     sta CURRENT2
-    lda #ROBBER_R_2
+    lda #ROBBER_R
     sta CURRENT
+    jmp .update_end
 .left_move
     lda #ROBBER_L_1
     sta CURRENT2
-    lda #ROBBER_L_2
+    lda #ROBBER_L
     sta CURRENT
 .update_end
     rts

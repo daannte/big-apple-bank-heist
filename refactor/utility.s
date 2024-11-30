@@ -64,7 +64,7 @@ reset_current:
 ; Description : Initialize Game Variables and System Variables
 initialize_clock:
     ; Loop Speed Init (FPS)
-    lda #LOOP_RATE_15
+    lda #LOOP_RATE_10
     sta LOOP_INTERVAL
     rts
 

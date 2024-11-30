@@ -11,7 +11,7 @@ handle_movement:
     jsr read_input
     jsr check_collisions
     jsr move_character
-    jsr reset_current
+skip_movement:
     rts
 
 ; Subroutine : Read Input
@@ -35,7 +35,10 @@ read_input:
     cmp #68                     ; "D"
     beq .move_right 
     cmp #32                     ; "<SPACE>"
-    beq .move_action             
+    beq .move_action     
+    cmp #0                      ; Nothing
+    beq skip_movement        
+.exit_read:
     rts
 
 ; Subroutine : Move Up
@@ -60,8 +63,8 @@ read_input:
     dec Y_POS
     lda #1
     sta MOVING
-    lda #1
-    sta ANIMATION_DIRECTION 
+    lda #2
+    sta ANIMATION_FRAME
     rts
 
 ; Subroutine : Move Right
@@ -70,8 +73,8 @@ read_input:
     inc Y_POS
     lda #1
     sta MOVING
-    lda #0
-    sta ANIMATION_DIRECTION
+    lda #1
+    sta ANIMATION_FRAME
     rts
 
 ; Subroutine : Action
@@ -168,10 +171,6 @@ check_collisions:
 move_character:
     cmp #1
     beq .collision_wall
-    ;lda TEMP_X_POS
-    ;sta X_POS
-    ;lda TEMP_Y_POS
-    ;sta Y_POS
 
 .collision_wall
     lda #0

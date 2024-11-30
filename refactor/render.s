@@ -4,17 +4,28 @@
 
 ; Subroutine : Render Game
 ; Description : Render game objects
-render_game:
-    jsr clear_player
+render_game:    
+    lda MOVING
+    cmp #0
+    beq .render_cont
+    lda MOVING
+    cmp #2
+    beq .render_anim
+    jmp .render_normal
+.render_anim
+    jsr draw_animation
+    jmp .render_cont
+.render_normal:
     jsr draw_player
+.render_cont:
     jsr draw_timer
     rts
 
 ; Subroutine : Clear Player
 ; Description : Clears previous player sprite
 clear_player:
-    ldx TEMP_X_POS
-    ldy TEMP_Y_POS
+    ldx X_POS
+    ldy Y_POS
     clc
     jsr PLOT
     lda #EMPTY_SPACE_CHAR
@@ -24,13 +35,6 @@ clear_player:
 ; Subroutine : Draw player
 ; Description : Draws Player Character
 draw_player:
-    ldx TEMP_X_POS
-    ldy TEMP_Y_POS
-    clc
-    jsr PLOT
-    lda CURRENT2
-    jsr CHROUT
-    
     ldx X_POS
     ldy Y_POS
     clc
@@ -38,6 +42,24 @@ draw_player:
     lda CURRENT                       
     jsr CHROUT
     rts 
+
+; Subroutine : Draw Animation
+; Description : Replaces `draw_player` when MOVING is #2 ( Animation State )
+draw_animation:
+    ldx TEMP_X_POS
+    ldy TEMP_Y_POS
+    clc
+    jsr PLOT
+    lda CURRENT2
+    jsr CHROUT
+
+    ldx X_POS
+    ldy Y_POS
+    clc
+    jsr PLOT
+    lda CURRENT
+    jsr CHROUT
+    rts
 
 ; Subroutine : Load Level
 ; Description : Level Data is included during compile as level<n>

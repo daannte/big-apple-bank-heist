@@ -7,7 +7,10 @@
 ;               *** May change to joystick or $00C5 checks instead ***
     subroutine
 handle_input:
+    ; If movement is in process (animation is supposed to be rendered)
+    ; Ignore input for this Loop
     lda $00C5
+    sta INPUT_COMMAND
     cmp #$09                      ; "W"
     beq .set_move_up
     cmp #$29                     ; "S"
@@ -17,9 +20,7 @@ handle_input:
     cmp #$12                     ; "D"
     beq .set_move_right
     cmp #$20                     ; "<SPACE>"
-    beq .set_action_space
-    lda #0                       ; If nothing was pressed, set MOVING to 0 (for idle frames)
-    sta MOVING                             
+    beq .set_action_space                          
     jmp .set_exit
 
 .set_move_up:

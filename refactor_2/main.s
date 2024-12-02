@@ -39,16 +39,18 @@ main_loop:
   jsr handle_input
   lda DIED
   beq .died
+
   lda X_POS
   cmp EXIT_X
-  bne not_exited
+  bne .not_exited
   lda Y_POS
   cmp EXIT_Y
-  bne not_exited
+  bne .not_exited
+  
   jsr increment_level
   rts
 
-not_exited:
+.not_exited:
   jsr increment_clock
   cmp #0
   bne .died
@@ -58,17 +60,14 @@ not_exited:
   jsr handle_lives
   rts
 
-
 ; -------- SUBROUTINES --------
 
   include "setup.s"
-  include "init.s"
   include "clock.s"
-  include "endscreen.s"
   include "levels.s"
   include "lives.s"
   include "movement.s"
-  include "titlescreen.s"
+  include "screens.s"
   include "zx02.s"
   include "music.s"
 

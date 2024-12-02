@@ -333,3 +333,100 @@ gravity:
   sta CAN_JUMP
   dec X_POS
   rts
+  
+; -------------------
+
+  subroutine
+animate:
+  lda VERTICAL
+  cmp #255
+  beq .skip_animate
+  ldx X_POS
+  ldy Y_POS
+  lda CURRENT
+  cmp #ROBBER_R_2
+  beq .animate_r
+  cmp #ROBBER_L_1
+  beq .animate_l
+  lda VERTICAL
+  beq .animate_u
+  jmp .animate_d
+
+.skip_animate:
+  lda #0
+  sta VERTICAL
+  rts
+
+.animate_r:
+  dey
+  clc
+  jsr PLOT
+  lda #EMPTY_SPACE_CHAR
+  jsr CHROUT
+  lda #ROBBER_R
+  jsr CHROUT
+  jmp .end_animate
+
+.animate_l:
+  iny
+  clc
+  jsr PLOT
+  lda #EMPTY_SPACE_CHAR
+  jsr CHROUT
+  ldx X_POS
+  ldy Y_POS
+  clc
+  jsr PLOT
+  lda #ROBBER_L
+  jsr CHROUT
+  jmp .end_animate
+
+.animate_u:
+  inx
+  clc
+  jsr PLOT
+  lda #EMPTY_SPACE_CHAR
+  jsr CHROUT
+  ldx X_POS
+  ldy Y_POS
+  clc
+  jsr PLOT
+  lda HORIZONTAL
+  beq .animate_ul
+  lda #ROBBER_R
+  jmp .animate_u1
+
+.animate_ul:
+  lda #ROBBER_L
+
+.animate_u1:
+  jsr CHROUT
+  jmp .end_animate
+
+.animate_d:
+  dex
+  clc
+  jsr PLOT
+  lda #EMPTY_SPACE_CHAR
+  jsr CHROUT
+  ldx X_POS
+  ldy Y_POS
+  clc
+  jsr PLOT
+  lda HORIZONTAL
+  beq .animate_dl
+  lda #ROBBER_R
+  jmp .animate_d1
+
+.animate_dl:
+  lda #ROBBER_L
+
+.animate_d1:
+  jsr CHROUT
+
+.end_animate:
+  ldx X_POS
+  ldy Y_POS
+  clc
+  jsr PLOT
+  rts

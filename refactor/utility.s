@@ -39,6 +39,9 @@ init_set:
     lda #ANIMATION_DELAY
     sta IDLE_LOOP_COUNT
 
+    lda #GRAVITY_MAX_COOLDOWN
+    sta GRAVITY_COOLDOWN
+
     lda #$80                    ; Key Repeats Enable
     sta $028A    
     lda #0                      ; Level Init
@@ -56,7 +59,7 @@ init_set:
 ; Description : Initialize Game Variables and System Variables
 initialize_clock:
     ; Loop Speed Init (FPS)
-    lda #LOOP_RATE_15
+    lda #3
     sta LOOP_INTERVAL
     rts
 

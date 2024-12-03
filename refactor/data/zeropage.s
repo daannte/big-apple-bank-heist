@@ -45,7 +45,9 @@ FRAME_STATE             ds.b  1     ; FLAG indicating if current render is anima
 CAN_MOVE                ds.b  1     ; FLAG indicating if can move
 IDLE_LOOP_COUNT         ds.b  1     ; Animation Loop Counter
 DIRECTION               ds.b  1     ; FLAG : LEFT (1) / RIGHT (0)
-
+IN_AIR                  ds.b  1     ; FLAG indiciating if PC is in air
+AIR_COUNTER             ds.b  1     ; Counter to activate gravity
+MOVING_TEMP             ds.b  1     ; Temporary storage for MOVING
 ;;
 
 ;;

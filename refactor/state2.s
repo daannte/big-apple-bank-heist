@@ -60,7 +60,6 @@ handle_frames:
 
     lda MOVING
     beq .idle_frame
-
 .dest_frame:
     lda MOVING
     cmp #1
@@ -77,7 +76,6 @@ handle_frames:
     lda MOVING
     cmp #4
     beq .dest_down_frame
-
 .dest_right_frame:
     lda #1              ; Right Dest
     sta ANIMATION_FRAME
@@ -133,7 +131,6 @@ handle_frames:
     lda MOVING
     cmp #4
     beq .anim_down_frame
-
 .anim_right_frame:
     lda #5
     sta ANIMATION_FRAME
@@ -415,3 +412,17 @@ dec_timer_loop:
 .timer_inter_exit:
     rts
 
+; Subroutine : Gravity
+; Description : Decrements XPOS depending on state
+gravity:
+    lda MOVING
+    sta MOVING_TEMP
+    lda #4
+    sta MOVING
+    beq .check_on_ground
+
+.check_on_ground:
+    jsr temp_coord
+    jsr check_collisions
+    cmp #0
+    

@@ -159,7 +159,7 @@ class GridEditorApp:
     def export_grid(self):
         filename = self.filename_entry.get()
         if filename:
-            self.feedback_message.set(f"Exporting grid to '{filename}' (not yet implemented)")
+            self.feedback_message.set(f"Exporting grid to '{filename}'")
             # get characters from grid
             data = []
             for row in self.grid:
@@ -179,7 +179,7 @@ class GridEditorApp:
         timer = int(self.timer_value.get())
 
         if filename:
-            self.feedback_message.set(f"Exporting grid to '{filename}' (not yet implemented)")
+            self.feedback_message.set(f"Exporting grid to '{filename}'")
             # get characters from grid
             data = []
             for row in self.grid:

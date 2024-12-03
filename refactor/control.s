@@ -19,8 +19,8 @@ handle_input:
     beq .set_move_left
     cmp #$12                     ; "D"
     beq .set_move_right
-    cmp #$20                     ; "<SPACE>"
-    beq .set_action_space                          
+    lda #0
+    sta INPUT_COMMAND                          
     jmp .set_exit
 
 .set_move_up:
@@ -40,11 +40,6 @@ handle_input:
 
 .set_move_right:
     lda #68
-    sta INPUT_COMMAND
-    jmp .set_exit
-
-.set_action_space
-    lda #32
     sta INPUT_COMMAND
 
 .set_exit

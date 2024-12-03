@@ -44,6 +44,7 @@ read_input:
 ; Subroutine : Move Up
 ; Description : 
 .move_up:
+    ; JUMPS - implement later, focus now on left and right movement
     dec X_POS
     lda #1
     sta MOVING

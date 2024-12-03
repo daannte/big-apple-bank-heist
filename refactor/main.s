@@ -24,9 +24,11 @@ start:
     jsr init_set
     jsr initialize_clock           ; THIS INITIALIZES CLOCK
 
+    ;jsr test_sprites
+    ;jmp loop
+
 init:
     jsr load_level
-    
 game:
     jsr handle_input
     jsr handle_movement
@@ -44,8 +46,8 @@ loop:
     include "debug.s"               ; debugging subroutines
     include "utility.s"
     include "control.s"
-    include "movement.s"
-    include "state.s"
+    include "movement2.s"
+    include "state2.s"
     include "render.s"
     ;include "titlescreen.s"
     ;include "music.s"

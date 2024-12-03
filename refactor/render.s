@@ -4,62 +4,73 @@
 
 ; Subroutine : Render Game
 ; Description : Render game objects
-render_game:    
-    lda MOVING
-    cmp #0
-    beq .render_cont
-    lda MOVING
+render_game:
+    lda FRAME_STATE
+    cmp #1
+    beq .draw_anim
+
+    lda FRAME_STATE
     cmp #2
-    beq .render_anim
-    jmp .render_normal
-.render_anim
+    beq .draw_dest
+
+.draw_dest:
+    jsr draw_dest_frame
+    jmp .next
+.draw_anim:
     jsr draw_animation
-    jmp .render_cont
-.render_normal:
-    jsr draw_player
-.render_cont:
+    jmp .next
+.next:
     jsr draw_timer
     rts
 
-; Subroutine : Clear Player
-; Description : Clears previous player sprite
-clear_player:
+; Subroutine : Draw Animation Frame
+; Description : Draws Player Character
+draw_animation:
+    ldx X_POS
+    ldy Y_POS
+    clc
+    jsr PLOT
+    lda CURRENT2                       
+    jsr CHROUT
+
+    ldx TEMP_X_POS
+    ldy TEMP_Y_POS
+    clc
+    jsr PLOT
+    lda CURRENT
+    jsr CHROUT
+
+    lda #2
+    sta FRAME_STATE
+    rts 
+
+; Subroutine : Draw Destination Frame
+; Description : Subroutine called when drawing destination frame
+draw_dest_frame:
     ldx X_POS
     ldy Y_POS
     clc
     jsr PLOT
     lda #EMPTY_SPACE_CHAR
     jsr CHROUT
-    rts
 
-; Subroutine : Draw player
-; Description : Draws Player Character
-draw_player:
-    ldx X_POS
-    ldy Y_POS
-    clc
-    jsr PLOT
-    lda CURRENT                       
-    jsr CHROUT
-    rts 
-
-; Subroutine : Draw Animation
-; Description : Replaces `draw_player` when MOVING is #2 ( Animation State )
-draw_animation:
     ldx TEMP_X_POS
     ldy TEMP_Y_POS
     clc
     jsr PLOT
-    lda CURRENT2
+    lda CURRENT                       
     jsr CHROUT
 
-    ldx X_POS
-    ldy Y_POS
-    clc
-    jsr PLOT
-    lda CURRENT
-    jsr CHROUT
-    rts
+    ; Save coordinates after successful render
+    lda TEMP_X_POS
+    sta X_POS
+    lda TEMP_Y_POS
+    sta Y_POS
+    
+    lda #0
+    sta FRAME_STATE
+    rts 
+
 
 ; Subroutine : Load Level
 ; Description : Level Data is included during compile as level<n>
@@ -98,13 +109,11 @@ load_level:
     lda #22
     sbc PLAYER_LIVES
     tax
-
 .repeat:
     lda #EMPTY_SPACE_CHAR
     jsr CHROUT
     dex
     bne .repeat
-
 .top_row:
     lda #WALL
     jsr CHROUT
@@ -112,12 +121,10 @@ load_level:
     cpy #23
     bne .top_row
     ldy #0
-
 .load_character:
     lda #1
     sta BITWISE
     jmp .loop_byte
-
 .inc_char:
     inx
     cpx #20
@@ -126,13 +133,11 @@ load_level:
     jsr CHROUT
     jsr CHROUT
     ldx #0
-
 .inc_bitwise:
     lda BITWISE
     cmp #128
     beq .end_loop_byte
     asl BITWISE
-
 .loop_byte:
     lda (LEVEL_LOW_BYTE),y
     and BITWISE
@@ -140,12 +145,10 @@ load_level:
     lda #WALL
     jsr CHROUT
     jmp .inc_char
-
 .empty_space:
     lda #EMPTY_SPACE_CHAR
     jsr CHROUT
     jmp .inc_char
-
 .end_loop_byte:
     iny
     cpy #50
@@ -160,7 +163,6 @@ load_level:
     bne .bottom_row
     lda #12
     sta $1FF9
-
 .load_player:
     ldy #51
     lda (LEVEL_LOW_BYTE),y
@@ -174,7 +176,6 @@ load_level:
     jsr PLOT
     lda #ROBBER_R
     jsr CHROUT
-
 .load_exit:
     ldy #53
     lda (LEVEL_LOW_BYTE),y
@@ -188,7 +189,6 @@ load_level:
     jsr PLOT
     lda #EXITDOOR
     jsr CHROUT
-
 .load_timer_value:
     ldy #54
     lda (LEVEL_LOW_BYTE),y

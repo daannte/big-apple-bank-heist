@@ -37,7 +37,7 @@ init_set:
     sta TIMER_LOOP_COUNT
     
     lda #ANIMATION_DELAY
-    sta ANIMATION_LOOP_COUNT
+    sta IDLE_LOOP_COUNT
 
     lda #$80                    ; Key Repeats Enable
     sta $028A    
@@ -51,20 +51,12 @@ init_set:
     sta ANIMATION_FRAME
     rts
 
-; Subroutine : Reset CURRENT Frame
-; Description : Resets CURRENT
-reset_current:
-    lda #0
-    sta CURRENT
-    sta CURRENT2
-    rts
-
 ; ---- Jiffy Related ----
 ; Subroutine : Initialize Clock
 ; Description : Initialize Game Variables and System Variables
 initialize_clock:
     ; Loop Speed Init (FPS)
-    lda #LOOP_RATE_10
+    lda #LOOP_RATE_15
     sta LOOP_INTERVAL
     rts
 

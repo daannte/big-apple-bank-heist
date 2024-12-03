@@ -9,7 +9,6 @@ X_POS                   ds.b  1     ; vertical axis, because why not
 Y_POS                   ds.b  1     ; horizontal axis, because why not
 TEMP_X_POS              ds.b  1     ; Temporary X position before collision detection
 TEMP_Y_POS              ds.b  1     ; Temporary Y position before collision detection
-COLLISION               ds.b  1     ; Store collision Bool (0 - No col, 1 - Wall, 2 - Exit, 3 - Item)
 PLAYER_LIVES            ds.b  1     ; Store player lives 
 
 INPUT_COMMAND           ds.b  1     ; Stores Keyboard Input
@@ -34,13 +33,24 @@ ASCII_OFFSET            ds.b  1     ; Offset for ASCII characters (default or cu
 TIMER_VALUE             ds.b  1     ; Timer value
 TIME_OUT_FLAG           ds.b  1     ; Flag to set time out
 
-; Animations
+; Animations - Felt cute, might delete later
 CURRENT                 ds.b  1     ; Holds Sprite For Render
 CURRENT2                ds.b  1     ; Holds Sprite For Render 2
 ANIMATION_FRAME         ds.b  1     ; Current animation frame
 ANIMATION_DIRECTION     ds.b  1     ; Current Facing ANIMATION_DIRECTION
-ANIMATION_LOOP_COUNT    ds.b  1     ; Animation Loop Counter
-MOVING                  ds.b  1     ; 0 = moving, 1 = not moving
+
+;;
+MOVING                  ds.b  1     ; FLAG indicating next movement, 0 - NO MOVE , 1 - RIGHT, 2 - LEFT, 3 - UP, 4 - DOWN
+FRAME_STATE             ds.b  1     ; FLAG indicating if current render is animation frame
+CAN_MOVE                ds.b  1     ; FLAG indicating if can move
+IDLE_LOOP_COUNT         ds.b  1     ; Animation Loop Counter
+DIRECTION               ds.b  1     ; FLAG : LEFT (1) / RIGHT (0)
+
+;;
+
+;;
+LEVEL_UP                ds.b  1     ; FLAG indicating level complete
+;;
 
 CAN_JUMP                ds.b  1     ; 0 = can't jump, 1 = can jump
 GRAVITY_COOLDOWN        ds.b  1     ; Cooldown for gravity

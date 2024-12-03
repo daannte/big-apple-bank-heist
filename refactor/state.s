@@ -173,14 +173,14 @@ update_frames:
     sta CURRENT
     jmp .update_end
 .right_move
-    lda #ROBBER_R_1
-    sta CURRENT2
+    ;lda #ROBBER_R_1
+    ;sta CURRENT2
     lda #ROBBER_R
     sta CURRENT
     jmp .update_end
 .left_move
-    lda #ROBBER_L_1
-    sta CURRENT2
+    ;lda #ROBBER_L_1
+    ;sta CURRENT2
     lda #ROBBER_L
     sta CURRENT
 .update_end

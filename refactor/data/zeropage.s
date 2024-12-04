@@ -53,12 +53,13 @@ MOVING_TEMP             ds.b  1     ; Temporary storage for MOVING
 ;;
 LEVEL_UP                ds.b  1     ; FLAG indicating level complete
 ;;
-
+TEMP_STATE              ds.b  1     ; ;df
 CAN_JUMP                ds.b  1     ; 0 = can't jump, 1 = can jump
-GRAVITY_COOLDOWN        ds.b  1     ; Cooldown for gravity
+GRAVITY_LOOP            ds.b  1     ; Cooldown for gravity
 SCORE1                  ds.b  1     ; Keeps track of the last 2 digits of the score  (xx00-xx99)
 SCORE2                  ds.b  1     ; Keeps track of the first 2 digits of the score (00xx-99xx)
 BCD_TO_PRINT            ds.b  1     ; BCD to print
+FALLING                 ds.b  1     ; Indicates falling
 
 ; zx02 variables
 offset_hi             ds.b  1   ; Offset high byte

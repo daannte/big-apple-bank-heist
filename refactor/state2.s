@@ -2,6 +2,7 @@
 ; Sets game state, manages values of game state variables
 ; Timer value, 
 
+
 ; Subroutine : handle_game_state
 ; Description : 
 ;   1. Load MOVING (ZP)
@@ -12,6 +13,7 @@
 ;   3. IF VALID : update ANIMATION_FRAME
 ;      IF INVALID : end
 handle_game_state:
+    
     lda FRAME_STATE
     cmp #1                  ; If animation state, skip
     beq .start_anim
@@ -20,14 +22,11 @@ handle_game_state:
     cmp #2
     beq .finish_anim
 
-    jsr temp_coord
-    jsr check_collisions
-    bne .no_move
-
 .start_anim:
     jsr temp_coord
     jsr check_collisions
     bne .no_move
+
 .finish_anim:
     jsr handle_frames
     jsr update_frames
@@ -197,18 +196,26 @@ update_frames:
     cmp #10
     beq .left_fall
 .face_right:
+    lda #EMPTY_SPACE_CHAR
+    sta CURRENT2
     lda #ROBBER_R
     sta CURRENT
     jmp .update_end
 .face_left:
+    lda #EMPTY_SPACE_CHAR
+    sta CURRENT2
     lda #ROBBER_L
     sta CURRENT
     jmp .update_end
 .right_idle:
+    lda #EMPTY_SPACE_CHAR
+    sta CURRENT2
     lda #ROBBER_R_IDLE
     sta CURRENT
     jmp .update_end
 .left_idle: 
+    lda #EMPTY_SPACE_CHAR
+    sta CURRENT2
     lda #ROBBER_L_IDLE
     sta CURRENT
     jmp .update_end
@@ -300,6 +307,16 @@ reset_coord:
     sta TEMP_X_POS
     lda Y_POS
     sta TEMP_Y_POS
+    rts
+
+; Subroutine : Set Coordinates
+; Description : Transfers $_POS to $_TEMP_POS
+set_coord:
+    lda X_POS
+    sta TEMP_X_POS
+    lda Y_POS
+    sta TEMP_Y_POS
+    rts
 
 ; Subroutine : Check Collisions
 ; Description : 
@@ -412,17 +429,21 @@ dec_timer_loop:
 .timer_inter_exit:
     rts
 
-; Subroutine : Gravity
-; Description : Decrements XPOS depending on state
-gravity:
-    lda MOVING
-    sta MOVING_TEMP
-    lda #4
-    sta MOVING
-    beq .check_on_ground
+; Subroutine : Decrement Gravity Loop
+dec_gravity_loop:
+    lda GRAVITY_LOOP
+    beq .gravity_ready
+    dec GRAVITY_LOOP
+    lda #0
+    rts
+.gravity_ready:
+    ;lda #FALL_GRAVITY_DELAY
+    ;sta GRAVITY_LOOP
+    lda #1
+    rts
 
-.check_on_ground:
-    jsr temp_coord
-    jsr check_collisions
-    cmp #0
-    
+; Subroutine : Reset Grav Counter
+reset_grav:
+    lda #FALL_GRAVITY_DELAY
+    sta GRAVITY_LOOP
+    rts

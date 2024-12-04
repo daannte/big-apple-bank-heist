@@ -39,11 +39,11 @@ init_set:
     lda #ANIMATION_DELAY
     sta IDLE_LOOP_COUNT
 
-    lda #GRAVITY_MAX_COOLDOWN
-    sta GRAVITY_COOLDOWN
+    lda #FALL_GRAVITY_DELAY
+    sta GRAVITY_LOOP
 
-    lda #$80                    ; Key Repeats Enable
-    sta $028A    
+    ;lda #$80                    ; Key Repeats Enable
+    ;sta $028A    
     lda #0                      ; Level Init
     sta CURRENT_LEVEL
     lda #2                      ; Player Lives Init
@@ -59,7 +59,7 @@ init_set:
 ; Description : Initialize Game Variables and System Variables
 initialize_clock:
     ; Loop Speed Init (FPS)
-    lda #3
+    lda #LOOP_RATE_30
     sta LOOP_INTERVAL
     rts
 

@@ -74,4 +74,5 @@ TIMER_DELAY       = #18                 ; Change this value to control how long 
 ANIMATION_DELAY   = #4                  ; Idle animation wait
 
 ; OTHER VALUES
-GRAVITY_MAX_COOLDOWN = #4
+JUMP_GRAVITY_DELAY = #4
+FALL_GRAVITY_DELAY = #1

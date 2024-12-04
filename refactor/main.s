@@ -24,9 +24,6 @@ start:
     jsr init_set
     jsr initialize_clock           ; THIS INITIALIZES CLOCK
 
-    ;jsr test_sprites
-    ;jmp loop
-
 init:
     jsr load_level
 game:
@@ -37,8 +34,6 @@ game:
     jsr handle_timing
     jmp game
 loop:
-    ;jsr load_endscreen
-    ;jmp start
     jmp loop
 
 ; -------- OTHER FILES ---------

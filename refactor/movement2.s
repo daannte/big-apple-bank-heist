@@ -6,35 +6,57 @@
 ; Description : Sets flags indicating type of movement
 handle_movement:
     lda FRAME_STATE
-    cmp #2              ; If destination frame hasn't been rendered yet
-    beq .skip_input
+    bne .skip_input
     jsr read_input
+
+    inc TEMP_X_POS
+    jsr check_collisions
+    bne .reset_gravity_loop
+
+    ; No collision - in air
+    jsr dec_gravity_loop
+    bne .fall 
+    jmp .skip_input
+
+.fall:
+    lda #4
+    sta MOVING
+    lda #FALL_GRAVITY_DELAY
+    sta GRAVITY_LOOP
+    jmp .skip_input
+
+    ; Standing on platform (collision downwards)
+.reset_gravity_loop:
+    lda FRAME_STATE
+    bne .skip_input
+    jsr reset_grav
+    lda #1
+    sta CAN_JUMP
 .skip_input:
     rts
 
 ; Subroutine : Read Input
 ; Description : Loads INPUT_COMMAND and branch accordingly
 read_input:
-    ; Read Input
     lda INPUT_COMMAND
     cmp #87                     ; "W"
     beq .move_up
-    cmp #83                     ; "S"
-    beq .move_down
     cmp #65                     ; "A"
     beq .move_left
     cmp #68                     ; "D"
-    beq .move_right 
+    beq .move_right
     lda #0
-    sta MOVING 
+    sta MOVING
     jmp .exit_complete
 .move_up:
+    lda CAN_JUMP
+    beq .cant_jump
+    lda #0
+    sta CAN_JUMP
     lda #3
     sta MOVING
-    jmp .exit_read
-.move_down:
-    lda #4
-    sta MOVING
+    lda #JUMP_GRAVITY_DELAY
+    sta GRAVITY_LOOP
     jmp .exit_read
 .move_left:
     lda #2                     ; Direction - Left
@@ -51,5 +73,9 @@ read_input:
 .exit_read:
     lda #1                      ; Initiates the movement sequence 
     sta FRAME_STATE
+    jmp .exit_complete
+.cant_jump:
+    lda #0
+    sta MOVING
 .exit_complete:
     rts

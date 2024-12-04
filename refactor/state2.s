@@ -390,6 +390,8 @@ check_collisions:
     beq .occupied_wall
     cmp #13                 ; EXIT
     beq .occupied_exit
+    cmp #17
+    beq .occupied_trap
     lda #0                  ; No collision
     rts
 .occupied_wall
@@ -400,7 +402,10 @@ check_collisions:
     sta LEVEL_UP
     lda #2
     rts
-
+.occupied_trap
+    lda #0
+    sta GRAVITY_LOOP
+    rts
 ; Subroutine : Decrement Timer Loop
 ; Description : Decrement TIMER_VALUE every #TIMER_LOOP_COUNT loops over game
 dec_timer_loop:

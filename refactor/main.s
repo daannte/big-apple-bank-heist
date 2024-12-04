@@ -1,8 +1,8 @@
     processor 6502
 
     incdir "refactor"
-    incdir "data"
-    incdir "levels"
+    incdir "refactor/data"
+    incdir "refactor/levels"
     include "constants.s"
     include "zeropage.s"
 
@@ -59,7 +59,7 @@ game:
 
 ; -------- OTHER FILES ---------
 
-    include "debug.s"               ; debugging subroutines
+    ;include "debug.s"               ; debugging subroutines
     include "utility.s"
     include "control.s"
     include "movement2.s"

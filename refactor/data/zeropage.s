@@ -20,6 +20,8 @@ BITWISE                 ds.b  1     ; Bitmask for level decompression
 EXIT_X                  ds.b  1     ; x = vertical axis, because why not
 EXIT_Y                  ds.b  1     ; y = horizontal axis, because why not
 
+TRAP_INDEX              ds.b  1     ; Index for traps
+
 ; TIMER RELATED
 CURR_JIFFY_H            ds.b  1     ; JIFFY HIGH temporary storage 
 CURR_JIFFY_M            ds.b  1     ; JIFFY MID temporary storage 

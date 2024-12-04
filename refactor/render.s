@@ -195,7 +195,38 @@ load_level:
     ldy #54
     lda (LEVEL_LOW_BYTE),y
     sta TIMER_VALUE
-    rts
+
+.load_traps:
+  lda #55                   
+  sta TRAP_INDEX
+
+.load_next_trap:
+  ldy TRAP_INDEX
+
+  lda (LEVEL_LOW_BYTE),y    ; Load trap X position
+  beq .end_traps            ; If X position is 0, end of traps
+  pha                       ; Store X position in stack for later 
+
+  iny
+  lda (LEVEL_LOW_BYTE),y    ; Load trap Y position
+  tax                       ; Store Y position in X register
+
+  pla                       ; Pull X from stack
+  tay                       ; Store X position in Y register
+
+  clc
+  jsr PLOT
+  lda #TRAP
+  jsr CHROUT
+
+  ; Increment twice because traps take 2 bytes
+  inc TRAP_INDEX
+  inc TRAP_INDEX
+
+  jmp .load_next_trap
+
+.end_traps
+  rts
 
 ; Subroutine : Draw Timer
 ; Description : Displays Timer

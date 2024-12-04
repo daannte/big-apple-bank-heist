@@ -61,7 +61,7 @@ init_set:
 ; Description : Initialize Game Variables and System Variables
 initialize_clock:
     ; Loop Speed Init (FPS)
-    lda #LOOP_RATE_30
+    lda #LOOP_RATE_20
     sta LOOP_INTERVAL
     rts
 

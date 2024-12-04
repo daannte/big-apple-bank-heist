@@ -11,7 +11,7 @@ handle_movement:
 
     inc TEMP_X_POS
     jsr check_collisions
-    bne .reset_gravity_loop
+    bne .enable_jump
 
     ; No collision - in air
     jsr dec_gravity_loop
@@ -30,6 +30,7 @@ handle_movement:
     lda FRAME_STATE
     bne .skip_input
     jsr reset_grav
+.enable_jump:
     lda #1
     sta CAN_JUMP
 .skip_input:

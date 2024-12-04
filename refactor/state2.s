@@ -396,6 +396,8 @@ check_collisions:
     lda #1
     rts
 .occupied_exit
+    lda #1
+    sta LEVEL_UP
     lda #2
     rts
 

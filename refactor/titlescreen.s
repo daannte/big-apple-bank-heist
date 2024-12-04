@@ -19,13 +19,13 @@ draw_titlescreen:
 
 play_music:
   jsr musicinit
-  jmp end
+  jmp .end
 
 title_input_loop:
   ; jsr GETIN             ; JIN - input check done in music
   ; cmp #00               ; Keep looping until we get a value
   beq title_input_loop
 
-end:
+.end:
   rts
 

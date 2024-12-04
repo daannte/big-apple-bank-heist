@@ -8,6 +8,13 @@ JIFFY_LOW   = $00A2
 JIFFY_MID   = $00A1
 JIFFY_HIGH  = $00A0
 
+; MUSIC RELATED
+VOLUME      = $900E
+SPKLOW      = $900A
+SPKMID      = $900B
+SPKHIH      = $900C
+SPKWHT      = $900D
+
 ; OTHER MEMORY LOCATIONS
 SCR         = $1E00         ; Screen Memory Location (First half)
 SCR2        = $1EFA         ; Screen Memory Location (Second half)
@@ -70,7 +77,7 @@ LOOP_RATE_30      = #2                  ; 30Hz
 LOOP_RATE_15      = #4                  ; 15Hz
 LOOP_RATE_10      = #6                  ; 10Hz
 
-TIMER_DELAY       = #18                 ; Change this value to control how long each game loop takes
+TIMER_DELAY       = #28                 ; Change this value to control how long each game loop takes
 ANIMATION_DELAY   = #4                  ; Idle animation wait
 
 ; OTHER VALUES

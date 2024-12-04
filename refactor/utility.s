@@ -42,16 +42,18 @@ init_set:
     lda #FALL_GRAVITY_DELAY
     sta GRAVITY_LOOP
 
-    ;lda #$80                    ; Key Repeats Enable
-    ;sta $028A    
-    lda #0                      ; Level Init
-    sta CURRENT_LEVEL
+    lda #0
+    sta LEVEL_UP
+    
+    lda #$80                    ; Key Repeats Enable
+    sta $028A    
     lda #2                      ; Player Lives Init
     sta PLAYER_LIVES
 
     ; ANIMATION
-    lda #1
+    lda #0
     sta ANIMATION_FRAME
+
     rts
 
 ; ---- Jiffy Related ----

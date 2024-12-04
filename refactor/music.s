@@ -21,9 +21,9 @@ musicinit
 restNote
     ldx #11                 ; 8th Note on 130 bpm
 .restNoteLoop
-    lda JIFFY1
+    lda JIFFY_LOW
 .restNoteTimer
-    cmp JIFFY1
+    cmp JIFFY_LOW
     beq .restNoteTimer
     dex
     bne .restNoteLoop
@@ -34,9 +34,9 @@ restNote
 pause
     ldx #2
 .pauseLoop
-    lda JIFFY1
+    lda JIFFY_LOW
 .pauseTimer
-    cmp JIFFY1
+    cmp JIFFY_LOW
     beq .pauseTimer
     dex
     bne .pauseLoop

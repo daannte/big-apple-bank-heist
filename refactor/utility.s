@@ -44,11 +44,10 @@ init_set:
 
     lda #0
     sta LEVEL_UP
+    sta TIME_OUT_FLAG
     
     lda #$80                    ; Key Repeats Enable
-    sta $028A    
-    lda #2                      ; Player Lives Init
-    sta PLAYER_LIVES
+    sta $028A
 
     ; ANIMATION
     lda #0

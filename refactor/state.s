@@ -1,16 +1,411 @@
-; state.s
+; state2.s
 ; Sets game state, manages values of game state variables
 ; Timer value, 
 
-    subroutine
+
 ; Subroutine : handle_game_state
-; Description : Sets necessary values for frame counting
+; Description : 
+;   1. Load MOVING (ZP)
+;   2. Collision Test
+;       2a. Valid           - Change XPOS/YPOS accordingly
+;       2b. Invalid (Wall)  - CONTINUE; proceed game loop
+;       2c. Valid ( Exit )  - Sets level complete flag
+;   3. IF VALID : update ANIMATION_FRAME
+;      IF INVALID : end
 handle_game_state:
+    
+    lda FRAME_STATE
+    cmp #1                  ; If animation state, skip
+    beq .start_anim
+    
+    lda FRAME_STATE
+    cmp #2
+    beq .finish_anim
+
+.start_anim:
+    jsr temp_coord
+    jsr check_collisions
+    bne .no_move
+
+.finish_anim:
     jsr handle_frames
     jsr update_frames
+    jmp .game_state_end
+.no_move:
+    jsr reset_coord
+.game_state_end:
     jsr dec_timer_loop
     rts
 
+; Subroutine : handle_frames
+; Description : 
+;   * All movement consists of 2 frames, one animation frame and one destination frame
+;   ** FRAME_STATE - #1 animation frame, #2 destination frame
+;   ** If ANIMATION FRAME:
+;       render needs to use CURRENT POSITION to display first half
+;       Then $POS to display second half
+;   ** If DESTINATION FRAME:
+;       render needs to use $POS to display half
+;   Use FRAME_STATE (ZP) to distinguish FRAME
+handle_frames:
+    ; Check if currently in process of moving
+    lda FRAME_STATE
+    cmp #1              ; Animation Frame
+    beq .anim_frame
+    
+    lda FRAME_STATE
+    cmp #2              ; Destination Frame
+    beq .dest_frame
+
+    lda MOVING
+    beq .idle_frame
+.dest_frame:
+    lda MOVING
+    cmp #1
+    beq .dest_right_frame
+    
+    lda MOVING
+    cmp #2
+    beq .dest_left_frame
+    
+    lda MOVING
+    cmp #3
+    beq .dest_up_frame
+
+    lda MOVING
+    cmp #4
+    beq .dest_down_frame
+.dest_right_frame:
+    lda #1              ; Right Dest
+    sta ANIMATION_FRAME
+    jmp .end_frames
+.dest_left_frame:
+    lda #2              ; Left Dest
+    sta ANIMATION_FRAME
+    jmp .end_frames
+.dest_up_frame:
+    lda DIRECTION
+    cmp #0
+    beq .dest_right_frame
+    jmp .dest_left_frame
+.dest_down_frame:
+    lda DIRECTION
+    cmp #0
+    beq .dest_right_frame
+    jmp .dest_left_frame
+.idle_frame:
+    lda IDLE_LOOP_COUNT
+    beq .idle_next
+    dec IDLE_LOOP_COUNT
+    jmp .end_frames
+.idle_next:
+    lda ANIMATION_FRAME
+    cmp #3              ; Face Right
+    bcc .idle_switch
+    lda ANIMATION_FRAME
+    sbc #2
+    sta ANIMATION_FRAME
+    jmp .idle_end
+.idle_switch:
+    lda ANIMATION_FRAME
+    adc #2
+    sta ANIMATION_FRAME    
+.idle_end:
+    lda #ANIMATION_DELAY
+    sta IDLE_LOOP_COUNT
+    jmp .end_frames
+.anim_frame:
+    lda MOVING
+    cmp #1
+    beq .anim_right_frame
+
+    lda MOVING
+    cmp #2
+    beq .anim_left_frame
+
+    lda MOVING
+    cmp #3
+    beq .anim_up_frame
+
+    lda MOVING
+    cmp #4
+    beq .anim_down_frame
+.anim_right_frame:
+    lda #5
+    sta ANIMATION_FRAME
+    jmp .end_frames
+.anim_left_frame:
+    lda #6
+    sta ANIMATION_FRAME
+    jmp .end_frames
+.anim_up_frame:
+    lda DIRECTION
+    beq .anim_up_right
+    lda #8
+    sta ANIMATION_FRAME
+    jmp .end_frames
+.anim_up_right:
+    lda #7
+    sta ANIMATION_FRAME
+    jmp .end_frames
+.anim_down_frame:
+    lda DIRECTION
+    beq .anim_down_right
+    lda #10
+    sta ANIMATION_FRAME
+    jmp .end_frames
+.anim_down_right:
+    lda #9
+    sta ANIMATION_FRAME
+    jmp .end_frames
+.end_frames:    
+    rts
+
+; Subroutine : Update frames
+; Description : Uses ANIMATION_FRAME val to designate CURRENT
+; Basically a indexing table for CURRENT VALUE.
+update_frames:
+    lda ANIMATION_FRAME
+    cmp #1
+    beq .face_right
+    lda ANIMATION_FRAME
+    cmp #2
+    beq .face_left
+    lda ANIMATION_FRAME
+    cmp #3
+    beq .right_idle
+    lda ANIMATION_FRAME
+    cmp #4
+    beq .left_idle
+    lda ANIMATION_FRAME
+    cmp #5
+    beq .right_anim
+    lda ANIMATION_FRAME
+    cmp #6
+    beq .left_anim
+    lda ANIMATION_FRAME
+    cmp #7
+    beq .right_jmp
+    lda ANIMATION_FRAME
+    cmp #8
+    beq .left_jmp
+    lda ANIMATION_FRAME
+    cmp #9
+    beq .right_fall
+    lda ANIMATION_FRAME
+    cmp #10
+    beq .left_fall
+.face_right:
+    lda #EMPTY_SPACE_CHAR
+    sta CURRENT2
+    lda #ROBBER_R
+    sta CURRENT
+    jmp .update_end
+.face_left:
+    lda #EMPTY_SPACE_CHAR
+    sta CURRENT2
+    lda #ROBBER_L
+    sta CURRENT
+    jmp .update_end
+.right_idle:
+    lda #EMPTY_SPACE_CHAR
+    sta CURRENT2
+    lda #ROBBER_R_IDLE
+    sta CURRENT
+    jmp .update_end
+.left_idle: 
+    lda #EMPTY_SPACE_CHAR
+    sta CURRENT2
+    lda #ROBBER_L_IDLE
+    sta CURRENT
+    jmp .update_end
+.right_anim:
+    lda #ROBBER_R_1
+    sta CURRENT2
+    lda #ROBBER_R_2
+    sta CURRENT
+    jmp .update_end
+.left_anim:
+    lda #ROBBER_L_2
+    sta CURRENT2
+    lda #ROBBER_L_1
+    sta CURRENT
+    jmp .update_end
+.right_jmp:
+    lda #ROBBER_VR_2
+    sta CURRENT2
+    lda #ROBBER_VR_1
+    sta CURRENT
+    jmp .update_end
+.left_jmp:
+    lda #ROBBER_VL_2
+    sta CURRENT2
+    lda #ROBBER_VL_1
+    sta CURRENT
+    jmp .update_end
+.right_fall:
+    lda #ROBBER_VR_1
+    sta CURRENT2
+    lda #ROBBER_VR_2
+    sta CURRENT
+    jmp .update_end
+.left_fall:
+    lda #ROBBER_VL_1
+    sta CURRENT2
+    lda #ROBBER_VL_2
+    sta CURRENT
+    jmp .update_end
+.update_end
+    rts
+
+; Subroutine : Temporary Coordinates
+; Description : Updates Temporary Coordinates based on Direction
+;   Stores Temporary Coordinates to TEMP_$_POS
+;   RETURN VALUE IN REGISTER : NONE
+temp_coord:
+    lda X_POS
+    sta TEMP_X_POS
+    lda Y_POS
+    sta TEMP_Y_POS
+
+    lda MOVING
+    cmp #1
+    beq .right_move
+
+    lda MOVING 
+    cmp #2
+    beq .left_move
+
+    lda MOVING
+    cmp #3
+    beq .up_move
+
+    lda MOVING
+    cmp #4
+    beq .down_move
+    jmp .end_update_coord
+.right_move:
+    inc TEMP_Y_POS
+    jmp .end_update_coord
+.left_move:
+    dec TEMP_Y_POS
+    jmp .end_update_coord
+.up_move:
+    dec TEMP_X_POS
+    jmp .end_update_coord
+.down_move:
+    inc TEMP_X_POS
+    jmp .end_update_coord
+.end_update_coord:
+    rts
+
+; Subroutine : Reset Coordinates
+; Description : Since $_POS is changed after rendering, and TEMP_$_POS
+;   is used for rendering, reset TEMP_$_POS if movement is not viable
+reset_coord:
+    lda X_POS
+    sta TEMP_X_POS
+    lda Y_POS
+    sta TEMP_Y_POS
+    rts
+
+; Subroutine : Set Coordinates
+; Description : Transfers $_POS to $_TEMP_POS
+set_coord:
+    lda X_POS
+    sta TEMP_X_POS
+    lda Y_POS
+    sta TEMP_Y_POS
+    rts
+
+; Subroutine : Check Collisions
+; Description : 
+;   TEMP_$_POS is incremented/decremented accordingly based on given input key
+;   Potential Player Coordinates are tested if it is a valid movement ( no collisions)
+;   RETURN VALUE IN REGISTER : (A)
+;   If valid, returns #0 in Accumulator
+;   If wall, returns #1 in Accumulator
+;   If exit, returns #2 in Accumulator
+check_collisions:
+    lda TEMP_X_POS
+    cmp #11
+    bcc .baseaddr
+    lda TEMP_X_POS
+    cmp #11
+    bne .midaddr
+    lda TEMP_Y_POS
+    cmp #11
+    bcc .baseaddr
+.midaddr
+    lda TEMP_X_POS
+    sec
+    sbc #10
+    asl
+    asl
+    asl
+    asl
+    sta TEMP1
+
+    lda TEMP_X_POS
+    asl
+    sta TEMP2
+
+    asl
+    clc
+    adc TEMP2
+    clc
+    adc TEMP1
+
+    sta TEMP1
+    lda TEMP_Y_POS
+    clc
+    adc TEMP1
+    sec
+    sbc #90                 ; Magic number, apparently
+    tax
+    lda SCR2,X
+    jmp .check_occupied
+.baseaddr
+    lda TEMP_X_POS
+    asl
+    asl
+    asl
+    asl
+    sta TEMP1
+    lda TEMP_X_POS
+    asl
+    sta TEMP2
+    asl
+    clc
+    adc TEMP2
+    clc
+    adc TEMP1
+    sta TEMP1
+    lda TEMP_Y_POS
+    adc TEMP1
+    tax
+    lda SCR,x
+.check_occupied
+    cmp #12                 ; WALL
+    beq .occupied_wall
+    cmp #13                 ; EXIT
+    beq .occupied_exit
+    cmp #17
+    beq .occupied_trap
+    lda #0                  ; No collision
+    rts
+.occupied_wall
+    lda #1
+    rts
+.occupied_exit
+    lda #1
+    sta LEVEL_UP
+    lda #2
+    rts
+.occupied_trap
+    lda #0
+    sta GRAVITY_LOOP
+    rts
 ; Subroutine : Decrement Timer Loop
 ; Description : Decrement TIMER_VALUE every #TIMER_LOOP_COUNT loops over game
 dec_timer_loop:
@@ -41,147 +436,21 @@ dec_timer_loop:
 .timer_inter_exit:
     rts
 
-; Subroutine : handle_frames
-; Description : Stores frame ID
-handle_frames:
-    ; First Check if MOVING
-    ; If moving, game takes 2 loops to complete movement
-    ; If not moving, game takes 2 loops to complete idle movement
-    lda MOVING
-    beq .idle_start         ; NOT MOVING
-    
-    ; MOVING HERE - Check if in the middle of move, or new input
-    ; 1 - Key has been pressed this game loop, start movement processor
-    ; 2 - Is in the middle of the loop
-    lda MOVING
-    cmp #1
-    beq .move_start
-
-    ; In process of moving ( MOVING is #2 ) - needs to finish movement
-    lda ANIMATION_FRAME
-    cmp #5                      ; Since last frame was #5 or #6 (TRAN_R, TRAN_L)
-    beq .right_complete
-
-    ; Finish left movement
-    lda #FACE_L
-    sta ANIMATION_FRAME
-    lda #0                      ; Reset MOVING to 0
-    sta MOVING
-    jmp .frames_exit
-
-    ; Finish right movement
-.right_complete:
-    lda #FACE_R
-    sta ANIMATION_FRAME
-    lda #0                      ; Reset MOVING to 0
-    sta MOVING
-    jmp .frames_exit
-    
-.move_start:
-    ; Key was only recently pressed
-    ; Start the movement sequence
-    ; Needs to render 2 frames: CURRENT, and CURRENT2 for intermediate frame
-    lda ANIMATION_FRAME
-    cmp #1                      ; Check if movement is left or right (if eq #1, RIGHT)
-    beq .right_anim
-
-    ; Left movement animation here
-    lda #2                      
-    sta MOVING                  ; Saves #2 to MOVING to indicate next loop needs to render transition frames
-    lda #TRAN_L                 ; #6 - Refer to constants.s file for exact value
-    sta ANIMATION_FRAME         ; Indicates that `draw_player` has to draw the 2 frames related to transition
-    jmp .frames_exit
-
-    ; Right movement animation here
-.right_anim
-    lda #2
-    sta MOVING                  ; Saves #2 to MOVING to indicate next loop needs to render transition frames
-    lda #TRAN_R                 ; #5 - Refer to constants.s file for value meaning
-    sta ANIMATION_FRAME         ; Indicates that `draw_player` has to draw the 2 frames related to trasition
-    jmp .frames_exit
-
-.idle_start:
-    ; Skips a game loop to simulate idle movement: will change CURRENT frame every $ANIMATION_LOOP_COUNT Times
-    lda ANIMATION_LOOP_COUNT
-    beq .next_frame
-    dec ANIMATION_LOOP_COUNT
-    jmp .frames_exit
-
-.next_frame:
-    ; Reset Animation Delay
-    lda #ANIMATION_DELAY
-    sta ANIMATION_LOOP_COUNT
-    
-    lda MOVING              ; If MOVING == 0, branch idle animations
-    beq .idle_frames
-
-.idle_frames:
-    lda ANIMATION_FRAME
-    cmp #3
-    bcc .idle_switch        ; If on idle frame, (>2) and not moving, Switch to normal frame
-    lda ANIMATION_FRAME
-    sec
-    sbc #2
-    sta ANIMATION_FRAME
-    jmp .frames_exit
-.idle_switch:
-    lda ANIMATION_FRAME
-    clc
-    adc #2
-    sta ANIMATION_FRAME
-.frames_exit:
+; Subroutine : Decrement Gravity Loop
+dec_gravity_loop:
+    lda GRAVITY_LOOP
+    beq .gravity_ready
+    dec GRAVITY_LOOP
+    lda #0
+    rts
+.gravity_ready:
+    ;lda #FALL_GRAVITY_DELAY
+    ;sta GRAVITY_LOOP
+    lda #1
     rts
 
-; Subroutine : Update frames
-; Description : Uses ANIMATION_FRAME val to designate CURRENT
-; Basically a indexing table for CURRENT VALUE.
-; Want to optimize but too big
-update_frames:
-    lda ANIMATION_FRAME
-    cmp #1
-    beq .face_right
-    lda ANIMATION_FRAME
-    cmp #2
-    beq .face_left
-    lda ANIMATION_FRAME
-    cmp #3
-    beq .right_idle
-    lda ANIMATION_FRAME
-    cmp #4
-    beq .left_idle
-    lda ANIMATION_FRAME
-    cmp #5
-    beq .right_move
-    lda ANIMATION_FRAME
-    cmp #6
-    beq .left_move
-
-.face_right
-    lda #ROBBER_R
-    sta CURRENT
-    jmp .update_end
-.face_left
-    lda #ROBBER_L
-    sta CURRENT
-    jmp .update_end
-.right_idle
-    lda #ROBBER_R_IDLE
-    sta CURRENT
-    jmp .update_end
-.left_idle 
-    lda #ROBBER_L_IDLE
-    sta CURRENT
-    jmp .update_end
-.right_move
-    ;lda #ROBBER_R_1
-    ;sta CURRENT2
-    lda #ROBBER_R
-    sta CURRENT
-    jmp .update_end
-.left_move
-    ;lda #ROBBER_L_1
-    ;sta CURRENT2
-    lda #ROBBER_L
-    sta CURRENT
-.update_end
+; Subroutine : Reset Grav Counter
+reset_grav:
+    lda #FALL_GRAVITY_DELAY
+    sta GRAVITY_LOOP
     rts

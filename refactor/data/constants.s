@@ -78,7 +78,7 @@ LOOP_RATE_20      = #3                  ; 20Hz
 LOOP_RATE_15      = #4                  ; 15Hz
 LOOP_RATE_10      = #6                  ; 10Hz
 
-TIMER_DELAY       = #28                 ; Change this value to control how long each game loop takes
+TIMER_DELAY       = #21                 ; Change this value to control how long each game loop takes
 ANIMATION_DELAY   = #4                  ; Idle animation wait
 
 ; OTHER VALUES

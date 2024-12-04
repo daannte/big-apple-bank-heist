@@ -20,7 +20,21 @@ render_game:
     jsr draw_animation
     jmp .next
 .next:
-    jsr draw_timer
+    ldx #0
+    ldy #20
+    clc
+    jsr PLOT
+    lda TIMER_VALUE
+    sta BCD_TO_PRINT
+    cmp #10
+    bcs .color_white
+    lda #2
+    sta $0286
+
+.color_white:
+    jsr print_bcd
+    lda #1
+    sta $0286
     rts
 
 ; Subroutine : Draw Animation Frame
@@ -91,8 +105,7 @@ load_level:
     lda level_pointers+1,y
     sta LEVEL_HIGH_BYTE
 
-    lda PLAYER_LIVES
-    tay
+    ldy PLAYER_LIVES
     iny
 
     lda #2                  ; Set X to red
@@ -231,6 +244,7 @@ load_level:
 ; Subroutine : Draw Timer
 ; Description : Displays Timer
 draw_timer:
+
     ldx #0
     ldy #20
     clc
@@ -249,6 +263,8 @@ draw_timer:
     clc
     adc ASCII_OFFSET
     jsr CHROUT
+    lda #1
+    sta $0286
     rts
 
 ; Subroutine : Draw Score
@@ -302,10 +318,10 @@ print_score:
   adc TEMP2
   sta BCD_TO_PRINT
   jsr print_bcd
-
-.load_endscreen_loop:
   lda #0
   sta $00C6
+
+.load_endscreen_loop:
   jsr GETIN
   cmp #00
   beq .load_endscreen_loop
@@ -348,6 +364,19 @@ load_endscreen:
   lda #'!
   jsr CHROUT
 
+  lda #0
+  sta TEMP1
+.add_lives_to_score:
+  lda SCORE2
+  clc
+  adc #$01
+  sta SCORE2
+  inc TEMP1
+  lda TEMP1
+  cmp PLAYER_LIVES
+  beq .print_score
+  jmp .add_lives_to_score
+.print_score:
   jsr print_score
 
 .end_load_endscreen:

@@ -1,185 +1,82 @@
 ; movement.s
 ; Movement related subroutines
-; States saved on ZP memory is used to manipulate movement
-;   for modularity
+; ** ONLY sets flags for it to be changed later in state.s
 
-    
 ; Subroutine : Handle Movement
-; Description : Loads INPUT_COMMAND(ZP), moves character sprite
-    subroutine
+; Description : Sets flags indicating type of movement
 handle_movement:
+    lda FRAME_STATE
+    bne .skip_input
     jsr read_input
+
+    inc TEMP_X_POS
     jsr check_collisions
-    jsr move_character
-skip_movement:
+    bne .reset_gravity_loop
+
+    ; No collision - in air
+    jsr dec_gravity_loop
+    bne .fall 
+    jmp .skip_input
+
+.fall:
+    lda #4
+    sta MOVING
+    lda #FALL_GRAVITY_DELAY
+    sta GRAVITY_LOOP
+    jmp .skip_input
+
+    ; Standing on platform (collision downwards)
+.reset_gravity_loop:
+    lda FRAME_STATE
+    bne .skip_input
+    jsr reset_grav
+.enable_jump:
+    lda #1
+    sta CAN_JUMP
+.skip_input:
     rts
 
 ; Subroutine : Read Input
-; Description : Loads INPUT_COMMAND and compares with keymap and branche
-    subroutine
+; Description : Loads INPUT_COMMAND and branch accordingly
 read_input:
-    ; Store X and Y temporarily for Animations
-    lda X_POS
-    sta TEMP_X_POS             
-    lda Y_POS
-    sta TEMP_Y_POS
-
-    ; Read Input
     lda INPUT_COMMAND
     cmp #87                     ; "W"
     beq .move_up
-    cmp #83                     ; "S"
-    beq .move_down
     cmp #65                     ; "A"
     beq .move_left
     cmp #68                     ; "D"
-    beq .move_right 
-    cmp #32                     ; "<SPACE>"
-    beq .move_action     
-    cmp #0                      ; Nothing
-    beq skip_movement        
-.exit_read:
-    rts
-
-; Subroutine : Move Up
-; Description : 
-.move_up:
-    ; JUMPS - implement later, focus now on left and right movement
-    dec X_POS
-    lda #1
-    sta MOVING
-    rts
-
-; Subroutine : Move Down
-; Description : 
-.move_down:
-    inc X_POS
-    lda #1
-    sta MOVING
-    rts
-
-; Subroutine : Move Left
-; Description : 
-.move_left:
-    dec Y_POS
-    lda #1
-    sta MOVING
-    lda #2
-    sta ANIMATION_FRAME
-    rts
-
-; Subroutine : Move Right
-; Description : 
-.move_right:
-    inc Y_POS
-    lda #1
-    sta MOVING
-    lda #1
-    sta ANIMATION_FRAME
-    rts
-
-; Subroutine : Action
-; Description : Item usage: Loads from CURRENT_ITEM(ZP) and calls item use subroutine
-;               *PICKAXE : Detect collision ahead and remove block and replace with <SPACE>
-.move_action:
-    rts
-
-; Subroutine : Check Collisions
-; Description : Compares TEMP_$_POS with screen data to detect collision
-    subroutine
-check_collisions:
-    lda X_POS
-    cmp #11
-    bcc .baseaddr
-    lda X_POS
-    cmp #11
-    bne .midaddr
-    lda Y_POS
-    cmp #11
-    bcc .baseaddr
-
-.midaddr
-    lda X_POS
-    sec
-    sbc #10
-    asl
-    asl
-    asl
-    asl
-    sta TEMP1
-
-    lda X_POS
-    asl
-    sta TEMP2
-
-    asl
-    clc
-    adc TEMP2
-    clc
-    adc TEMP1
-
-    sta TEMP1
-    lda Y_POS
-    clc
-    adc TEMP1
-    sec
-    sbc #90                 ; Magic number, apparently
-    tax
-    lda SCR2,X
-    jmp .check_occupied
-
-.baseaddr
-    lda X_POS
-    asl
-    asl
-    asl
-    asl
-    sta TEMP1
-    lda X_POS
-    asl
-    sta TEMP2
-    asl
-    clc
-    adc TEMP2
-    clc
-    adc TEMP1
-    sta TEMP1
-    lda Y_POS
-    adc TEMP1
-    tax
-    lda SCR,x
-
-.check_occupied
-    cmp #10                 ; WALL
-    beq .occupied_wall
-    cmp #11                 ; EXIT
-    beq .occupied_exit
-    lda #0                  ; No collision
-    rts
-
-.occupied_wall
-    lda #1
-    rts
-
-.occupied_exit
-    lda #2
-    rts
-
-; Subroutine : Move Character
-; Description : Moves character position
-; FUTURE : 
-    subroutine
-move_character:
-    cmp #1
-    beq .collision_wall
-
-.collision_wall
+    beq .move_right
     lda #0
-    sta INPUT_COMMAND
+    sta MOVING
+    jmp .exit_complete
+.move_up:
+    lda CAN_JUMP
+    beq .cant_jump
+    lda #0
+    sta CAN_JUMP
+    lda #3
+    sta MOVING
+    lda #JUMP_GRAVITY_DELAY
+    sta GRAVITY_LOOP
+    jmp .exit_read
+.move_left:
+    lda #2                     ; Direction - Left
+    sta MOVING
+    lda #1
+    sta DIRECTION
+    jmp .exit_read
+.move_right:
+    lda #1                     ; Direction - Right
+    sta MOVING
+    lda #0
+    sta DIRECTION
+    jmp .exit_read
+.exit_read:
+    lda #1                      ; Initiates the movement sequence 
+    sta FRAME_STATE
+    jmp .exit_complete
+.cant_jump:
+    lda #0
+    sta MOVING
+.exit_complete:
     rts
-
-; Subroutine : Gravity (WIP)
-; Description : Gravity
-
-; Subroutine : Animations
-; Description : Animations

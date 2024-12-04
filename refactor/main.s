@@ -31,6 +31,7 @@ title:
     lda #0                         ; Level Init
     sta CURRENT_LEVEL
 init:
+    jsr reset_score
     jsr load_chars                 ; Load Custom Charset
 init2:
     jsr init_set
@@ -46,10 +47,15 @@ game:
     jmp game
 
 .level_up:
+    jsr add_score
     inc CURRENT_LEVEL
+    lda CURRENT_LEVEL
+    cmp #MAX_LEVELS
+    beq .score_scene
     jmp init2
-loop:
-    jmp loop
+.score_scene:
+    jsr load_endscreen
+    jmp start
 
 ; -------- OTHER FILES ---------
 

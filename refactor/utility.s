@@ -189,3 +189,11 @@ print_bcd:
   jsr CHROUT
   
   rts
+
+; Subroutine : Reset Score
+; Description : Resets score after full run
+reset_score:
+    lda #0
+    sta SCORE1
+    sta SCORE2
+    rts

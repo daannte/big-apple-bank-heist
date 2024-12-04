@@ -83,3 +83,7 @@ ANIMATION_DELAY   = #4                  ; Idle animation wait
 ; OTHER VALUES
 JUMP_GRAVITY_DELAY = #4
 FALL_GRAVITY_DELAY = #1
+
+; LEVEL VALUES
+LEVEL_SIZE = #55
+MAX_LEVELS = #3

@@ -11,25 +11,20 @@ handle_input:
     ; Ignore input for this Loop
     lda $00C5
     sta INPUT_COMMAND
-    cmp #$09                      ; "W"
+    cmp #$09                    ; "W"
     beq .set_move_up
-    cmp #$29                     ; "S"
-    beq .set_move_down
-    cmp #$11                     ; "A"
+    cmp #$11                    ; "A"
     beq .set_move_left
-    cmp #$12                     ; "D"
+    cmp #$12                    ; "D"
     beq .set_move_right
+    cmp #$15                    ; "L"
+    beq .set_cheat              
     lda #0
     sta INPUT_COMMAND                          
     jmp .set_exit
 
 .set_move_up:
     lda #87
-    sta INPUT_COMMAND
-    jmp .set_exit
-
-.set_move_down:
-    lda #83
     sta INPUT_COMMAND
     jmp .set_exit
 
@@ -41,6 +36,11 @@ handle_input:
 .set_move_right:
     lda #68
     sta INPUT_COMMAND
+    jmp .set_exit
+
+.set_cheat:
+    lda #1
+    sta LEVEL_UP
 
 .set_exit
     rts

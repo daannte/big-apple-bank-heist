@@ -50,7 +50,7 @@ AIR_COUNTER             ds.b  1     ; Counter to activate gravity
 MOVING_TEMP             ds.b  1     ; Temporary storage for MOVING
 ;;
 
-;;
+
 LEVEL_UP                ds.b  1     ; FLAG indicating level complete
 ;;
 TEMP_STATE              ds.b  1     ; ;df

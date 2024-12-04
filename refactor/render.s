@@ -246,7 +246,7 @@ print_score:
 
 .convert_to_bcd:
   lda SCORE2    ; Already in BCD since only using 0-9
-  sta TIMER_VALUE
+  sta BCD_TO_PRINT
   jsr print_bcd ; Print the BCD
 
   lda #0
@@ -269,10 +269,12 @@ print_score:
   asl
   clc
   adc TEMP2
-  sta TIMER_VALUE
+  sta BCD_TO_PRINT
   jsr print_bcd
 
 .load_endscreen_loop:
+  lda #0
+  sta $00C6
   jsr GETIN
   cmp #00
   beq .load_endscreen_loop

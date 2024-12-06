@@ -271,6 +271,12 @@ draw_timer:
 ; Description : Displays Score
     subroutine
 print_score:
+  lda #ASCII_0
+  sta ASCII_OFFSET
+  
+  lda #$f0                ; loading 240 into CHARSET to reset character set for titlescreen 
+  sta CHARSET             ; the above can be found on page 267
+
   ldx #12
   ldy #6
   clc

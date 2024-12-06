@@ -1,8 +1,8 @@
     processor 6502
 
     incdir "refactor"
-    incdir "refactor/data"
-    incdir "refactor/levels"
+    incdir "data"
+    incdir "levels"
     include "constants.s"
     include "zeropage.s"
 
@@ -15,9 +15,9 @@ level_pointers:
 level_1
     incbin "level1.data"
 level_2
-    incbin "level2.data"
+    incbin "level11.data"
 level_3
-    incbin "level3.data"
+    incbin "level10.data"
 level_4
     incbin "level4.data"
 level_5
@@ -31,9 +31,9 @@ level_8
 level_9
     incbin "level9.data"
 level_10
-    incbin "level10.data"
+    incbin "level3.data"
 level_11
-    incbin "level11.data"
+    incbin "level2.data"
 
 comp_data
     incbin "titlescreen.zx02"
@@ -50,8 +50,11 @@ title:
     sta PLAYER_LIVES
 init:
     jsr reset_score
-    jsr load_chars                 ; Load Custom Charset
 init2:
+    jsr clear_scr
+    jsr print_score
+    jsr load_chars                 ; Load Custom Charset
+init3:
     jsr init_set
     jsr load_level
 game:
@@ -84,6 +87,8 @@ game:
     jsr load_endscreen
 
 .game_over:
+    jsr clear_scr
+    jsr print_score
     jmp start
 
 ; -------- OTHER FILES ---------

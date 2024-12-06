@@ -1,0 +1,10 @@
+# To compile :
+`dasm main.s -omain.prg -lmain.lst`
+
+# Skip levels :
+Press `L` to skip level
+
+# Controls :
+W - Jump
+A - LEFT 
+D - RIGHT

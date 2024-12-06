@@ -4,6 +4,8 @@
 
 TEMP1                   ds.b  1     ; Temporary variable for screen offset calculation
 TEMP2                   ds.b  1     ; Temporary variable for screen offset calculation
+TEMP3                   ds.b  1     ; Temporary variable for screen offset calculation
+TEMP4                   ds.b  1     ; Temporary variable for screen offset calculation
 
 X_POS                   ds.b  1     ; vertical axis, because why not
 Y_POS                   ds.b  1     ; horizontal axis, because why not

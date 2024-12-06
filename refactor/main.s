@@ -10,7 +10,7 @@
     include "stub.s"
 
 level_pointers:
-    dc.w level_1, level_2, level_3
+    dc.w level_1, level_2, level_3, level_4, level_5, level_6, level_7
     
 level_1
     incbin "level1.data"
@@ -18,6 +18,14 @@ level_2
     incbin "level2.data"
 level_3
     incbin "level3.data"
+level_4
+    incbin "level4.data"
+level_5
+    incbin "level5.data"
+level_6
+    incbin "level6.data"
+level_7
+    incbin "level7.data"
 
 comp_data
     incbin "titlescreen.zx02"

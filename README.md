@@ -27,3 +27,13 @@ To update your branch from the main repository, do the following:
 - Run `git merge main`
     - If merge conflicts occur, correct them
 - Commit the merge
+
+## Data Format
+The compiled level data is formatted in the following manner:
+- Each level is surrounded by a static perimiter of bricks, with the variable positions being a grid of 20x20
+- The first 50 bytes represent the positions of the bricks in the level where each bit represents whether or not a brick is present
+- The next 2 bytes represent the X and Y positions of the player
+- The next 2 bytes represent the X and Y positions of the exit
+- The next byte represents the level timer
+- The remaining bytes are pairs of two, representing the X and Y positions of traps
+- The end of the data is denoted by a nullbyte

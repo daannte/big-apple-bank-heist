@@ -1,8 +1,8 @@
     processor 6502
 
     incdir "refactor"
-    incdir "data"
-    incdir "levels"
+    incdir "refactor/data"
+    incdir "refactor/levels"
     include "constants.s"
     include "zeropage.s"
 

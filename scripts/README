@@ -1,0 +1,25 @@
+# Using the Level Editor
+
+./python grideditor.py
+
+Customize your own levels.
+you don't need to put the border walls, the border walls will be included after your customization.
+
+"P" - Player starting location
+"#" - Wall/Platform
+"E" - Exit
+"T" - Collapsible Traps
+
+Name your level and click "compress" and "export"
+
+move the .data file to the levels directory
+
+in the main.s :
+
+add your new level_pointer to `level_pointers`, and add the line 
+level_$
+  incbin "your_level_$.data"
+
+in data/constants.s,
+
+add 1 to MAX_LEVELS so that the game can recognize the new number of levels by your addition.

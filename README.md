@@ -37,3 +37,10 @@ The compiled level data is formatted in the following manner:
 - The next byte represents the level timer
 - The remaining bytes are pairs of two, representing the X and Y positions of traps
 - The end of the data is denoted by a nullbyte
+
+
+## How to Run
+1. navigate to top directory "big-apple-bank-heist"
+2. `make`
+3. Load main.prg to VIC20 emulator
+* Game is optimized for XVIC VIC20 NTSC with unexpanded memory

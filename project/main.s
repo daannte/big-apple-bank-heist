@@ -1,191 +1,112 @@
-  processor 6502
+    processor 6502
 
-  incdir "project"
-  include "constants.s"
-  include "zeropage.s"
-  org $1001
-  include "stub.s"
-  
-comp_data
-  incbin "titlescreen.zx02"
+    incdir "project"
+    incdir "project/data"
+    incdir "project/levels"
+    include "constants.s"
+    include "zeropage.s"
 
-level_pointers
-  dc.w level_1
-  dc.w level_2
-  dc.w level_3
+    org $1001
+    include "stub.s"
 
+level_pointers:
+    dc.w level_1, level_2, level_3, level_4, level_5, level_6, level_7, level_8, level_9, level_10, level_11
+    
 level_1
-  incbin "levels/level1.data"
+    incbin "level1.data"
 level_2
-  incbin "levels/level2.data"
+    incbin "level11.data"
 level_3
-  incbin "levels/level3.data"
+    incbin "level10.data"
+level_4
+    incbin "level4.data"
+level_5
+    incbin "level5.data"
+level_6
+    incbin "level6.data"
+level_7
+    incbin "level7.data"
+level_8
+    incbin "level8.data"
+level_9
+    incbin "level9.data"
+level_10
+    incbin "level3.data"
+level_11
+    incbin "level2.data"
+
+comp_data
+    incbin "titlescreen.zx02"
 
 start:
-  lda #$80
-  sta $028A           ; Key repeats - needed for XVIC emulator
-  lda #$0F            ; Border Black
-  jsr setbg
-  lda #$F8            ; BG Black 
-  jsr setbg
-  ldx #1
-  stx $0286
-  lda #147            ; Load clear screen command
-  jsr CHROUT          ; Print it
+    jsr clear_scr                  ; Clear Screen and set BG color
+    jsr initialize_clock           ; THIS INITIALIZES CLOCK
 
-titlescreen:
-  jsr draw_titlescreen
-
-game:
-  lda #0
-  sta CURRENT_LEVEL   ; Set the current_level to the first
-  sta SCORE1
-  sta SCORE2
-
-  lda #2
-  sta PLAYER_LIVES    ; 2 is interpreted as 3 lives because of how BNE works
-
-  lda JIFFY1
-  sta LASTJIFFY
-
+title:
+    jsr draw_titlescreen
+    lda #0                         ; Level Init
+    sta CURRENT_LEVEL
+    lda #2                      ; Player Lives Init
+    sta PLAYER_LIVES
 init:
-  lda #CUSTOM_ASCII_0
-  sta ASCII_OFFSET
-  lda #$ff              ; loading 255 into $9005 makes the vic look at $1c00 for characters instead
-  sta CHARSET             ; the above can be found on pages 84
-  lda #0
-  sta MOVING
-  sta JIFFIES_SINCE_SECOND
+    jsr reset_score
+init2:
+    jsr clear_scr
+    jsr print_score
+    jsr load_chars                 ; Load Custom Charset
+init3:
+    jsr init_set
+    jsr load_level
+game:
+    lda LEVEL_UP
+    bne .level_up
+    lda TIME_OUT_FLAG
+    bne .lose_life
+    jsr handle_input
+    jsr handle_movement
+    jsr handle_game_state
+    jsr render_game
+    jsr handle_timing
+    jmp game
 
-  lda #GRAVITY_MAX_COOLDOWN
-  sta GRAVITY_COOLDOWN
+.level_up:
+    jsr add_score
+    inc CURRENT_LEVEL
+    lda CURRENT_LEVEL
+    cmp #MAX_LEVELS
+    beq .score_scene
+    jmp init2
 
-  lda #255
-  sta VERTICAL
+.lose_life:
+    lda PLAYER_LIVES
+    beq .game_over
+    dec PLAYER_LIVES
+    jmp init2
 
-  lda #1
-  sta HORIZONTAL
-  
-  lda #TIMERESET1       ; 60 * 256^0 = 60 jiffies
-  sta TIMER1            ; store the timer value in address TIMER1
+.score_scene:
+    jsr load_endscreen
 
-  lda #TIMERESET2       ; 0 * 256^1 = 0 jiffies
-  sta TIMER2            ; store the timer value in address TIMER2
+.game_over:
+    jsr clear_scr
+    jsr print_score
+    jmp start
 
-  lda #TIMERESET3       ; 0 * 256^2 = 0 jiffies
-  sta TIMER3            ; store the timer value in address TIMER3
+; -------- OTHER FILES ---------
 
-  jsr load_level
-  jsr main_loop
-  cmp #0
-  beq start
-  jmp init
+    ;include "debug.s"               ; debugging subroutines
+    include "utility.s"
+    include "control.s"
+    include "movement.s"
+    include "state.s"
+    include "render.s"
+    include "titlescreen.s"
+    include "music.s"
+    include "zx02.s"
 
-main_loop:
-read_input:
-  lda MOVING
-  beq loop
-  jsr gravity
-  lda MOVING
-  beq loop
-  
-  jsr GETIN
-  cmp #87
-  beq w_key
-  cmp #65
-  beq a_key
-  cmp #68
-  beq d_key
-  cmp #83
-  beq s_key
-  cmp #32
-  beq space_key
-  jmp loop
+; ---- Memory Specific Data ----
 
-w_key:
-  lda CAN_JUMP
-  beq loop
-  lda #0
-  sta CAN_JUMP
-  jsr move_up
-  lda #GRAVITY_JUMP_COOLDOWN
-  sta GRAVITY_COOLDOWN
-  jmp loop
+    org $1c00
+    include "charset.s"
 
-a_key:
-  jsr move_left
-  jmp loop
-
-d_key:
-  jsr move_right
-  jmp loop
-
-s_key:
-  jsr move_down
-  jmp loop
-
-space_key:
-  jsr handle_lives
-  rts
-
-setbg:
-  and SCREEN 
-  sta SCREEN
-  rts
-
-loop:
-  lda X_POS
-  cmp EXIT_X
-  bne not_exited
-  lda Y_POS
-  cmp EXIT_Y
-  bne not_exited
-  jmp increment_level
-
-not_exited:
-  jsr increment_clock
-  cmp #0
-  bne space_key
-  jmp read_input
-
-increment_level:
-  jsr add_score
-  inc CURRENT_LEVEL   ; Increment CURRENT_LEVEL
-  lda CURRENT_LEVEL
-  cmp #MAX_LEVELS     ; If max level reached, render next level, else die
-  beq game_win
-  lda #ASCII_0
-  sta ASCII_OFFSET
-  lda #$f0
-  sta CHARSET
-  lda #147
-  jsr CHROUT
-  jsr print_score
-  jmp init
-
-game_win:
-  jsr load_endscreen
-  lda #0
-  sta PLAYER_LIVES
-  jmp space_key
-
-
-; -------- SUBROUTINES --------
-
-  include "clock.s"
-  include "endscreen.s"
-  include "levels.s"
-  include "lives.s"
-  include "movement.s"
-  include "titlescreen.s"
-  include "zx02.s"
-  include "music.s"
-
-; -------------------
-
-  org $1c00
-  include "charset.s"
-
-  org $1d00
-  include "musicdata.s"
-
+    org $1d00
+    include "musicdata.s"

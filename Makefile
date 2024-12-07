@@ -18,7 +18,7 @@ endif
 main: compile #upload run
 
 compile:
-	dasm refactor/main.s -omain.prg -lmain.lst
+	dasm project/main.s -omain.prg -lmain.lst
 
 #upload:
 #	scp "./$(OUTFILE)" "$(REMOTE):~/www/$(OUTFILE)"

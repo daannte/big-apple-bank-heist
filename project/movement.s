@@ -1,285 +1,82 @@
-  subroutine
-check_collision:
-  lda X_POS
-  cmp #11
-  bcc .baseaddr
-  lda X_POS
-  cmp #11
-  bne .midaddr
-  lda Y_POS
-  cmp #11
-  bcc .baseaddr
+; movement.s
+; Movement related subroutines
+; ** ONLY sets flags for it to be changed later in state.s
 
-.midaddr
-  lda X_POS
-  sec
-  sbc #10
-  asl
-  asl
-  asl
-  asl
-  sta TEMP1
+; Subroutine : Handle Movement
+; Description : Sets flags indicating type of movement
+handle_movement:
+    lda FRAME_STATE
+    bne .skip_input
+    jsr read_input
 
-  lda X_POS
-  asl
-  sta TEMP2
+    inc TEMP_X_POS
+    jsr check_collisions
+    bne .reset_gravity_loop
 
-  asl
-  clc
-  adc TEMP2
-  clc
-  adc TEMP1
-  
-  sta TEMP1
-  lda Y_POS
-  clc
-  adc TEMP1
-  sec
-  sbc #90 ; for some reason, the magic number is 70
-  tax
-  lda SCR2,x
-  jmp .check_occupied
+    ; No collision - in air
+    jsr dec_gravity_loop
+    bne .fall 
+    jmp .skip_input
 
-.baseaddr
-  lda X_POS
-  asl
-  asl
-  asl
-  asl
-  sta TEMP1
-  lda X_POS
-  asl
-  sta TEMP2
-  asl
-  clc
-  adc TEMP2
-  clc
-  adc TEMP1
-  sta TEMP1
-  lda Y_POS
-  adc TEMP1
-  tax
-  lda SCR,x
+.fall:
+    lda #4
+    sta MOVING
+    lda #FALL_GRAVITY_DELAY
+    sta GRAVITY_LOOP
+    jmp .skip_input
 
-.check_occupied:
-  cmp #10 ; WALL
-  beq .occupied_wall
-  cmp #11 ; EXITDOOR
-  beq .occupied_exit
-  lda #0
-  rts
-  
-.occupied_wall:
-  lda #1
-  rts
+    ; Standing on platform (collision downwards)
+.reset_gravity_loop:
+    lda FRAME_STATE
+    bne .skip_input
+    jsr reset_grav
+.enable_jump:
+    lda #1
+    sta CAN_JUMP
+.skip_input:
+    rts
 
-.occupied_exit:
-  lda #2
-  rts
-
-; --------------------------------
-  subroutine
-move_up:
-  lda X_POS
-  cmp #2
-  beq .end_move_up
-  dec X_POS
-  jsr check_collision
-  inc X_POS
-  cmp #1
-  beq .end_move_up
-
-  lda #0
-  sta VERTICAL
-
-  lda HORIZONTAL
-  beq .move_up1
-  lda #ROBBER_VL_2
-  jmp .move_up2
-
-.move_up1:
-  lda #ROBBER_VR_2
-
-.move_up2:
-  jsr CHROUT
-
-  dec X_POS
-  ldy Y_POS
-  ldx X_POS
-  clc
-  jsr PLOT
-
-  lda HORIZONTAL
-  beq .move_up3
-  lda #ROBBER_VL_1
-  jmp .move_up4
-
-.move_up3:
-  lda #ROBBER_VR_1
-
-.move_up4:
-  sta CURRENT
-  jsr CHROUT
-
-  clc
-  jsr PLOT
-  lda #0
-  sta MOVING
-  lda #TIMERESET1
-  sta TIMER1
-
-.end_move_up:
-  rts
-
-; -------------------
-  subroutine
-move_down:
-  lda X_POS
-  cmp #21
-  beq .end_move_down_fail
-  inc X_POS
-  jsr check_collision
-  dec X_POS
-  cmp #1
-  beq .end_move_down_fail
-
-  lda #1
-  sta VERTICAL
-
-  lda HORIZONTAL
-  beq .move_down1
-  lda #ROBBER_VL_1
-  jmp .move_down2
-
-.move_down1:
-  lda #ROBBER_VR_1
-
-.move_down2:
-  jsr CHROUT
-
-  inc X_POS
-  ldy Y_POS
-  ldx X_POS
-  clc
-  jsr PLOT
-
-  lda HORIZONTAL
-  beq .move_down3
-  lda #ROBBER_VL_2
-  jmp .move_down4
-
-.move_down3:
-  lda #ROBBER_VR_2
-
-.move_down4:
-  sta CURRENT
-  jsr CHROUT
-
-  clc
-  jsr PLOT
-  lda #0
-  sta MOVING
-  lda #TIMERESET1
-  sta TIMER1
-
-.end_move_down_success:
-  lda #0
-  rts
-
-.end_move_down_fail:
-  lda #1
-  rts
-
-; -------------------
-  subroutine
-move_right:
-  lda Y_POS
-  cmp #20
-  beq .end_move_right
-  inc Y_POS
-  jsr check_collision
-  dec Y_POS
-  cmp #1
-  beq .end_move_right
-
-  lda #1
-  sta HORIZONTAL
-
-  lda #ROBBER_R_1
-  jsr CHROUT
-
-  inc Y_POS
-  ldx X_POS
-  ldy Y_POS
-  clc
-  jsr PLOT
-
-  lda #ROBBER_R_2
-  sta CURRENT
-  jsr CHROUT
-
-  clc
-  jsr PLOT
-  lda #0
-  sta MOVING
-  lda #TIMERESET1
-  sta TIMER1
-
-.end_move_right:
-  rts
-; -------------------
-  subroutine
-move_left:
-  lda Y_POS
-  cmp #1
-  beq .end_move_left
-  dec Y_POS
-  jsr check_collision
-  inc Y_POS
-  cmp #1
-  beq .end_move_left
-
-  lda #0
-  sta HORIZONTAL
-
-  lda #ROBBER_L_2
-  jsr CHROUT
-
-  dec Y_POS
-  ldx X_POS
-  ldy Y_POS
-  clc
-  jsr PLOT
-
-  lda #ROBBER_L_1
-  sta CURRENT
-  jsr CHROUT
-
-  clc
-  jsr PLOT
-  lda #0
-  sta MOVING
-  lda #TIMERESET1
-  sta TIMER1
-
-.end_move_left:
-  rts
-; -------------------
-  subroutine
-gravity:
-  lda MOVING
-  beq .check_on_ground
-  lda GRAVITY_COOLDOWN
-  bne .check_on_ground
-  lda #GRAVITY_MAX_COOLDOWN
-  sta GRAVITY_COOLDOWN
-  jsr move_down
-  sta CAN_JUMP
-  rts
-
-.check_on_ground:
-  inc X_POS
-  jsr check_collision
-  sta CAN_JUMP
-  dec X_POS
-  rts
+; Subroutine : Read Input
+; Description : Loads INPUT_COMMAND and branch accordingly
+read_input:
+    lda INPUT_COMMAND
+    cmp #87                     ; "W"
+    beq .move_up
+    cmp #65                     ; "A"
+    beq .move_left
+    cmp #68                     ; "D"
+    beq .move_right
+    lda #0
+    sta MOVING
+    jmp .exit_complete
+.move_up:
+    lda CAN_JUMP
+    beq .cant_jump
+    lda #0
+    sta CAN_JUMP
+    lda #3
+    sta MOVING
+    lda #JUMP_GRAVITY_DELAY
+    sta GRAVITY_LOOP
+    jmp .exit_read
+.move_left:
+    lda #2                     ; Direction - Left
+    sta MOVING
+    lda #1
+    sta DIRECTION
+    jmp .exit_read
+.move_right:
+    lda #1                     ; Direction - Right
+    sta MOVING
+    lda #0
+    sta DIRECTION
+    jmp .exit_read
+.exit_read:
+    lda #1                      ; Initiates the movement sequence 
+    sta FRAME_STATE
+    jmp .exit_complete
+.cant_jump:
+    lda #0
+    sta MOVING
+.exit_complete:
+    rts
